@@ -1,0 +1,75 @@
+>> image1 = imread('300cat.jpeg');
+>> image2 = imread('300dog.jpeg');
+>> if size(image1) ~= size(image2)
+    error('Images must be of the same size to be added');
+end
+>> image1_double = im2double(image1);
+image2_double = im2double(image2);
+>> result_image = image1_double + image2_double;
+
+>> imshow(result_image);
+
+% Step 5: Normalize the result (if necessary, to avoid overflow issues)
+result_image = result_image / max(result_image(:));
+
+--------------------------------------------------------------
+logical or
+---------------------------------------------------------------------
+% Step 1: Read the two images
+img1 = imread('image1.jpg');
+img2 = imread('image2.jpg');
+
+% Step 2: Convert images to binary (logical) if necessary
+% This step assumes you are working with grayscale images; for color images, convert to grayscale first
+img1_bw = imbinarize(rgb2gray(img1)); % Convert image 1 to binary
+img2_bw = imbinarize(rgb2gray(img2)); % Convert image 2 to binary
+
+% Step 3: Perform logical OR operation
+img_or = img1_bw | img2_bw;
+
+% Step 4: Display the original images and the result
+subplot(1, 3, 1), imshow(img1_bw), title('Binary Image 1');
+subplot(1, 3, 2), imshow(img2_bw), title('Binary Image 2');
+subplot(1, 3, 3), imshow(img_or), title('Logical OR of Images');
+
+--------------------------------------------------------------------
+
+% Step 1: Read the two images
+img1 = imread('image1.jpg');
+img2 = imread('image2.jpg');
+
+% Step 2: Convert the images to grayscale if needed, and then to binary
+img1_bw = imbinarize(rgb2gray(img1));  % Convert image 1 to binary
+img2_bw = imbinarize(rgb2gray(img2));  % Convert image 2 to binary
+
+% Step 3: Perform logical NOT operation on both images
+img1_not = ~img1_bw;
+img2_not = ~img2_bw;
+
+% Step 4: Display the original and result images
+subplot(2, 2, 1), imshow(img1_bw), title('Binary Image 1');
+subplot(2, 2, 2), imshow(img2_bw), title('Binary Image 2');
+subplot(2, 2, 3), imshow(img1_not), title('Logical NOT of Image 1');
+subplot(2, 2, 4), imshow(img2_not), title('Logical NOT of Image 2');
+-----------------------------------------------------------------------------
+blurring
+-----------------------------
+% Step 1: Read the image
+img = imread('image.jpg');
+
+% Step 2: Convert the image to grayscale (optional for color images)
+img_gray = rgb2gray(img);
+
+% Step 3: Define an averaging filter
+h = fspecial('average', [5 5]);  % 5x5 averaging filter
+
+% Step 4: Apply the average filter to the image
+img_blur_average = imfilter(img_gray, h);
+
+% Step 5: Display the original and blurred image
+subplot(1, 2, 1), imshow(img_gray), title('Original Image');
+subplot(1, 2, 2), imshow(img_blur_average), title('Average Blurred Image');
+-----------------------------------------------------------------------------------
+
+
+

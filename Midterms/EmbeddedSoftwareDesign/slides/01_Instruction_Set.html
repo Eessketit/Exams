@@ -1,0 +1,1354 @@
+<title>Instruction Set: What the Processor Actually Does</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1c1f; --muted: #5b6270; --rule: #dfe3ea;
+    --accent: #1f5fa8; --code-bg: #f5f7fa; --code-fg: #22262b;
+    --th-bg: #eef2f7; --mark: #0a7a4a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c; --fg: #e6e9ee; --muted: #9aa3b2; --rule: #2b313b;
+      --accent: #78b4f0; --code-bg: #1b1f26; --code-fg: #dfe4ec;
+      --th-bg: #1f242c; --mark: #56d39a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171c; --fg: #e6e9ee; --muted: #9aa3b2; --rule: #2b313b;
+    --accent: #78b4f0; --code-bg: #1b1f26; --code-fg: #dfe4ec;
+    --th-bg: #1f242c; --mark: #56d39a;
+  }
+
+  body {
+    background: var(--bg); color: var(--fg); margin: 0;
+    font: 16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .slide {
+    display: none; box-sizing: border-box; min-height: 100vh;
+    padding: 4.6rem 4rem 5rem; max-width: 1180px; margin: 0 auto;
+  }
+  .slide.active { display: block; }
+  h1 { font-size: 2.3rem; line-height: 1.15; margin: 0 0 .4rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.65rem; margin: 0 0 1rem; color: var(--accent); letter-spacing: -.01em; }
+  h3 { font-size: 1.12rem; margin: 1.5rem 0 .5rem; }
+  p  { margin: .6rem 0; }
+  ul, ol { margin: .5rem 0 .9rem; padding-left: 1.4rem; }
+  li { margin: .28rem 0; }
+  a { color: var(--accent); }
+  code {
+    background: var(--code-bg); color: var(--code-fg); padding: .1em .35em;
+    border-radius: 4px; font-size: .89em;
+    font-family: "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--rule); border-radius: 8px;
+    padding: .85rem 1rem; overflow-x: auto; line-height: 1.45;
+  }
+  pre code { background: none; padding: 0; font-size: .85rem; }
+  table { border-collapse: collapse; margin: .8rem 0; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--rule); padding: .38rem .7rem; text-align: left; }
+  th { background: var(--th-bg); }
+  strong { font-weight: 650; }
+
+  .topbar {
+    position: fixed; left: 0; right: 0; top: 0; height: 2.2rem; z-index: 5;
+    display: flex; align-items: center; gap: 1rem; padding: 0 1.2rem;
+    background: var(--bg); border-bottom: 1px solid var(--rule);
+    font-size: .8rem; color: var(--muted);
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar .deck-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* ---- diagrams -------------------------------------------------------
+     A ```svg block lands here.  Shapes inherit the page colour through
+     currentColor, so one diagram works in both themes.  The helper classes
+     save every deck from restating the same fills and strokes. */
+  .diagram { margin: 1.1rem 0; text-align: center; color: var(--fg); }
+  .diagram svg { max-width: 100%; height: auto; overflow: visible; }
+  .diagram text {
+    fill: currentColor; font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px; dominant-baseline: middle;
+  }
+  .diagram .mono   { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .diagram .lbl    { fill: var(--muted); font-size: 11px; }
+  .diagram .box    { fill: var(--code-bg); stroke: currentColor; stroke-width: 1.5; }
+  .diagram .reg    { fill: none; stroke: currentColor; stroke-width: 1.2; }
+  .diagram .hi     { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .diagram .hifill { fill: var(--accent); fill-opacity: .14; stroke: var(--accent); stroke-width: 1.5; }
+  .diagram .ok     { fill: none; stroke: var(--mark); stroke-width: 2; }
+  .diagram .wire   { fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .diagram text.hi { fill: var(--accent); stroke: none; font-weight: 600; }
+  .diagram .halo   { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+  .diagram .dash   { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  .diagram figcaption { color: var(--muted); font-size: .8rem; margin-top: .4rem; }
+
+  .topbar a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .topbar a:hover { text-decoration: underline; }
+
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 2.6rem;
+    display: flex; align-items: center; gap: 1rem; padding: 0 1.2rem;
+    background: var(--bg); border-top: 1px solid var(--rule);
+    font-size: .8rem; color: var(--muted);
+  }
+  .bar .spacer { flex: 1; }
+  .bar button {
+    font: inherit; color: var(--muted); background: none;
+    border: 1px solid var(--rule); border-radius: 5px; padding: .1rem .55rem;
+    cursor: pointer;
+  }
+  .bar button:hover { color: var(--fg); }
+
+  /* overview grid */
+  body.grid .slide {
+    display: block; min-height: 0; padding: 1rem; margin: 0;
+    border: 1px solid var(--rule); border-radius: 8px;
+    zoom: .42; cursor: pointer; overflow: hidden; height: 44rem;
+  }
+  body.grid #deck {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: .8rem; padding: 3rem 1rem 4rem;
+  }
+
+  @media print {
+    .bar, .topbar { display: none; }
+    .slide { display: block !important; page-break-after: always; min-height: 0; padding: 1.2cm; }
+    pre, table { page-break-inside: avoid; }
+  }
+</style>
+
+<div class="topbar">
+  <span><a href="https://www.st.com/resource/en/reference_manual/rm0490-stm32c0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf" target="_blank" rel="noopener">STM32 Reference Manual (PDF)</a></span>
+  <span><a href="UM2953_Nucleo64_MB1717.pdf" target="_blank" rel="noopener">Board manual (PDF)</a></span>
+  <span><a href="https://docs.wokwi.com/parts/board-st-nucleo-c031c6" target="_blank" rel="noopener">Nucleo-C031C6 board</a></span>
+  <span><a href="board-pins.html" target="_blank" rel="noopener">Board pins</a></span>
+  <span><a href="https://colab.research.google.com/github/gnoejh/soc3050code/blob/main/projects2026_arm/_notebooks/SOC3050_ARM.ipynb" target="_blank" rel="noopener">Open in Colab</a></span>
+  <span class="spacer"></span>
+  <span class="deck-name">Instruction Set: What the Processor Actually Does</span>
+</div>
+
+<div id="deck">
+<section class="slide">
+<h1>Instruction Set: What the Processor Actually Does</h1>
+<h2>SOC3050 ARM Edition — Part 0, Models</h2>
+<p><strong>Reference</strong>: <a href="https://www.st.com/resource/en/reference_manual/rm0490-stm32c0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf" target="_blank" rel="noopener">STM32 Reference Manual</a></p>
+<p>The second of four lessons with <strong>no code to write</strong>.</p>
+<p>Last lesson: the machine is a CPU, memory and peripherals on one bus, and a<br>register is an address with a side effect. This lesson: what the CPU can<br>actually <em>do</em> with an address.</p>
+<p>Every disassembly and every statistic on these slides is real output from this<br>repository&#x27;s own build — <code>_spike/c031c6/Main.elf</code>, compiled with <code>-Os</code> by the<br>same <code>arm-none-eabi-gcc</code> you will use. Nothing here is illustrative.</p>
+</section>
+<section class="slide">
+<h2>Slide 1: You Will Not Write Assembly. You Will Read It.</h2>
+<p>Nobody in this course writes an application in assembly. But four times a term,<br>something will go wrong in a way that C cannot explain:</p>
+<ul><li>the debugger stops somewhere with no source line</li><li>a variable changes when nothing wrote to it</li><li>a loop that should take 3 µs takes 30</li><li>the optimiser deletes code you needed</li></ul>
+<p>Each of those is answered in one place: <strong>the instructions the compiler<br>actually emitted</strong>. Reading them is a diagnostic skill, like reading a stack<br>trace.</p>
+</section>
+<section class="slide">
+<h2>Slide 2: Thumb — the Only Instruction Set This Chip Has</h2>
+<p>Before reading a single mnemonic, know which language it is written in. ARM<br>designs <strong>two</strong> instruction sets, and this processor can execute exactly one of<br>them.</p>
+<table><thead><tr><th></th><th><strong>ARM (A32)</strong></th><th><strong>Thumb (T32)</strong></th></tr></thead><tbody><tr><td>Instruction width</td><td>always 32 bits</td><td>16 bits, widening to 32 only when it must</td></tr><tr><td>Same program, code size</td><td>baseline</td><td><strong>roughly 30% smaller</strong></td></tr><tr><td>Conditional execution</td><td>on every instruction</td><td>on branches</td></tr><tr><td>Registers in one instruction</td><td>all 16, always</td><td>R0–R7 in most 16-bit forms</td></tr><tr><td>Arrived</td><td>1985, the original</td><td>1994, in the ARM7<strong>T</strong>DMI</td></tr><tr><td>Executed by</td><td>Cortex-A, Cortex-R</td><td>Cortex-A, Cortex-R, <strong>and every Cortex-M</strong></td></tr></tbody></table>
+<figure class="diagram"><svg viewBox="0 0 560 220" role="img" aria-label="ARM instructions are always 32 bits; Thumb is mostly 16 bits; Cortex-M has only Thumb">
+  <text x="138" y="26" text-anchor="middle" class="lbl">ARM (A32) — four instructions</text>
+  <rect class="reg" x="20" y="38" width="55" height="26" rx="3"/>
+  <rect class="reg" x="80" y="38" width="55" height="26" rx="3"/>
+  <rect class="reg" x="140" y="38" width="55" height="26" rx="3"/>
+  <rect class="reg" x="200" y="38" width="55" height="26" rx="3"/>
+  <text x="138" y="82" text-anchor="middle" class="lbl">16 bytes</text>
+  <text x="422" y="26" text-anchor="middle" class="lbl">Thumb (T32) — the same four</text>
+  <rect class="hifill" x="305" y="38" width="27" height="26" rx="3"/>
+  <rect class="hifill" x="337" y="38" width="27" height="26" rx="3"/>
+  <rect class="hifill" x="369" y="38" width="55" height="26" rx="3"/>
+  <rect class="hifill" x="429" y="38" width="27" height="26" rx="3"/>
+  <text x="396" y="82" text-anchor="middle" class="lbl">10 bytes</text>
+  <text x="504" y="56" text-anchor="middle" class="lbl">one widened</text>
+  <path class="dash" d="M280 30 V92"/>
+  <rect class="box" x="60" y="112" width="200" height="46" rx="6"/>
+  <text x="160" y="130" text-anchor="middle">Cortex-A, Cortex-R</text>
+  <text x="160" y="148" text-anchor="middle" class="lbl">both, switched at run time</text>
+  <rect class="hifill" x="300" y="112" width="200" height="46" rx="6"/>
+  <text x="400" y="130" text-anchor="middle">Cortex-M — this chip</text>
+  <text x="400" y="148" text-anchor="middle" class="lbl">Thumb only. No ARM state exists.</text>
+  <text x="280" y="192" text-anchor="middle" class="lbl">A third less flash for the same program is worth more to a 32 KB part</text>
+  <text x="280" y="210" text-anchor="middle" class="lbl">than anything the wider encoding was buying.</text>
+</svg></figure>
+<p>A phone&#x27;s Cortex-A holds both and switches between them as it runs. <strong>A<br>Cortex-M has no ARM state to switch to.</strong> Thumb is not a mode you opt into<br>here; it is the only thing the decoder understands.</p>
+<p><strong>The general idea behind all of this is code density</strong> — how much program you<br>get per byte of memory — and it is a standing tension in instruction-set design.<br>Wide fixed-length instructions decode trivially and waste space; variable-length<br>ones (x86 runs from 1 to 15 bytes) pack tightly and make the decoder&#x27;s first job<br><em>working out where the next instruction starts</em>. The compromise most RISC<br>families reached is a <strong>compressed instruction set</strong>: a narrow encoding of the<br>common cases, sitting beside the full-width one. Thumb is ARM&#x27;s; MIPS16 was<br>MIPS&#x27;s; RISC-V calls its version the <strong>&quot;C&quot; extension</strong>. Every one of them exists<br>because memory, not arithmetic, is what a small system runs out of first.</p>
+<p>You do not have to take that on faith — the build says so. This is the<br>runtime library the linker actually pulled in, straight out of <code>Main.map</code>:</p>
+<pre><code>.../lib/gcc/arm-none-eabi/15.2.1/thumb/v6-m/nofp/libgcc.a(_udivsi3.o)</code></pre>
+<p>Three directory names, three decisions: <strong><code>thumb</code></strong> the instruction set,<br><strong><code>v6-m</code></strong> the architecture, <strong><code>nofp</code></strong> no floating-point unit. GCC ships a<br>separate copy of its runtime for each combination, and that is the copy your<br>chip got.</p>
+</section>
+<section class="slide">
+<h2>Slide 3: The Good News — There Is Not Much to Learn</h2>
+<p>The whole spike program is <strong>2100 instructions</strong> built from just <strong>51 distinct<br>mnemonics</strong>. And they are not evenly used:</p>
+<table><thead><tr><th>Instruction</th><th>Share</th><th>Running total</th></tr></thead><tbody><tr><td><code>movs</code></td><td>15.9%</td><td>15.9%</td></tr><tr><td><code>ldr</code></td><td>15.3%</td><td>31.2%</td></tr><tr><td><code>cmp</code></td><td>8.3%</td><td>39.5%</td></tr><tr><td><code>str</code></td><td>8.0%</td><td>47.5%</td></tr><tr><td><code>adds</code></td><td>5.7%</td><td>53.2%</td></tr><tr><td><code>bl</code></td><td>4.3%</td><td>57.5%</td></tr><tr><td><code>lsls</code></td><td>4.0%</td><td>61.5%</td></tr><tr><td><code>b</code></td><td>3.9%</td><td>65.4%</td></tr><tr><td><code>bne</code></td><td>3.6%</td><td>69.0%</td></tr><tr><td><code>beq</code></td><td>3.5%</td><td>72.5%</td></tr><tr><td><code>subs</code></td><td>2.5%</td><td>75.0%</td></tr><tr><td><code>push</code> / <code>pop</code></td><td>4.6%</td><td><strong>79.6%</strong></td></tr></tbody></table>
+<figure class="diagram"><svg viewBox="0 0 560 150" role="img" aria-label="Thirteen mnemonics account for eighty percent of all instructions">
+  <rect class="reg" x="20" y="40" width="520" height="34" rx="5"/>
+  <rect class="hifill" x="20" y="40" width="414" height="34" rx="5"/>
+  <text x="227" y="58" text-anchor="middle">13 mnemonics = 80% of all code</text>
+  <text x="487" y="58" text-anchor="middle" class="lbl">the other 38</text>
+  <text x="280" y="106" text-anchor="middle" class="lbl">Move things. Add things. Compare things. Jump somewhere.</text>
+  <text x="280" y="126" text-anchor="middle" class="lbl">That is most of what a processor does.</text>
+</svg></figure>
+<p>Learn those thirteen and you can read almost any disassembly on this chip. The<br>next five slides are those thirteen, by job.</p>
+</section>
+<section class="slide">
+<h2>Slide 4: Load / Store — Two Machine Models, and Which One This Is</h2>
+<p>Every instruction set answers one question early and never revisits it: <strong>may an<br>arithmetic instruction name a memory address?</strong> There are two answers, and both<br>have names you will meet in any architecture text.</p>
+<p><strong>Register–memory.</strong> x86, the 68000, the IBM S/360. An operand may be an<br>address, so one instruction fetches, computes and writes back:</p>
+<pre><code>add  dword [counter], 1        ; x86 — one instruction, memory += 1</code></pre>
+<p><strong>Load–store.</strong> ARM, RISC-V, MIPS — and the AVR you already know. The ALU sees<br>registers and nothing else. Memory is reached only by instructions whose entire<br>job is moving a word across the boundary:</p>
+<pre><code>ldr   r0, [r1]                 @ Cortex-M — the same job, in three
+adds  r0, r0, #1
+str   r0, [r1]</code></pre>
+<p>Both fragments increment the same counter. The second says out loud what the<br>first one hides.</p>
+<figure class="diagram"><svg viewBox="0 0 560 258" role="img" aria-label="Register-memory lets one instruction span memory and the ALU; load-store puts a boundary between them that only LDR and STR cross">
+  <defs><marker id="m4" markerWidth="7" markerHeight="7" refX="6.2" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.4 0.7 L6.2 3 L0.4 5.3 z" fill="currentColor"/></marker></defs>
+
+  <text x="14" y="16" class="lbl">REGISTER–MEMORY — x86, 68000</text>
+  <rect class="dash" x="10" y="26" width="540" height="64" rx="7"/>
+  <rect class="box" x="26" y="39" width="104" height="38" rx="5"/>
+  <text x="78" y="58" text-anchor="middle">memory</text>
+  <path class="wire" d="M134 49 H222" marker-end="url(#m4)"/>
+  <path class="wire" d="M222 67 H134" marker-end="url(#m4)"/>
+  <rect class="box" x="226" y="39" width="84" height="38" rx="5"/>
+  <text x="268" y="58" text-anchor="middle">ALU</text>
+  <text x="330" y="50" class="mono lbl">add dword [counter], 1</text>
+  <text x="330" y="68" class="lbl">one instruction spans the whole dashed box</text>
+
+  <text x="14" y="116" class="lbl">LOAD–STORE — ARM, RISC-V, AVR</text>
+  <rect class="box" x="26" y="130" width="96" height="38" rx="5"/>
+  <text x="74" y="149" text-anchor="middle">memory</text>
+  <path class="dash" d="M152 114 V214"/>
+  <text x="152" y="228" text-anchor="middle" class="lbl">only ldr / str cross here</text>
+  <path class="hi" d="M124 140 H230" marker-end="url(#m4)"/>
+  <text x="177" y="128" text-anchor="middle" class="mono lbl">ldr</text>
+  <path class="hi" d="M230 158 H124" marker-end="url(#m4)"/>
+  <text x="177" y="172" text-anchor="middle" class="mono lbl">str</text>
+  <rect class="hifill" x="234" y="130" width="96" height="38" rx="5"/>
+  <text x="282" y="149" text-anchor="middle">registers</text>
+  <path class="wire" d="M334 140 H420" marker-end="url(#m4)"/>
+  <path class="wire" d="M420 158 H334" marker-end="url(#m4)"/>
+  <rect class="box" x="424" y="130" width="84" height="38" rx="5"/>
+  <text x="466" y="149" text-anchor="middle">ALU</text>
+  <text x="372" y="192" text-anchor="middle" class="lbl">arithmetic never sees an address</text>
+  <text x="280" y="248" text-anchor="middle" class="lbl">Same work either way. Only one of them makes you write it down.</text>
+</svg></figure>
+<table><thead><tr><th></th><th>Register–memory</th><th>Load–store</th></tr></thead><tbody><tr><td>Found in</td><td>x86, 68000, S/360</td><td><strong>ARM</strong>, RISC-V, MIPS, <strong>AVR</strong></td></tr><tr><td>An ALU operand may be</td><td>a register <strong>or</strong> memory</td><td>a register only</td></tr><tr><td>Memory is touched by</td><td>most instructions</td><td><code>ldr</code> / <code>str</code>, and nothing else</td></tr><tr><td>Instruction length</td><td>variable — x86 is 1 to 15 bytes</td><td>fixed — Thumb is 2 or 4</td></tr><tr><td><code>counter++</code> costs</td><td>1 instruction</td><td>3 instructions</td></tr><tr><td>…and bus accesses</td><td>2</td><td>2</td></tr></tbody></table>
+<p>Read those last two rows together, because they are the whole trade:<br><strong>load–store costs instructions, not memory traffic.</strong> The bus does identical<br>work either way; the only difference is whether the instruction stream admits<br>it. What the admission buys is a fixed-length encoding, a decoder that never has<br>to ask how long an instruction is before it can find the next one, and a<br>pipeline whose stages are the same depth for every opcode. A 48 MHz part with no<br>cache is built out of exactly those properties. This is most of what &quot;RISC&quot; and<br>&quot;CISC&quot; ever meant. (The VAX went further than x86 in the other direction —<br><em>both</em> operands could be memory. Nobody builds those any more.)</p>
+<p><strong>The AVR was load–store too, with one deliberate crack.</strong> <code>sbi PORTB, 0</code> sets a<br>bit in a low I/O register in a single uninterruptible instruction, no <code>lds</code>/<code>sts</code><br>around it — which is why <code>PORTB |= (1 &lt;&lt; 0)</code> was something you never had to<br>think about. <strong>Cortex-M0+ has no <code>sbi</code>.</strong> Every peripheral register here is<br>ordinary memory at an ordinary address, reached the ordinary way. The<br>convenience comes back as <em>hardware</em> instead: STM32&#x27;s GPIO has a set/reset<br>register, <code>BSRR</code>, that turns a bit-set back into one <code>str</code> — lesson 05.</p>
+<h3>Crossing the boundary, on this chip</h3>
+<table><thead><tr><th>Instruction</th><th>Moves</th><th>C equivalent</th></tr></thead><tbody><tr><td><code>ldr  r0, [r1]</code></td><td>32 bits, memory → register</td><td><code>x = *p;</code></td></tr><tr><td><code>str  r0, [r1]</code></td><td>32 bits, register → memory</td><td><code>*p = x;</code></td></tr><tr><td><code>ldrb</code> / <code>strb</code></td><td>8 bits</td><td><code>char</code>, <code>uint8_t</code></td></tr><tr><td><code>ldrh</code> / <code>strh</code></td><td>16 bits</td><td><code>uint16_t</code></td></tr><tr><td><code>ldrsh</code></td><td>16 bits, <strong>sign-extended</strong></td><td><code>int16_t</code></td></tr><tr><td><code>movs r0, #7</code></td><td>a constant into a register</td><td><code>x = 7;</code></td></tr><tr><td><code>movs r0, r3</code></td><td>register to register</td><td><code>x = y;</code></td></tr></tbody></table>
+<p>The last two rows are there for contrast: <code>movs</code> is the one that never touches<br>memory at all. Everything else in the deck operates on what <code>ldr</code> brought in.</p>
+<p>So setting one bit in a peripheral register is never one instruction here. It is<br>a <strong>read, a modify and a write</strong> — three instructions, two bus events, and a gap<br>in between that belongs to whatever the processor does next. Lesson 03 shows<br>what goes wrong in that gap.</p>
+</section>
+<section class="slide">
+<h2>Slide 5: Arithmetic and Logic</h2>
+<p>These operate on registers only, and almost all of them carry an <code>s</code>.</p>
+<table><thead><tr><th>Instruction</th><th>Does</th><th>Note</th></tr></thead><tbody><tr><td><code>adds r0, r1, r2</code></td><td>add</td><td></td></tr><tr><td><code>subs r0, r1, #4</code></td><td>subtract</td><td></td></tr><tr><td><code>negs r0, r1</code></td><td>negate</td><td><code>0 - r1</code></td></tr><tr><td><code>muls r0, r1</code></td><td>multiply</td><td>32×32, low 32 bits kept</td></tr><tr><td><code>adcs</code></td><td>add with carry</td><td>how 64-bit sums are built from 32-bit parts</td></tr><tr><td><code>ands r0, r1</code></td><td>bitwise AND</td><td><code>x &amp;= y</code></td></tr><tr><td><code>orrs r0, r1</code></td><td>bitwise OR</td><td><code>x |= y</code></td></tr><tr><td><code>eors r0, r1</code></td><td>bitwise XOR</td><td><code>x ^= y</code></td></tr><tr><td><code>bics r0, r1</code></td><td><strong>bit clear</strong> — <code>r0 AND NOT r1</code></td><td><code>x &amp;= ~y</code> — the mask-clearing idiom</td></tr></tbody></table>
+<p>&gt; <strong>There is no divide instruction on Cortex-M0+.</strong> <code>a / b</code> becomes a call to a<br>&gt; library routine, <code>__aeabi_uidiv</code>, which is why it is dramatically slower than<br>&gt; multiply. You can see it in the spike: <code>080000b4 &lt;__udivsi3&gt;</code> is linked in<br>&gt; because one line of C divided. Cortex-M3 and above have <code>sdiv</code> and <code>udiv</code> in<br>&gt; hardware.</p>
+<p><strong>Why the <code>s</code> everywhere?</strong> On the 16-bit Thumb encodings the M0+ uses, most<br>data-processing instructions <em>always</em> update the flags — there is no room in<br>the encoding for a choice. So the compiler writes <code>adds</code>, not <code>add</code>. On M3 and<br>above, the 32-bit encodings let you pick. Slide 16 has the rest of that<br>difference, generation by generation.</p>
+</section>
+<section class="slide">
+<h2>Slide 6: Shifts — Why <code>lsls</code> Is 4% of All Code</h2>
+<table><thead><tr><th>Instruction</th><th>Does</th></tr></thead><tbody><tr><td><code>lsls r0, r1, #3</code></td><td>logical shift left — multiply by 8</td></tr><tr><td><code>lsrs r0, r1, #3</code></td><td>logical shift right — unsigned divide by 8</td></tr><tr><td><code>asrs r0, r1, #3</code></td><td>arithmetic shift right — <strong>signed</strong> divide, keeps the sign</td></tr><tr><td><code>rors r0, r1</code></td><td>rotate right</td></tr></tbody></table>
+<p>Shifts are everywhere in embedded code for one reason: <strong>bit fields</strong>. Every<br>time you write</p>
+<pre class="lang-c"><code>GPIOA-&gt;MODER |= (2u &lt;&lt; (pin * 2));</code></pre>
+<p>the <code>&lt;&lt;</code> is an <code>lsls</code>. Every peripheral configuration you write this term<br>compiles into shift-and-mask, which is why a shift instruction outranks<br>subtraction in real firmware.</p>
+<p>Note <code>lsrs</code> versus <code>asrs</code>: shifting right is only a division if you pick the<br>one that matches your signedness. Getting it wrong turns a small negative<br>number into a very large positive one.</p>
+</section>
+<section class="slide">
+<h2>Slide 7: Flags and Conditional Branches</h2>
+<p><strong>The general idea: how does a machine remember the result of a comparison?</strong><br>Two families, and you can tell them apart in one glance at any disassembly.</p>
+<ul><li><strong>Condition-code machines</strong> keep a few flag bits in a status register. A compare <em>sets</em> them, a later branch <em>reads</em> them, and the two instructions are coupled by invisible state. ARM, x86, AVR and the 68000 all work this way.</li><li><strong>Compare-and-branch machines</strong> have no flags register at all. The comparison and the branch are one instruction — RISC-V writes <code>blt a0, a1, label</code> directly, and MIPS does the same. Nothing is carried between instructions.</li></ul>
+<p>Flags buy density: one <code>cmp</code> can feed several branches. They cost a hidden<br>dependency that every instruction in between must preserve, which is awkward for<br>a deeply pipelined or out-of-order machine — the main reason the newer designs<br>dropped them.</p>
+<p><strong>This chip is a condition-code machine.</strong> Comparison does not produce a value.<br>It sets four bits in the status register, and the <em>next</em> instruction acts on<br>them.</p>
+<figure class="diagram"><svg viewBox="0 0 560 190" role="img" aria-label="Compare sets flags, branch reads them">
+  <defs><marker id="i3" markerWidth="7" markerHeight="7" refX="6.2" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.4 0.7 L6.2 3 L0.4 5.3 z" fill="currentColor"/></marker></defs>
+  <rect class="box" x="30" y="34" width="150" height="34" rx="5"/>
+  <text x="105" y="51" text-anchor="middle" class="mono">cmp r3, r2</text>
+  <path class="wire" d="M180 51 H226" marker-end="url(#i3)"/>
+  <rect class="hifill" x="230" y="26" width="140" height="50" rx="6"/>
+  <text x="300" y="46" text-anchor="middle" class="mono">N Z C V</text>
+  <text x="300" y="65" text-anchor="middle" class="lbl">flags, in APSR</text>
+  <path class="wire" d="M370 51 H416" marker-end="url(#i3)"/>
+  <rect class="box" x="420" y="34" width="120" height="34" rx="5"/>
+  <text x="480" y="51" text-anchor="middle" class="mono">blt  label</text>
+  <text x="300" y="110" text-anchor="middle" class="lbl">N negative · Z zero · C carry/borrow · V signed overflow</text>
+  <text x="280" y="150" text-anchor="middle" class="lbl">cmp is a subtraction that throws the answer away and keeps the flags.</text>
+  <text x="280" y="170" text-anchor="middle" class="lbl">tst is an AND that does the same.</text>
+</svg></figure>
+<p>The four bits are the top of <code>APSR</code>, the flags view of <code>xPSR</code> from lesson 00:</p>
+<figure class="diagram"><svg width="786" viewBox="0 0 786 76" role="img" aria-label="APSR, 32 bits">
+<text x="16" y="41" class="mono">APSR</text>
+<text x="131.0" y="20" text-anchor="start" class="mono lbl">31</text>
+<text x="769.0" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="210.0" y="28" width="560.0" height="26"/>
+<text x="490.0" y="41" text-anchor="middle" class="lbl">reserved</text>
+<rect class="hifill" x="130.0" y="28" width="20.0" height="26"/>
+<text x="140.0" y="41" text-anchor="middle" class="mono">N</text>
+<rect class="hifill" x="150.0" y="28" width="20.0" height="26"/>
+<text x="160.0" y="20" text-anchor="middle" class="mono lbl">30</text>
+<text x="160.0" y="41" text-anchor="middle" class="mono">Z</text>
+<rect class="hifill" x="170.0" y="28" width="20.0" height="26"/>
+<text x="180.0" y="20" text-anchor="middle" class="mono lbl">29</text>
+<text x="180.0" y="41" text-anchor="middle" class="mono">C</text>
+<rect class="hifill" x="190.0" y="28" width="20.0" height="26"/>
+<text x="200.0" y="20" text-anchor="middle" class="mono lbl">28</text>
+<text x="200.0" y="41" text-anchor="middle" class="mono">V</text>
+</svg></figure>
+<table><thead><tr><th>Branch</th><th>Taken when</th><th>From C</th></tr></thead><tbody><tr><td><code>beq</code></td><td>equal (<code>Z</code>)</td><td><code>if (a == b)</code></td></tr><tr><td><code>bne</code></td><td>not equal</td><td><code>if (a != b)</code></td></tr><tr><td><code>blt</code> / <code>bge</code></td><td>signed less / greater-or-equal</td><td><code>int</code> comparison</td></tr><tr><td><code>bcc</code> / <code>bcs</code></td><td>unsigned lower / higher-or-same</td><td><code>unsigned</code> comparison</td></tr><tr><td><code>bmi</code> / <code>bpl</code></td><td>negative / positive</td><td>sign test</td></tr></tbody></table>
+<p>&gt; <strong><code>blt</code> and <code>bcc</code> are not interchangeable.</strong> The compiler picks based on<br>&gt; whether your variable is signed. A comparison that behaves oddly at the<br>&gt; extremes of a range is very often a signedness bug, and the disassembly shows<br>&gt; it immediately.</p>
+</section>
+<section class="slide">
+<h2>Slide 8: Branches, Calls and Returns</h2>
+<table><thead><tr><th>Instruction</th><th>Does</th><th>C</th></tr></thead><tbody><tr><td><code>b   label</code></td><td>jump</td><td><code>goto</code>, loop back, <code>else</code></td></tr><tr><td><code>bne label</code></td><td>jump if condition</td><td><code>if</code>, <code>while</code></td></tr><tr><td><code>bl  func</code></td><td><strong>branch with link</strong> — jump and save the return address in <code>LR</code></td><td><code>f();</code></td></tr><tr><td><code>bx  lr</code></td><td>jump to the address in <code>LR</code></td><td><code>return;</code></td></tr><tr><td><code>push {r4, lr}</code></td><td>save registers on the stack</td><td>function prologue</td></tr><tr><td><code>pop  {r4, pc}</code></td><td>restore — <strong>and popping into <code>PC</code> returns</strong></td><td>function epilogue</td></tr></tbody></table>
+<p><strong>The general idea: where does a call put the return address?</strong> Again two<br>answers, and this one you will see in every function on the chip.</p>
+<table><thead><tr><th></th><th>Where the return address goes</th><th>Machines</th></tr></thead><tbody><tr><td><strong>Stack-based</strong></td><td><code>call</code> pushes it to memory; <code>ret</code> pops it</td><td>x86, 68000, <strong>AVR</strong> (<code>rcall</code> / <code>ret</code>)</td></tr><tr><td><strong>Link register</strong></td><td>the call writes it to a register; return branches to that register</td><td><strong>ARM</strong>, RISC-V (<code>ra</code>), MIPS (<code>$ra</code>), PowerPC</td></tr></tbody></table>
+<p>A link register makes a <strong>leaf</strong> call — one that calls nothing else — touch<br>memory not at all: <code>bl</code> in, <code>bx lr</code> out, no stack traffic either way. The cost<br>is that <code>LR</code> holds exactly one return address, so a function that calls anything<br>must save it before it is overwritten. <strong>That is precisely what <code>push {lr}</code> in<br>every non-leaf prologue is for</strong>, and why leaf functions on this chip often have<br>no prologue at all.</p>
+<p>That last table row is a neat trick worth recognising. Instead of <code>pop {r4, lr}</code><br>followed by <code>bx lr</code>, the compiler pops the saved <code>LR</code> straight into <code>PC</code>, which<br><em>is</em> a branch. One instruction saved on every function that touches the stack.</p>
+<p>You can see both halves in the spike&#x27;s <code>_write</code>:</p>
+<pre><code> 80002b8:  b5f0    push  {r4, r5, r6, r7, lr}
+   ...
+ 80002c8:  bdf0    pop   {r4, r5, r6, r7, pc}</code></pre>
+</section>
+<section class="slide">
+<h2>Slide 9: How You Reach Memory — Addressing Modes</h2>
+<p><code>ldr</code> and <code>str</code> need an address, and there are only a few ways to build one.<br>Each corresponds to a C construct you write constantly.</p>
+<table><thead><tr><th>Form</th><th>Example</th><th>In C</th><th>Encoding</th></tr></thead><tbody><tr><td>register</td><td><code>ldr r0, [r1]</code></td><td><code>*p</code></td><td>16-bit</td></tr><tr><td><strong>immediate offset</strong></td><td><code>ldr r0, [r4, #28]</code></td><td><code>s-&gt;field</code></td><td>16-bit, small offsets</td></tr><tr><td><strong>register offset</strong></td><td><code>ldrb r6, [r1, r3]</code></td><td><code>buf[i]</code></td><td>16-bit</td></tr><tr><td>SP-relative</td><td><code>ldr r0, [sp, #8]</code></td><td>a local variable</td><td>16-bit</td></tr><tr><td>PC-relative</td><td><code>ldr r2, [pc, #44]</code></td><td>a big constant</td><td>16-bit</td></tr><tr><td>scaled register</td><td><code>ldr r0, [r1, r2, lsl #2]</code></td><td><code>arr[i]</code> for <code>int</code></td><td><strong>32-bit, M3+ only</strong></td></tr><tr><td>pre-indexed</td><td><code>ldr r0, [r1, #4]!</code></td><td><code>*++p</code></td><td><strong>32-bit, M3+ only</strong></td></tr><tr><td>post-indexed</td><td><code>ldr r0, [r1], #4</code></td><td><code>*p++</code></td><td><strong>32-bit, M3+ only</strong></td></tr></tbody></table>
+<figure class="diagram"><svg viewBox="0 0 560 200" role="img" aria-label="Immediate offset reaches a struct field; register offset reaches an array element">
+  <defs><marker id="i4" markerWidth="7" markerHeight="7" refX="6.2" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.4 0.7 L6.2 3 L0.4 5.3 z" fill="currentColor"/></marker></defs>
+  <rect class="box" x="18" y="30" width="150" height="30" rx="4"/>
+  <text x="93" y="45" text-anchor="middle" class="mono">[r4, #28]</text>
+  <text x="93" y="80" text-anchor="middle" class="lbl">base + FIXED offset</text>
+  <text x="93" y="100" text-anchor="middle" class="lbl">known at compile time</text>
+  <text x="93" y="124" text-anchor="middle" class="mono lbl">USART2-&gt;ISR</text>
+  <rect class="hifill" x="204" y="30" width="150" height="30" rx="4"/>
+  <text x="279" y="45" text-anchor="middle" class="mono">[r1, r3]</text>
+  <text x="279" y="80" text-anchor="middle" class="lbl">base + VARIABLE index</text>
+  <text x="279" y="100" text-anchor="middle" class="lbl">computed at run time</text>
+  <text x="279" y="124" text-anchor="middle" class="mono lbl">buf[i]</text>
+  <rect class="box" x="390" y="30" width="152" height="30" rx="4"/>
+  <text x="466" y="45" text-anchor="middle" class="mono">[sp, #8]</text>
+  <text x="466" y="80" text-anchor="middle" class="lbl">base is the stack</text>
+  <text x="466" y="100" text-anchor="middle" class="lbl">pointer</text>
+  <text x="466" y="124" text-anchor="middle" class="mono lbl">a local</text>
+  <text x="280" y="168" text-anchor="middle" class="lbl">A peripheral register access is literally a struct field access — base register</text>
+  <text x="280" y="186" text-anchor="middle" class="lbl">plus constant offset. That is the whole trick the CMSIS headers use.</text>
+</svg></figure>
+</section>
+<section class="slide">
+<h2>Slide 10: The Offsets Are Small, and You Can See When They Run Out</h2>
+<p>A 16-bit instruction has very little room left for an offset once it has<br>encoded the opcode and two registers. The limits are strict:</p>
+<table><thead><tr><th>Instruction</th><th>Offset field</th><th>Reaches</th></tr></thead><tbody><tr><td><code>ldr  r0, [r1, #n]</code></td><td>5 bits, <strong>scaled by 4</strong></td><td>0 to 124 bytes</td></tr><tr><td><code>ldrh r0, [r1, #n]</code></td><td>5 bits, scaled by 2</td><td>0 to 62 bytes</td></tr><tr><td><code>ldrb r0, [r1, #n]</code></td><td>5 bits, unscaled</td><td>0 to 31 bytes</td></tr><tr><td><code>ldr  r0, [sp, #n]</code></td><td>8 bits, scaled by 4</td><td>0 to 1020 bytes</td></tr></tbody></table>
+<p>Two things follow that you will actually observe:</p>
+<p><strong>Offsets are always positive.</strong> There is no <code>[r1, #-4]</code> in 16-bit Thumb. To<br>step backwards the compiler must adjust the base register first.</p>
+<p><strong>A far field costs an extra instruction.</strong> Reaching offset 28 is free:</p>
+<pre><code> 80002d0:  ldr   r6, [r4, #28]        ; USART2-&gt;ISR, one instruction</code></pre>
+<p>Here is where the limit comes from. Five bits for the opcode, three for each<br>register, and five left for the offset, stored divided by 4 — <code>7</code> means 28,<br><code>10</code> means 40:</p>
+<figure class="diagram"><svg width="510" viewBox="0 0 510 182" role="img" aria-label="ldr r6, [r4, #28], 16 bits; str r5, [r4, #40], 16 bits">
+<text x="16" y="35" class="mono">ldr r6, [r4, #28]</text>
+<text x="16" y="50" class="mono lbl">= 0x69E6</text>
+<text x="175.3" y="20" text-anchor="start" class="mono lbl">15</text>
+<text x="493.3" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="174.3" y="28" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M254.3 28 V32 M254.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M234.3 28 V32 M234.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M214.3 28 V32 M214.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M194.3 28 V32 M194.3 50 V54"/>
+<text x="273.3" y="20" text-anchor="end" class="mono lbl">11</text>
+<rect class="hifill" x="274.3" y="28" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M354.3 28 V32 M354.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M334.3 28 V32 M334.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M314.3 28 V32 M314.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M294.3 28 V32 M294.3 50 V54"/>
+<text x="373.3" y="20" text-anchor="end" class="mono lbl">6</text>
+<rect class="reg" x="374.3" y="28" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M414.3 28 V32 M414.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M394.3 28 V32 M394.3 50 V54"/>
+<text x="433.3" y="20" text-anchor="end" class="mono lbl">3</text>
+<rect class="reg" x="434.3" y="28" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M474.3 28 V32 M474.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M454.3 28 V32 M454.3 50 V54"/>
+<text x="484.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="464.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="444.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="424.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="404.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="384.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="364.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="344.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="324.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="304.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="284.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="264.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="244.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="204.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="184.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="67" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="324.3" y="67" text-anchor="middle" class="mono halo">imm5</text>
+<text x="404.3" y="67" text-anchor="middle" class="mono halo lbl">Rn</text>
+<text x="464.3" y="67" text-anchor="middle" class="mono halo lbl">Rt</text>
+<text x="16" y="121" class="mono">str r5, [r4, #40]</text>
+<text x="16" y="136" class="mono lbl">= 0x62A5</text>
+<text x="175.3" y="106" text-anchor="start" class="mono lbl">15</text>
+<text x="493.3" y="106" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="174.3" y="114" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M254.3 114 V118 M254.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M234.3 114 V118 M234.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M214.3 114 V118 M214.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M194.3 114 V118 M194.3 136 V140"/>
+<text x="273.3" y="106" text-anchor="end" class="mono lbl">11</text>
+<rect class="hifill" x="274.3" y="114" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M354.3 114 V118 M354.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M334.3 114 V118 M334.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M314.3 114 V118 M314.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M294.3 114 V118 M294.3 136 V140"/>
+<text x="373.3" y="106" text-anchor="end" class="mono lbl">6</text>
+<rect class="reg" x="374.3" y="114" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M414.3 114 V118 M414.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M394.3 114 V118 M394.3 136 V140"/>
+<text x="433.3" y="106" text-anchor="end" class="mono lbl">3</text>
+<rect class="reg" x="434.3" y="114" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M474.3 114 V118 M474.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M454.3 114 V118 M454.3 136 V140"/>
+<text x="484.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="464.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="444.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="424.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="404.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="384.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="364.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="344.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="324.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="304.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="284.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="264.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="244.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="204.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="184.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="153" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="324.3" y="153" text-anchor="middle" class="mono halo">imm5</text>
+<text x="404.3" y="153" text-anchor="middle" class="mono halo lbl">Rn</text>
+<text x="464.3" y="153" text-anchor="middle" class="mono halo lbl">Rt</text>
+</svg></figure>
+<p>but a field beyond 124 bytes cannot be encoded, so the compiler emits an <code>add</code><br>to move the base, then loads from the new base. <strong>This is why a large<br>peripheral struct can generate visibly worse code at the far end of it</strong>, and<br>why drivers that keep a pointer to the specific register they hammer in a loop<br>are sometimes measurably faster than ones that index from the block base.</p>
+<p>&gt; On Cortex-M3 and above the 32-bit encodings lift most of this: offsets up to<br>&gt; 4095 bytes, negative offsets, scaled register offsets and auto-increment.<br>&gt; Same source code, denser output — another instance of the &quot;one model, many<br>&gt; instances&quot; idea from lesson 00.</p>
+</section>
+<section class="slide">
+<h2>Slide 11: A Real Function, Disassembled</h2>
+<p>This is <code>SystemInit()</code> from the spike — the code that takes the chip from its<br>12 MHz reset state to 48 MHz. Here is what the processor got:</p>
+<pre><code>0800022c &lt;SystemInit&gt;:
+ 800022c:  2007        movs  r0, #7            ; r0 = the LATENCY mask
+ 800022e:  2301        movs  r3, #1
+ 8000230:  4a0b        ldr   r2, [pc, #44]     ; r2 = 0x40022000  (FLASH base)
+ 8000232:  6811        ldr   r1, [r2, #0]      ; LOAD    FLASH-&gt;ACR
+ 8000234:  4381        bics  r1, r0            ; MODIFY  clear the field
+ 8000236:  430b        orrs  r3, r1            ; MODIFY  set the new value
+ 8000238:  6013        str   r3, [r2, #0]      ; STORE   back to FLASH-&gt;ACR</code></pre>
+<p>Four instructions — <code>ldr</code>, <code>bics</code>, <code>orrs</code>, <code>str</code> — are the load/modify/store of<br>slide 4, and they came from a single line of C:</p>
+<pre class="lang-c"><code>FLASH-&gt;ACR = (FLASH-&gt;ACR &amp; ~FLASH_ACR_LATENCY) | FLASH_ACR_LATENCY_0;</code></pre>
+<p>The field being changed is <code>LATENCY</code>, bits 2:0. <code>r0</code> is its mask, <code>r3</code> the new<br>value:</p>
+<figure class="diagram"><svg width="792" viewBox="0 0 792 280" role="img" aria-label="FLASH_ACR, 32 bits; r0, 32 bits; r3, 32 bits">
+<text x="16" y="41" class="mono">FLASH_ACR</text>
+<text x="137.0" y="20" text-anchor="start" class="mono lbl">31</text>
+<text x="775.0" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="616.0" y="28" width="100.0" height="26"/>
+<text x="666.0" y="41" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="556.0" y="28" width="20.0" height="26"/>
+<rect class="dash" x="456.0" y="28" width="80.0" height="26"/>
+<text x="496.0" y="41" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="416.0" y="28" width="20.0" height="26"/>
+<rect class="dash" x="136.0" y="28" width="260.0" height="26"/>
+<text x="266.0" y="41" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="396.0" y="28" width="20.0" height="26"/>
+<text x="406.0" y="20" text-anchor="middle" class="mono lbl">18</text>
+<rect class="reg" x="436.0" y="28" width="20.0" height="26"/>
+<text x="446.0" y="20" text-anchor="middle" class="mono lbl">16</text>
+<rect class="reg" x="536.0" y="28" width="20.0" height="26"/>
+<text x="546.0" y="20" text-anchor="middle" class="mono lbl">11</text>
+<rect class="reg" x="576.0" y="28" width="20.0" height="26"/>
+<text x="586.0" y="20" text-anchor="middle" class="mono lbl">9</text>
+<rect class="reg" x="596.0" y="28" width="20.0" height="26"/>
+<text x="606.0" y="20" text-anchor="middle" class="mono lbl">8</text>
+<rect class="hifill" x="716.0" y="28" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M756.0 28 V32 M756.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M736.0 28 V32 M736.0 50 V54"/>
+<text x="717.0" y="20" text-anchor="start" class="mono lbl">2</text>
+<path class="dash" d="M446.0 54 L446.0 76"/>
+<path class="dash" d="M606.0 54 L606.0 76"/>
+<text x="406.0" y="67" text-anchor="middle" class="mono halo lbl">DBG_SWEN</text>
+<text x="446.0" y="83" text-anchor="middle" class="mono halo lbl">PROGEMPTY</text>
+<text x="546.0" y="67" text-anchor="middle" class="mono halo lbl">ICRST</text>
+<text x="586.0" y="67" text-anchor="middle" class="mono halo lbl">ICEN</text>
+<text x="606.0" y="83" text-anchor="middle" class="mono halo lbl">PRFTEN</text>
+<text x="746.0" y="67" text-anchor="middle" class="mono halo">LATENCY</text>
+<text x="16" y="137" class="mono">r0</text>
+<text x="16" y="152" class="lbl">mask, for bics</text>
+<text x="16" y="167" class="mono lbl">= 0x00000007</text>
+<text x="137.0" y="122" text-anchor="start" class="mono lbl">31</text>
+<text x="775.0" y="122" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="136.0" y="130" width="580.0" height="26"/>
+<rect class="hifill" x="716.0" y="130" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M756.0 130 V134 M756.0 152 V156"/>
+<path class="reg" stroke-width="0.6" d="M736.0 130 V134 M736.0 152 V156"/>
+<text x="717.0" y="122" text-anchor="start" class="mono lbl">2</text>
+<text x="766.0" y="143" text-anchor="middle" class="mono">1</text>
+<text x="746.0" y="143" text-anchor="middle" class="mono">1</text>
+<text x="726.0" y="143" text-anchor="middle" class="mono">1</text>
+<text x="706.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="686.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="666.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="646.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="626.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="606.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="586.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="566.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="546.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="526.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="506.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="486.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="466.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="446.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="426.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="406.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="386.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="366.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="346.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="326.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="306.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="286.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="266.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="246.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="226.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="206.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="186.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="166.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="146.0" y="143" text-anchor="middle" class="mono lbl">0</text>
+<text x="16" y="221" class="mono">r3</text>
+<text x="16" y="236" class="lbl">value, for orrs</text>
+<text x="16" y="251" class="mono lbl">= 0x00000001</text>
+<text x="137.0" y="206" text-anchor="start" class="mono lbl">31</text>
+<text x="775.0" y="206" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="136.0" y="214" width="580.0" height="26"/>
+<rect class="hifill" x="716.0" y="214" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M756.0 214 V218 M756.0 236 V240"/>
+<path class="reg" stroke-width="0.6" d="M736.0 214 V218 M736.0 236 V240"/>
+<text x="717.0" y="206" text-anchor="start" class="mono lbl">2</text>
+<text x="766.0" y="227" text-anchor="middle" class="mono">1</text>
+<text x="746.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="726.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="706.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="686.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="666.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="646.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="626.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="606.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="586.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="566.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="546.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="526.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="506.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="486.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="466.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="446.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="426.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="406.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="386.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="366.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="346.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="326.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="306.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="286.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="266.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="246.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="226.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="206.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="186.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="166.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+<text x="146.0" y="227" text-anchor="middle" class="mono lbl">0</text>
+</svg></figure>
+<p>One statement, four bus operations. <code>bics</code> is the <code>&amp; ~</code>, <code>orrs</code> is the <code>|</code>.<br>That correspondence is the whole reason to read disassembly.</p>
+</section>
+<section class="slide">
+<h2>Slide 12: Where Do Big Constants Live?</h2>
+<p>Look again at <code>ldr r2, [pc, #44]</code>. The CPU is loading from an address computed<br>from <strong>the program counter itself</strong>. Why?</p>
+<figure class="diagram"><svg viewBox="0 0 560 210" role="img" aria-label="A 16-bit instruction cannot hold a 32-bit address, so it is stored nearby">
+  <rect class="reg" x="20" y="30" width="200" height="38" rx="5"/>
+  <text x="120" y="49" text-anchor="middle" class="mono">movs r0, #7</text>
+  <text x="120" y="86" text-anchor="middle" class="lbl">small number: fits inside</text>
+  <text x="120" y="104" text-anchor="middle" class="lbl">the instruction itself</text>
+  <rect class="hifill" x="300" y="30" width="240" height="38" rx="5"/>
+  <text x="420" y="49" text-anchor="middle" class="mono">0x40022000</text>
+  <text x="420" y="86" text-anchor="middle" class="lbl">32 bits — cannot possibly fit in a</text>
+  <text x="420" y="104" text-anchor="middle" class="lbl">16-bit instruction</text>
+  <rect class="box" x="140" y="132" width="280" height="36" rx="5"/>
+  <text x="280" y="150" text-anchor="middle" class="mono">ldr r2, [pc, #44]</text>
+  <text x="280" y="192" text-anchor="middle" class="lbl">So the compiler parks the constant in a "literal pool" just past the
+  code, and loads it relative to PC.</text>
+</svg></figure>
+<p><strong>This is a general consequence of fixed-width encoding, not an ARM quirk.</strong> An<br>instruction that is itself only 16 or 32 bits wide cannot carry an arbitrary<br>32-bit constant inside it, so every fixed-width machine needs an answer:</p>
+<table><thead><tr><th>Machine</th><th>How a 32-bit constant reaches a register</th></tr></thead><tbody><tr><td>x86</td><td>the instruction simply grows — the constant is embedded, variable length</td></tr><tr><td><strong>ARM / Thumb</strong></td><td><strong>a literal pool near the code, loaded PC-relative</strong></td></tr><tr><td>RISC-V</td><td>built in two halves, <code>lui</code> then <code>addi</code></td></tr><tr><td>AArch64</td><td>built in halves too, <code>movz</code> then <code>movk</code></td></tr></tbody></table>
+<p>The pool sits at the end of the function, and every peripheral address the<br>function touches is listed in plain sight:</p>
+<pre><code> 8000260:  40022000   .word  0x40022000    ; FLASH
+ 8000264:  40021000   .word  0x40021000    ; RCC
+ 8000268:  ffffc7ff   .word  0xffffc7ff    ; ~(7 &lt;&lt; 11)  — the HSIDIV mask
+ 800026c:  20000000   .word  0x20000000    ; &amp;SystemCoreClock, in SRAM
+ 8000270:  02dc6c00   .word  0x02dc6c00    ; 48000000</code></pre>
+<p>The third word is a mask, and drawn out it is easy to read: all ones except the<br>three <code>HSIDIV</code> bits of <code>RCC-&gt;CR</code>, which an <code>ands</code> with it clears:</p>
+<figure class="diagram"><svg width="786" viewBox="0 0 786 96" role="img" aria-label=".word, 32 bits">
+<text x="16" y="35" class="mono">.word</text>
+<text x="16" y="50" class="lbl">~(7 &lt;&lt; 11)</text>
+<text x="16" y="65" class="mono lbl">= 0xFFFFC7FF</text>
+<text x="131.0" y="20" text-anchor="start" class="mono lbl">31</text>
+<text x="769.0" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="130.0" y="28" width="360.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M470.0 28 V32 M470.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M450.0 28 V32 M450.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M430.0 28 V32 M430.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M410.0 28 V32 M410.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M390.0 28 V32 M390.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M370.0 28 V32 M370.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M350.0 28 V32 M350.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M330.0 28 V32 M330.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M310.0 28 V32 M310.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M290.0 28 V32 M290.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M270.0 28 V32 M270.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M250.0 28 V32 M250.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M230.0 28 V32 M230.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M210.0 28 V32 M210.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M190.0 28 V32 M190.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M170.0 28 V32 M170.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M150.0 28 V32 M150.0 50 V54"/>
+<text x="489.0" y="20" text-anchor="end" class="mono lbl">14</text>
+<rect class="hifill" x="490.0" y="28" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M530.0 28 V32 M530.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M510.0 28 V32 M510.0 50 V54"/>
+<text x="549.0" y="20" text-anchor="end" class="mono lbl">11</text>
+<rect class="reg" x="550.0" y="28" width="220.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M750.0 28 V32 M750.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M730.0 28 V32 M730.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M710.0 28 V32 M710.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M690.0 28 V32 M690.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M670.0 28 V32 M670.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M650.0 28 V32 M650.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M630.0 28 V32 M630.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M610.0 28 V32 M610.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M590.0 28 V32 M590.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M570.0 28 V32 M570.0 50 V54"/>
+<text x="760.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="740.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="720.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="700.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="680.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="660.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="640.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="620.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="600.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="580.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="560.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="540.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="520.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="500.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="480.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="460.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="440.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="420.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="400.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="380.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="360.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="340.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="320.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="300.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="280.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="260.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="240.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="220.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="200.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="180.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="160.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="140.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="520.0" y="67" text-anchor="middle" class="mono halo">HSIDIV</text>
+</svg></figure>
+<p><code>0x02dc6c00</code> is 48,000,000. The clock speed you assigned in C is sitting in<br>flash as a number, and the address it gets written to is <code>0x20000000</code> — the<br>very bottom of SRAM, exactly where lesson 02 will show the linker putting it.</p>
+</section>
+<section class="slide">
+<h2>Slide 13: A Polling Loop, in Four Instructions</h2>
+<p>Lesson 00 described polling as &quot;keep asking&quot;. Here it is literally, waiting for<br>the flash controller to acknowledge the new wait state:</p>
+<pre><code> 800023a:  6813        ldr   r3, [r2, #0]     ; read FLASH-&gt;ACR
+ 800023c:  4003        ands  r3, r0           ; isolate the LATENCY field
+ 800023e:  2b01        cmp   r3, #1           ; is it what we asked for?
+ 8000240:  d1fb        bne.n 800023a          ; no -&gt; go back and read again</code></pre>
+<p>The branch target <code>800023a</code> is the load. That is the loop: <strong>read, test,<br>branch back</strong>. It costs the CPU every cycle until the hardware agrees.</p>
+<p>The branch itself is two bytes. <code>d1fb</code> holds the condition (<code>0001</code>, NE) and a<br>signed offset in halfwords, <code>0xFB</code> = −5, counted from PC + 4:<br><code>0x8000244 − 10 = 0x800023a</code>.</p>
+<figure class="diagram"><svg width="479" viewBox="0 0 479 96" role="img" aria-label="bne.n 800023a, 16 bits">
+<text x="16" y="35" class="mono">bne.n 800023a</text>
+<text x="16" y="50" class="mono lbl">= 0xD1FB</text>
+<text x="143.7" y="20" text-anchor="start" class="mono lbl">15</text>
+<text x="461.7" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="142.7" y="28" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M202.7 28 V32 M202.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M182.7 28 V32 M182.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M162.7 28 V32 M162.7 50 V54"/>
+<text x="221.7" y="20" text-anchor="end" class="mono lbl">12</text>
+<rect class="reg" x="222.7" y="28" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M282.7 28 V32 M282.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M262.7 28 V32 M262.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M242.7 28 V32 M242.7 50 V54"/>
+<text x="301.7" y="20" text-anchor="end" class="mono lbl">8</text>
+<rect class="hifill" x="302.7" y="28" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M442.7 28 V32 M442.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M422.7 28 V32 M422.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M402.7 28 V32 M402.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M382.7 28 V32 M382.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M362.7 28 V32 M362.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M342.7 28 V32 M342.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M322.7 28 V32 M322.7 50 V54"/>
+<text x="452.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="432.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="412.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="392.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="372.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="352.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="332.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="312.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="292.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="272.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="252.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="232.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="212.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="192.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="172.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="152.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="182.7" y="67" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="262.7" y="67" text-anchor="middle" class="mono halo lbl">cond</text>
+<text x="382.7" y="67" text-anchor="middle" class="mono halo">imm8</text>
+</svg></figure>
+<p>Note there is no <code>volatile</code> keyword visible in the machine code — but without<br>it in the C source, the compiler would have read <code>FLASH-&gt;ACR</code> <strong>once</strong>, cached<br>it in <code>r3</code>, and looped forever on a value that never changes.</p>
+</section>
+<section class="slide">
+<h2>Slide 14: A Whole C Function, Line by Line</h2>
+<p>This is <code>_write()</code> from the spike — the function that makes <code>printf</code> reach the<br>serial port. Eleven lines of C:</p>
+<pre class="lang-c"><code>static void uart2_putc(char c)
+{
+    while (!(USART2-&gt;ISR &amp; USART_ISR_TXE_TXFNF)) { }
+    USART2-&gt;TDR = (uint8_t)c;
+}
+
+int _write(int fd, const char *buf, int len)
+{
+    (void)fd;
+    for (int i = 0; i &lt; len; i++) {
+        if (buf[i] == &#x27;\n&#x27;) { uart2_putc(&#x27;\r&#x27;); }
+        uart2_putc(buf[i]);
+    }
+    return len;
+}</code></pre>
+<p>And here is what the processor got. Nothing in it is exotic, and every<br>instruction is one you have now met:</p>
+<pre><code>080002b8 &lt;_write&gt;:
+ 80002b8:  b5f0    push  {r4, r5, r6, r7, lr}   ; prologue
+ 80002ba:  2300    movs  r3, #0                 ; i = 0
+ 80002bc:  2080    movs  r0, #128               ; 0x80 = the TXE flag
+ 80002be:  250d    movs  r5, #13                ; &#x27;\r&#x27;
+ 80002c0:  4c09    ldr   r4, [pc, #36]          ; r4 = 0x40004400 = USART2
+ 80002c2:  4293    cmp   r3, r2                 ; i &lt; len ?
+ 80002c4:  db01    blt.n 80002ca                ;   yes -&gt; body
+ 80002c6:  0010    movs  r0, r2                 ; return len
+ 80002c8:  bdf0    pop   {r4, r5, r6, r7, pc}   ; epilogue + return
+ 80002ca:  5cce    ldrb  r6, [r1, r3]           ; c = buf[i]
+ 80002cc:  2e0a    cmp   r6, #10                ; c == &#x27;\n&#x27; ?
+ 80002ce:  d103    bne.n 80002d8                ;   no -&gt; skip
+ 80002d0:  69e6    ldr   r6, [r4, #28]          ; USART2-&gt;ISR
+ 80002d2:  4206    tst   r6, r0                 ; TXE set?
+ 80002d4:  d0fc    beq.n 80002d0                ;   no -&gt; poll again
+ 80002d6:  62a5    str   r5, [r4, #40]          ; USART2-&gt;TDR = &#x27;\r&#x27;
+ 80002d8:  5cce    ldrb  r6, [r1, r3]           ; c = buf[i]
+ 80002da:  69e7    ldr   r7, [r4, #28]          ; poll again for the real character
+ 80002dc:  4207    tst   r7, r0
+ 80002de:  d0fc    beq.n 80002da
+ 80002e0:  62a6    str   r6, [r4, #40]          ; USART2-&gt;TDR = c
+ 80002e2:  3301    adds  r3, #1                 ; i++
+ 80002e4:  e7ed    b.n   80002c2                ; loop</code></pre>
+<p>Read the constants and the whole thing decodes itself:</p>
+<table><thead><tr><th>In the code</th><th>Is</th></tr></thead><tbody><tr><td><code>#10</code></td><td><code>&#x27;\n&#x27;</code></td></tr><tr><td><code>#13</code></td><td><code>&#x27;\r&#x27;</code></td></tr><tr><td><code>#128</code></td><td><code>USART_ISR_TXE</code>, bit 7</td></tr><tr><td><code>[r4, #28]</code></td><td><code>USART2-&gt;ISR</code> — offset <code>0x1C</code></td></tr><tr><td><code>[r4, #40]</code></td><td><code>USART2-&gt;TDR</code> — offset <code>0x28</code></td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 15: The Same Function, in One Picture</h2>
+<p>Twenty-two instructions, and only five things happening. Follow the arrows:</p>
+<figure class="diagram"><svg viewBox="0 0 560 430" role="img" aria-label="Control flow of _write: setup once, the loop test, the character load, the carriage-return branch, the send, and the jump back to the test">
+  <defs><marker id="i6" markerWidth="7" markerHeight="7" refX="6.2" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.4 0.7 L6.2 3 L0.4 5.3 z" fill="currentColor"/></marker></defs>
+
+  <rect class="box" x="56" y="16" width="240" height="46" rx="6"/>
+  <text x="176" y="34" text-anchor="middle" class="mono">80002b8 - c0</text>
+  <text x="176" y="52" text-anchor="middle" class="lbl">push, i = 0, masks, r4 = USART2</text>
+  <text x="306" y="42" class="lbl">runs once</text>
+  <path class="wire" d="M176 62 V76" marker-end="url(#i6)"/>
+
+  <rect class="reg" x="56" y="80" width="240" height="34" rx="5"/>
+  <text x="176" y="100" text-anchor="middle" class="mono">80002c2   i &lt; len ?</text>
+  <path class="wire" d="M296 97 H330" marker-end="url(#i6)"/>
+  <text x="313" y="88" text-anchor="middle" class="lbl">no</text>
+  <rect class="box" x="336" y="80" width="184" height="34" rx="5"/>
+  <text x="428" y="100" text-anchor="middle" class="mono">80002c6  return len</text>
+
+  <path class="wire" d="M176 114 V132" marker-end="url(#i6)"/>
+  <text x="168" y="128" text-anchor="end" class="lbl">yes</text>
+  <rect class="box" x="56" y="138" width="240" height="34" rx="5"/>
+  <text x="176" y="158" text-anchor="middle" class="mono">80002ca   c = buf[i]</text>
+  <path class="wire" d="M176 172 V190" marker-end="url(#i6)"/>
+
+  <rect class="reg" x="56" y="196" width="240" height="34" rx="5"/>
+  <text x="176" y="216" text-anchor="middle" class="mono">80002cc   c == '\n' ?</text>
+  <path class="wire" d="M296 213 H330" marker-end="url(#i6)"/>
+  <text x="313" y="204" text-anchor="middle" class="lbl">yes</text>
+
+  <rect class="hifill" x="336" y="190" width="184" height="52" rx="6"/>
+  <text x="428" y="210" text-anchor="middle" class="mono">80002d0 - d6</text>
+  <text x="428" y="228" text-anchor="middle" class="lbl">wait for TXE, send '\r'</text>
+  <path class="hi" d="M520 202 C544 202 544 230 522 230" marker-end="url(#i6)"/>
+  <text x="538" y="248" text-anchor="middle" class="lbl">poll</text>
+
+  <path class="wire" d="M176 230 V276" marker-end="url(#i6)"/>
+  <text x="168" y="256" text-anchor="end" class="lbl">no</text>
+  <path class="wire" d="M428 242 V288 H304" marker-end="url(#i6)"/>
+
+  <rect class="hifill" x="56" y="282" width="240" height="52" rx="6"/>
+  <text x="176" y="302" text-anchor="middle" class="mono">80002d8 - e0</text>
+  <text x="176" y="320" text-anchor="middle" class="lbl">reload c, wait for TXE, send c</text>
+  <path class="hi" d="M296 296 C320 296 320 324 298 324" marker-end="url(#i6)"/>
+  <text x="314" y="342" text-anchor="middle" class="lbl">poll</text>
+
+  <path class="wire" d="M176 334 V352" marker-end="url(#i6)"/>
+  <rect class="box" x="56" y="358" width="240" height="32" rx="5"/>
+  <text x="176" y="377" text-anchor="middle" class="mono">80002e2   i++</text>
+
+  <path class="wire" d="M56 374 H26 V97 H50" marker-end="url(#i6)"/>
+  <text x="18" y="240" text-anchor="middle" class="lbl mono" transform="rotate(-90 18 240)">80002e4   b</text>
+
+  <text x="280" y="414" text-anchor="middle" class="lbl">Two send blocks, one source line each: uart2_putc was inlined, so there is no bl here at all.</text>
+</svg></figure>
+<p>Every address in the listing belongs to one line of the C:</p>
+<table><thead><tr><th>C</th><th>Became</th></tr></thead><tbody><tr><td><code>int _write(...)</code></td><td><code>80002b8</code> — <code>push</code></td></tr><tr><td><code>(void)fd;</code></td><td><strong>nothing</strong> — <code>r0</code> arrived holding <code>fd</code> and is reused at <code>80002bc</code></td></tr><tr><td><code>int i = 0</code>, and the hoisted constants</td><td><code>80002ba</code> – <code>80002c0</code></td></tr><tr><td><code>i &lt; len</code></td><td><code>80002c2</code> – <code>80002c4</code></td></tr><tr><td><code>buf[i] == &#x27;\n&#x27;</code></td><td><code>80002ca</code> – <code>80002ce</code></td></tr><tr><td><code>uart2_putc(&#x27;\r&#x27;)</code></td><td><code>80002d0</code> – <code>80002d6</code></td></tr><tr><td><code>uart2_putc(buf[i])</code></td><td><code>80002d8</code> – <code>80002e0</code></td></tr><tr><td><code>i++</code>, and the jump back</td><td><code>80002e2</code> – <code>80002e4</code></td></tr><tr><td><code>return len</code></td><td><code>80002c6</code> – <code>80002c8</code> — <strong>in the middle</strong></td></tr></tbody></table>
+<p>Three things the compiler did that the source does not show:</p>
+<ul><li><strong>Hoisting.</strong> <code>#128</code>, <code>#13</code> and the USART2 base are set up once, before the loop, although the C mentions them inside it. Anything that cannot change is lifted out.</li><li><strong>Inlining, twice.</strong> <code>uart2_putc</code> is a function in the source and is nowhere in the machine code — its three instructions appear once for <code>&#x27;\r&#x27;</code> and again for the character. <code>_write</code> contains no <code>bl</code> at all.</li><li><strong>Rotation.</strong> The <code>for</code> test sits at the top, so the exit is the <em>fall through</em>, and <code>return len</code> lands in the middle of the address range at <code>0x080002c6</code>. <strong>Address order is not source order</strong>, which is why a debugger stepping through optimised code appears to jump around.</li></ul>
+<p>&gt; One more, worth chasing: <code>buf[i]</code> is loaded <strong>twice</strong>, at <code>80002ca</code> and again<br>&gt; at <code>80002d8</code>. The compiler may not keep it in a register across the store to<br>&gt; <code>USART2-&gt;TDR</code>, because a <code>char</code> object is allowed to alias anything, so as<br>&gt; far as the standard is concerned that store might have changed <code>buf[i]</code>.<br>&gt; Slide 21 is the same rule seen from the other side.</p>
+<p><strong>Every <code>for</code> loop you ever write looks like this</strong>: initialise, compare,<br>conditional branch to the body, increment, unconditional branch back.</p>
+</section>
+<section class="slide">
+<h2>Slide 16: Thumb-1 and Thumb-2 — Two Generations</h2>
+<p>Look at the second column of the disassembly: <code>2007</code>, <code>4a0b</code>, <code>6811</code>. Four hex<br>digits. Two bytes. Almost every instruction on this chip is <strong>16 bits wide</strong>,<br>which is why 32 KB of flash holds a useful program at all.</p>
+<p>Those three, taken apart. Every 16-bit format spends its top bits on the<br>opcode, three bits on each register it names, and whatever is left on a<br>constant:</p>
+<figure class="diagram"><svg width="510" viewBox="0 0 510 268" role="img" aria-label="movs r0, #7, 16 bits; ldr r2, [pc, #44], 16 bits; ldr r1, [r2, #0], 16 bits">
+<text x="16" y="35" class="mono">movs r0, #7</text>
+<text x="16" y="50" class="mono lbl">= 0x2007</text>
+<text x="175.3" y="20" text-anchor="start" class="mono lbl">15</text>
+<text x="493.3" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="174.3" y="28" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M254.3 28 V32 M254.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M234.3 28 V32 M234.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M214.3 28 V32 M214.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M194.3 28 V32 M194.3 50 V54"/>
+<text x="273.3" y="20" text-anchor="end" class="mono lbl">11</text>
+<rect class="reg" x="274.3" y="28" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M314.3 28 V32 M314.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M294.3 28 V32 M294.3 50 V54"/>
+<text x="333.3" y="20" text-anchor="end" class="mono lbl">8</text>
+<rect class="hifill" x="334.3" y="28" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M474.3 28 V32 M474.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M454.3 28 V32 M454.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M434.3 28 V32 M434.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M414.3 28 V32 M414.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M394.3 28 V32 M394.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M374.3 28 V32 M374.3 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M354.3 28 V32 M354.3 50 V54"/>
+<text x="484.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="464.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="444.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="424.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="404.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="384.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="364.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="344.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="324.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="304.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="284.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="264.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="244.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="41" text-anchor="middle" class="mono">1</text>
+<text x="204.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="184.3" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="67" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="304.3" y="67" text-anchor="middle" class="mono halo lbl">Rd</text>
+<text x="414.3" y="67" text-anchor="middle" class="mono halo">imm8</text>
+<text x="16" y="121" class="mono">ldr r2, [pc, #44]</text>
+<text x="16" y="136" class="mono lbl">= 0x4A0B</text>
+<text x="175.3" y="106" text-anchor="start" class="mono lbl">15</text>
+<text x="493.3" y="106" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="174.3" y="114" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M254.3 114 V118 M254.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M234.3 114 V118 M234.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M214.3 114 V118 M214.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M194.3 114 V118 M194.3 136 V140"/>
+<text x="273.3" y="106" text-anchor="end" class="mono lbl">11</text>
+<rect class="reg" x="274.3" y="114" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M314.3 114 V118 M314.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M294.3 114 V118 M294.3 136 V140"/>
+<text x="333.3" y="106" text-anchor="end" class="mono lbl">8</text>
+<rect class="hifill" x="334.3" y="114" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M474.3 114 V118 M474.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M454.3 114 V118 M454.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M434.3 114 V118 M434.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M414.3 114 V118 M414.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M394.3 114 V118 M394.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M374.3 114 V118 M374.3 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M354.3 114 V118 M354.3 136 V140"/>
+<text x="484.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="464.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="444.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="424.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="404.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="384.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="364.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="344.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="324.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="304.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="284.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="264.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="244.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="204.3" y="127" text-anchor="middle" class="mono">1</text>
+<text x="184.3" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="153" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="304.3" y="153" text-anchor="middle" class="mono halo lbl">Rt</text>
+<text x="414.3" y="153" text-anchor="middle" class="mono halo">imm8</text>
+<text x="16" y="207" class="mono">ldr r1, [r2, #0]</text>
+<text x="16" y="222" class="mono lbl">= 0x6811</text>
+<text x="175.3" y="192" text-anchor="start" class="mono lbl">15</text>
+<text x="493.3" y="192" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="174.3" y="200" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M254.3 200 V204 M254.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M234.3 200 V204 M234.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M214.3 200 V204 M214.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M194.3 200 V204 M194.3 222 V226"/>
+<text x="273.3" y="192" text-anchor="end" class="mono lbl">11</text>
+<rect class="hifill" x="274.3" y="200" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M354.3 200 V204 M354.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M334.3 200 V204 M334.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M314.3 200 V204 M314.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M294.3 200 V204 M294.3 222 V226"/>
+<text x="373.3" y="192" text-anchor="end" class="mono lbl">6</text>
+<rect class="reg" x="374.3" y="200" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M414.3 200 V204 M414.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M394.3 200 V204 M394.3 222 V226"/>
+<text x="433.3" y="192" text-anchor="end" class="mono lbl">3</text>
+<rect class="reg" x="434.3" y="200" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M474.3 200 V204 M474.3 222 V226"/>
+<path class="reg" stroke-width="0.6" d="M454.3 200 V204 M454.3 222 V226"/>
+<text x="484.3" y="213" text-anchor="middle" class="mono">1</text>
+<text x="464.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="444.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="424.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="404.3" y="213" text-anchor="middle" class="mono">1</text>
+<text x="384.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="364.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="344.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="324.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="304.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="284.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="264.3" y="213" text-anchor="middle" class="mono">1</text>
+<text x="244.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="213" text-anchor="middle" class="mono">1</text>
+<text x="204.3" y="213" text-anchor="middle" class="mono">1</text>
+<text x="184.3" y="213" text-anchor="middle" class="mono lbl">0</text>
+<text x="224.3" y="239" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="324.3" y="239" text-anchor="middle" class="mono halo">imm5</text>
+<text x="404.3" y="239" text-anchor="middle" class="mono halo lbl">Rn</text>
+<text x="464.3" y="239" text-anchor="middle" class="mono halo lbl">Rt</text>
+</svg></figure>
+<p>Three bits per register is why most 16-bit forms reach only R0–R7.</p>
+<p>Thumb was not always able to do anything else:</p>
+<ul><li><strong>Thumb-1</strong> (1994) — 16-bit encodings, and nothing else. Compact, and correspondingly restricted.</li><li><strong>Thumb-2</strong> (2003, ARMv6T2) — keeps every 16-bit encoding and adds 32-bit ones <strong>beside</strong> them, in the same instruction stream. There is no mode switch: the decoder reads a halfword, and if its top five bits are <code>11101</code>, <code>11110</code> or <code>11111</code>, a second halfword belongs to it.</li></ul>
+<p>So &quot;Thumb&quot; on its own does not tell you what a core can do. The generation<br>does:</p>
+<table><thead><tr><th></th><th><strong>Cortex-M0 / M0+</strong></th><th><strong>Cortex-M3</strong></th><th><strong>Cortex-M4 / M7</strong></th></tr></thead><tbody><tr><td>Architecture</td><td>ARMv6-M</td><td>ARMv7-M</td><td>ARMv7E-M</td></tr><tr><td>Instruction set</td><td>Thumb-1, plus six</td><td>full Thumb-2</td><td>full Thumb-2 + DSP</td></tr><tr><td>Divide</td><td><strong>none</strong> — calls <code>__aeabi_uidiv</code></td><td><code>sdiv</code> / <code>udiv</code></td><td><code>sdiv</code> / <code>udiv</code></td></tr><tr><td>Flags</td><td>most 16-bit forms always set them</td><td><code>add</code> <strong>or</strong> <code>adds</code>, your choice</td><td>same</td></tr><tr><td>Conditional execution</td><td>branches only</td><td><code>IT</code> blocks, up to 4 instructions</td><td>same</td></tr><tr><td><code>ldr</code> offset</td><td>0–124 bytes, positive only</td><td>±4095, pre- and post-indexed</td><td>same</td></tr><tr><td>Registers</td><td>R0–R7 in most 16-bit forms</td><td>32-bit forms reach all 16</td><td>same</td></tr><tr><td>Immediates</td><td>8 bits, 0–255</td><td>12-bit modified constants, <code>movw</code> / <code>movt</code></td><td>same</td></tr><tr><td>Floating point</td><td>none</td><td>none</td><td>M4F and M7: hardware FPU</td></tr></tbody></table>
+<p>Every core in that table is Thumb-only — not one of them can execute an ARM<br>instruction. The only question is <em>which</em> Thumb.</p>
+</section>
+<section class="slide">
+<h2>Slide 17: Which Thumb This Is — &quot;Thumb-1, Plus Six&quot;</h2>
+<p>The M0+ column says <em>Thumb-1, plus six</em>, and the six are worth memorising,<br>because they are the <strong>only</strong> 32-bit instructions this chip has:</p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><code>bl</code></td><td>call a function anywhere in the address space</td></tr><tr><td><code>mrs</code> / <code>msr</code></td><td>read and write the special registers (<code>PRIMASK</code>, <code>CONTROL</code>, <code>PSP</code>)</td></tr><tr><td><code>dsb</code> / <code>dmb</code> / <code>isb</code></td><td>memory and instruction barriers</td></tr></tbody></table>
+<p>Everything else an M0+ executes is two bytes. Here is one of the six, decoded<br>out of the real image — the call in <code>Reset_Handler</code> that runs the clock setup<br>from slide 11:</p>
+<pre><code> 800028a:  f7ff ffcf   bl  800022c &lt;SystemInit&gt;</code></pre>
+<figure class="diagram"><svg width="799" viewBox="0 0 799 120" role="img" aria-label="f7ff then ffcf: the offset is S:I1:I2:imm10:imm11:0 = −98, from 800028e back to 800022c; bl SystemInit, 32 bits">
+<text x="399" y="16" text-anchor="middle" class="lbl">f7ff then ffcf: the offset is S:I1:I2:imm10:imm11:0 = −98, from 800028e back to 800022c</text>
+<text x="16" y="59" class="mono">bl SystemInit</text>
+<text x="16" y="74" class="mono lbl">= 0xF7FFFFCF</text>
+<text x="143.7" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="781.7" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="142.7" y="52" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M222.7 52 V56 M222.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M202.7 52 V56 M202.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M182.7 52 V56 M182.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M162.7 52 V56 M162.7 74 V78"/>
+<text x="241.7" y="44" text-anchor="end" class="mono lbl">27</text>
+<rect class="reg" x="242.7" y="52" width="20.0" height="26"/>
+<text x="252.7" y="44" text-anchor="middle" class="mono lbl">26</text>
+<rect class="hifill" x="262.7" y="52" width="200.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M442.7 52 V56 M442.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M422.7 52 V56 M422.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M402.7 52 V56 M402.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M382.7 52 V56 M382.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M362.7 52 V56 M362.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M342.7 52 V56 M342.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M322.7 52 V56 M322.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M302.7 52 V56 M302.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M282.7 52 V56 M282.7 74 V78"/>
+<text x="263.7" y="44" text-anchor="start" class="mono lbl">25</text>
+<text x="461.7" y="44" text-anchor="end" class="mono lbl">16</text>
+<rect class="reg" x="462.7" y="52" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M482.7 52 V56 M482.7 74 V78"/>
+<text x="501.7" y="44" text-anchor="end" class="mono lbl">14</text>
+<rect class="reg" x="502.7" y="52" width="20.0" height="26"/>
+<text x="512.7" y="44" text-anchor="middle" class="mono lbl">13</text>
+<rect class="reg" x="522.7" y="52" width="20.0" height="26"/>
+<text x="532.7" y="44" text-anchor="middle" class="mono lbl">12</text>
+<rect class="reg" x="542.7" y="52" width="20.0" height="26"/>
+<text x="552.7" y="44" text-anchor="middle" class="mono lbl">11</text>
+<rect class="hifill" x="562.7" y="52" width="220.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M762.7 52 V56 M762.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M742.7 52 V56 M742.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M722.7 52 V56 M722.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M702.7 52 V56 M702.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M682.7 52 V56 M682.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M662.7 52 V56 M662.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M642.7 52 V56 M642.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M622.7 52 V56 M622.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M602.7 52 V56 M602.7 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M582.7 52 V56 M582.7 74 V78"/>
+<text x="563.7" y="44" text-anchor="start" class="mono lbl">10</text>
+<text x="772.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="752.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="732.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="712.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="692.7" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="672.7" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="652.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="632.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="612.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="592.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="572.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="552.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="532.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="512.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="492.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="472.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="452.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="432.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="412.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="392.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="372.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="352.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="332.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="312.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="292.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="272.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="252.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="232.7" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="212.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="192.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="172.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="152.7" y="65" text-anchor="middle" class="mono">1</text>
+<text x="192.7" y="91" text-anchor="middle" class="mono halo lbl">op</text>
+<text x="252.7" y="91" text-anchor="middle" class="mono halo lbl">S</text>
+<text x="362.7" y="91" text-anchor="middle" class="mono halo">imm10</text>
+<text x="512.7" y="91" text-anchor="middle" class="mono halo lbl">J1</text>
+<text x="552.7" y="91" text-anchor="middle" class="mono halo lbl">J2</text>
+<text x="672.7" y="91" text-anchor="middle" class="mono halo">imm11</text>
+</svg></figure>
+<p>Four bytes, because a 16-bit branch reaches about ±2 KB and a call has to<br>reach anywhere. <strong>That is the whole rule for when Thumb widens</strong>: not when 32<br>bits would be convenient, but when 16 bits cannot do the job at all.</p>
+<p><strong><code>.n</code> and <code>.w</code>.</strong> objdump has been writing <code>bne.n</code>, <code>blt.n</code> and <code>b.n</code><br>throughout this deck. <code>.n</code> is <em>narrow</em>, 16 bits; <code>.w</code> is <em>wide</em>, 32. On this<br>chip there is nothing to choose and the suffix is only objdump being explicit.<br>On M3 and above the assembler picks the smallest encoding that reaches, and<br><code>.w</code> forces the wide one — which is how you write a branch that crosses a<br>large flash.</p>
+<p>&gt; <strong>Now re-read the last dozen slides.</strong> The <code>s</code> on every <code>adds</code>, the missing<br>&gt; divide, the 5-bit positive-only offsets, the eight reachable registers, the<br>&gt; literal pool full of addresses — <strong>none of those are ARM. They are<br>&gt; Thumb-1.</strong> Compile the same C for a Cortex-M4 and you get <code>add</code> that leaves<br>&gt; the flags alone, <code>sdiv</code> instead of a library call, <code>ldr r0, [r1, #2000]</code> in<br>&gt; one instruction, and far fewer literal pools, because <code>movw</code> / <code>movt</code> build a<br>&gt; 32-bit constant inline. Same source, same instruction set family — a<br>&gt; different instance of the model from lesson 00.</p>
+</section>
+<section class="slide">
+<h2>Slide 18: Who Owns Which Register — the Calling Convention</h2>
+<p><strong>The general idea: an ABI.</strong> Sixteen registers, one CPU, and every function<br>wanting all of them. Some agreement has to say where arguments go, where the<br>result comes back, and which registers a function may destroy. That agreement is<br>a <strong>calling convention</strong>, part of the <strong>Application Binary Interface</strong>, and<br>every platform has one: SysV AMD64 on Linux, the RISC-V and MIPS conventions,<br>ARM&#x27;s <strong>AAPCS</strong> here.</p>
+<p>The universal shape of it is the same everywhere — registers are split into</p>
+<ul><li><strong>caller-saved</strong> (<em>volatile</em>, <em>scratch</em>): a function may destroy them, so the caller saves anything it still wants;</li><li><strong>callee-saved</strong> (<em>non-volatile</em>): a function must give them back untouched, so it saves them on entry and restores them on exit.</li></ul>
+<p>It exists because of separate compilation: your C has to call a library compiled<br>years ago by a different compiler, possibly written in assembly, and neither<br>side can see the other&#x27;s source. <strong>This chip&#x27;s answer is AAPCS</strong>, and the<br>compiler follows it exactly.</p>
+<figure class="diagram"><svg viewBox="0 0 560 210" role="img" aria-label="AAPCS register roles: arguments, callee-saved, special">
+  <rect class="hifill" x="16" y="26" width="150" height="44" rx="5"/>
+  <text x="91" y="42" text-anchor="middle" class="mono">R0 R1 R2 R3</text>
+  <text x="91" y="60" text-anchor="middle" class="lbl">arguments in, result out</text>
+  <rect class="box" x="182" y="26" width="150" height="44" rx="5"/>
+  <text x="257" y="42" text-anchor="middle" class="mono">R4 ... R11</text>
+  <text x="257" y="60" text-anchor="middle" class="lbl">callee must preserve</text>
+  <rect class="box" x="348" y="26" width="196" height="44" rx="5"/>
+  <text x="446" y="42" text-anchor="middle" class="mono">R12  SP  LR  PC</text>
+  <text x="446" y="60" text-anchor="middle" class="lbl">scratch and special</text>
+  <text x="280" y="106" text-anchor="middle" class="lbl">A function returning its answer in R0 is not a convention the compiler invented.</text>
+  <text x="280" y="124" text-anchor="middle" class="lbl">It is why C you compile can call assembly someone else wrote.</text>
+  <rect class="reg" x="140" y="148" width="280" height="34" rx="5"/>
+  <text x="280" y="165" text-anchor="middle" class="mono">push {r4, r5, r6, r7, lr}</text>
+</svg></figure>
+<p>Now <code>_write</code> explains itself. Its arguments arrived in <code>r0</code>, <code>r1</code>, <code>r2</code> — the<br>file descriptor, the buffer and the length. It returns <code>len</code> by putting it in<br><code>r0</code>. And it pushes <code>r4</code>–<code>r7</code> <strong>because AAPCS says it must give them back<br>unchanged</strong> — it wanted them for the USART base and the loop counter.</p>
+</section>
+<section class="slide">
+<h2>Slide 19: The Thumb Bit — an Odd Address That Is Not a Bug</h2>
+<p>Here are the first sixteen bytes of <code>Main.hex</code>, the actual file that would be<br>flashed:</p>
+<pre><code>:1000000000300020750200082902000829020008BB</code></pre>
+<p>Decoded, ignoring the record framing:</p>
+<table><thead><tr><th>Bytes (little-endian)</th><th>Value</th><th>Meaning</th></tr></thead><tbody><tr><td><code>00300020</code></td><td><code>0x20003000</code></td><td>initial stack pointer — top of 12 KB SRAM</td></tr><tr><td><code>75020008</code></td><td><code>0x08000275</code></td><td>reset vector — <strong>where execution begins</strong></td></tr><tr><td><code>29020008</code></td><td><code>0x08000229</code></td><td>NMI handler</td></tr></tbody></table>
+<p><code>Reset_Handler</code> is at <code>0x08000274</code>, an even address. The vector says<br><code>0x08000275</code>. <strong>The low bit is set on purpose</strong>: on this processor it means<br>&quot;the code at this address is Thumb code&quot;. Every function pointer on the chip<br>is odd.</p>
+<figure class="diagram"><svg width="799" viewBox="0 0 799 182" role="img" aria-label="vector [1], 32 bits; Reset_Handler, 32 bits">
+<text x="16" y="35" class="mono">vector [1]</text>
+<text x="16" y="50" class="mono lbl">= 0x08000275</text>
+<text x="143.7" y="20" text-anchor="start" class="mono lbl">31</text>
+<text x="781.7" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="142.7" y="28" width="620.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M742.7 28 V32 M742.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M722.7 28 V32 M722.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M702.7 28 V32 M702.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M682.7 28 V32 M682.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M662.7 28 V32 M662.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M642.7 28 V32 M642.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M622.7 28 V32 M622.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M602.7 28 V32 M602.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M582.7 28 V32 M582.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M562.7 28 V32 M562.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M542.7 28 V32 M542.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M522.7 28 V32 M522.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M502.7 28 V32 M502.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M482.7 28 V32 M482.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M462.7 28 V32 M462.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M442.7 28 V32 M442.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M422.7 28 V32 M422.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M402.7 28 V32 M402.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M382.7 28 V32 M382.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M362.7 28 V32 M362.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M342.7 28 V32 M342.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M322.7 28 V32 M322.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M302.7 28 V32 M302.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M282.7 28 V32 M282.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M262.7 28 V32 M262.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M242.7 28 V32 M242.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M222.7 28 V32 M222.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M202.7 28 V32 M202.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M182.7 28 V32 M182.7 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M162.7 28 V32 M162.7 50 V54"/>
+<text x="761.7" y="20" text-anchor="end" class="mono lbl">1</text>
+<rect class="hifill" x="762.7" y="28" width="20.0" height="26"/>
+<text x="772.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="752.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="732.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="712.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="692.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="672.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="652.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="632.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="612.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="592.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="572.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="552.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="532.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="512.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="492.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="472.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="432.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="412.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="392.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="372.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="352.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="332.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="312.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="292.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="272.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="252.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="232.7" y="41" text-anchor="middle" class="mono">1</text>
+<text x="212.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="192.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="172.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="152.7" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.7" y="67" text-anchor="middle" class="mono halo lbl">address</text>
+<text x="772.7" y="67" text-anchor="middle" class="mono halo">T</text>
+<text x="16" y="121" class="mono">Reset_Handler</text>
+<text x="16" y="136" class="mono lbl">= 0x08000274</text>
+<text x="143.7" y="106" text-anchor="start" class="mono lbl">31</text>
+<text x="781.7" y="106" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="142.7" y="114" width="620.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M742.7 114 V118 M742.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M722.7 114 V118 M722.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M702.7 114 V118 M702.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M682.7 114 V118 M682.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M662.7 114 V118 M662.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M642.7 114 V118 M642.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M622.7 114 V118 M622.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M602.7 114 V118 M602.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M582.7 114 V118 M582.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M562.7 114 V118 M562.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M542.7 114 V118 M542.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M522.7 114 V118 M522.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M502.7 114 V118 M502.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M482.7 114 V118 M482.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M462.7 114 V118 M462.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M442.7 114 V118 M442.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M422.7 114 V118 M422.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M402.7 114 V118 M402.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M382.7 114 V118 M382.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M362.7 114 V118 M362.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M342.7 114 V118 M342.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M322.7 114 V118 M322.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M302.7 114 V118 M302.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M282.7 114 V118 M282.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M262.7 114 V118 M262.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M242.7 114 V118 M242.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M222.7 114 V118 M222.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M202.7 114 V118 M202.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M182.7 114 V118 M182.7 136 V140"/>
+<path class="reg" stroke-width="0.6" d="M162.7 114 V118 M162.7 136 V140"/>
+<text x="761.7" y="106" text-anchor="end" class="mono lbl">1</text>
+<rect class="reg" x="762.7" y="114" width="20.0" height="26"/>
+<text x="772.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="752.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="732.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="712.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="692.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="672.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="652.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="632.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="612.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="592.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="572.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="552.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="532.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="512.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="492.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="472.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="432.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="412.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="392.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="372.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="352.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="332.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="312.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="292.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="272.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="252.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="232.7" y="127" text-anchor="middle" class="mono">1</text>
+<text x="212.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="192.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="172.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="152.7" y="127" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.7" y="153" text-anchor="middle" class="mono halo lbl">address</text>
+</svg></figure>
+<p>The bit exists because on a Cortex-A it is a genuine question — that core<br>has both instruction sets and this is how a branch says which one it is<br>landing in. On a Cortex-M, per slide 2, the answer is always Thumb, so the<br>bit is always 1 and the hardware still insists on being told.</p>
+<p>&gt; Clear that bit and the CPU faults immediately on reset. A vector table full<br>&gt; of even addresses is a dead chip — and it is a common hand-written-assembly<br>&gt; mistake.</p>
+</section>
+<section class="slide">
+<h2>Slide 20: <code>LR</code> Is Odd Too — Reading a Return Address</h2>
+<p>Stop the debugger anywhere inside a function and <code>LR</code> ends in an odd digit.<br>It is the same bit as the vector table&#x27;s, and it is the first thing in an ARM<br>debugging session that looks like an off-by-one.</p>
+<p>Here is a real call, and the instruction it must come back to:</p>
+<pre><code> 800028a:  f7ff ffcf   bl  800022c &lt;SystemInit&gt;
+ 800028e:  f000 fb31   bl  80008f4</code></pre>
+<p><code>bl</code> is four bytes wide, so the return address is <code>0x0800028e</code>. What the<br>processor puts in <code>LR</code> is not that:</p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>address of the instruction after the <code>bl</code></td><td><code>0x0800028e</code></td></tr><tr><td>Thumb bit, set by <code>bl</code></td><td><code>| 1</code></td></tr><tr><td><strong><code>LR</code> becomes</strong></td><td><strong><code>0x0800028f</code></strong></td></tr></tbody></table>
+<figure class="diagram"><svg viewBox="0 0 560 200" role="img" aria-label="bl stores the return address with bit 0 set; returning clears it again">
+  <defs><marker id="i5" markerWidth="7" markerHeight="7" refX="6.2" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.4 0.7 L6.2 3 L0.4 5.3 z" fill="currentColor"/></marker></defs>
+  <rect class="box" x="12" y="44" width="140" height="34" rx="5"/>
+  <text x="82" y="61" text-anchor="middle" class="mono">bl 800022c</text>
+  <path class="hi" d="M152 61 H206" marker-end="url(#i5)"/>
+  <text x="179" y="36" text-anchor="middle" class="lbl">next | 1</text>
+  <rect class="hifill" x="210" y="36" width="150" height="50" rx="6"/>
+  <text x="285" y="56" text-anchor="middle" class="mono">LR = 0800028f</text>
+  <text x="285" y="75" text-anchor="middle" class="lbl">odd — on purpose</text>
+  <path class="hi" d="M360 61 H414" marker-end="url(#i5)"/>
+  <text x="387" y="36" text-anchor="middle" class="lbl">&amp; ~1</text>
+  <rect class="box" x="418" y="44" width="130" height="34" rx="5"/>
+  <text x="483" y="61" text-anchor="middle" class="mono">PC = 0800028e</text>
+  <text x="285" y="112" text-anchor="middle" class="lbl">bx lr · pop {pc} · both take bit 0 as "which instruction set", then drop it</text>
+  <text x="280" y="152" text-anchor="middle" class="lbl">The odd value was never an address. It is an address plus a one-bit answer</text>
+  <text x="280" y="172" text-anchor="middle" class="lbl">to a question this processor only has one answer to.</text>
+</svg></figure>
+<p>Returning undoes it. <code>bx lr</code> — and the <code>pop {r4, r5, r6, r7, pc}</code> from slide 8,<br>which is the same branch in disguise — read bit 0 as <em>the instruction set to<br>resume in</em>, then branch to the address with that bit <strong>cleared</strong>:</p>
+<pre><code>PC  &lt;-  LR &amp; ~1  =  0x0800028e</code></pre>
+<p>So execution continues at <code>0x0800028e</code>, the instruction immediately after the<br>call. <strong>Nothing is skipped and nothing is off by one.</strong> One bit is doing the<br>job of a processor mode flag, which is why it rides along inside the address<br>rather than living in a register of its own — and it is why <code>pop {pc}</code> can<br>return at all: the Thumb bit was saved with <code>LR</code> and comes back with it.</p>
+<p>&gt; <strong>When it bites.</strong> The bit is only ever 1 on a Cortex-M, so it is a trap<br>&gt; rather than a feature. Branch to an address with bit 0 <strong>clear</strong> and the core<br>&gt; faults — it has been told to execute ARM instructions, and it has none. A<br>&gt; <code>HardFault</code> whose stacked <code>PC</code> or <code>LR</code> looks like a perfectly sensible <em>even</em><br>&gt; address usually means a function pointer that was computed rather than<br>&gt; assigned, or hand-written assembly that returned with <code>mov pc, lr</code> instead of<br>&gt; <code>bx lr</code>.</p>
+<p>The one place <code>LR</code> is not a return address at all is inside an exception<br>handler: the core loads a magic <code>EXC_RETURN</code> value there instead<br>(<code>0xFFFFFFF9</code>, <code>0xFFFFFFFD</code>), and branching to it is what unstacks the frame<br>lesson 03 draws.</p>
+</section>
+<section class="slide">
+<h2>Slide 21: What the Compiler Is Allowed to Do to You</h2>
+<p>The compiler&#x27;s contract is to preserve the <em>observable behaviour</em> of your<br>program — as defined by the C standard, which has never heard of your<br>peripheral.</p>
+<figure class="diagram"><svg viewBox="0 0 560 180" role="img" aria-label="The compiler may cache or delete accesses unless told otherwise">
+  <rect class="box" x="20" y="26" width="180" height="106" rx="6"/>
+  <text x="110" y="48" text-anchor="middle" class="lbl">you wrote</text>
+  <text x="110" y="74" text-anchor="middle" class="mono">read</text>
+  <text x="110" y="94" text-anchor="middle" class="mono">read</text>
+  <text x="110" y="114" text-anchor="middle" class="mono">read</text>
+  <rect class="hifill" x="360" y="26" width="180" height="106" rx="6"/>
+  <text x="450" y="48" text-anchor="middle" class="lbl">you may get</text>
+  <text x="450" y="84" text-anchor="middle" class="mono">read</text>
+  <text x="450" y="108" text-anchor="middle" class="lbl">(cached in a register)</text>
+  <path class="dash" d="M200 79 H356"/>
+  <text x="278" y="66" text-anchor="middle" class="lbl">-Os</text>
+</svg></figure>
+<p>For ordinary variables this is exactly what you want. For a status register it<br>is catastrophic, and it produces the classic symptom: <strong>code that works at<br><code>-O0</code> and hangs at <code>-Os</code></strong>.</p>
+<p>The keyword that forbids it is <code>volatile</code>, and it has already been applied for<br>you by <strong>CMSIS</strong> — the <em>Common Microcontroller Software Interface Standard</em>,<br>ARM&#x27;s vendor-neutral set of headers for Cortex-M. Every register in<br><code>stm32c031xx.h</code> is declared <code>__IO</code>, which is simply <code>volatile</code>. You inherit the<br>protection; you should still know why it is there.</p>
+</section>
+<section class="slide">
+<h2>Slide 22: What You Should Be Able to Say</h2>
+<ol><li>Roughly how many distinct instructions make up 80% of real firmware?</li><li>Why does setting one bit in a peripheral register take at least three instructions?</li><li>What does <code>bics</code> do, and which C operator produces it?</li><li>Why is <code>lsls</code> more common than <code>subs</code> in embedded code?</li><li><code>cmp</code> computes a subtraction and discards the answer. What is the point?</li><li><code>blt</code> and <code>bcc</code> both mean &quot;less than&quot;. What is the difference, and what bug does confusing them cause?</li><li>What does <code>pop {r4, pc}</code> do that <code>pop {r4, lr}</code> does not?</li><li>Which addressing mode is <code>s-&gt;field</code>? Which is <code>buf[i]</code>?</li><li>Why is there no divide instruction, and how can you tell from a <code>.map</code> file that your code divided?</li><li>ARM designs two instruction sets. What is the other one called, and under what circumstances does a Cortex-M switch into it?</li><li>Name three things a Cortex-M4 does in one instruction that this M0+ cannot.</li><li>The reset vector holds <code>0x08000275</code> but the function is at <code>0x08000274</code>. Why, and what happens if you &quot;fix&quot; it?</li><li>You break inside a function and <code>LR</code> reads <code>0x0800028f</code>. Which instruction will run when it returns, and what would an <strong>even</strong> <code>LR</code> tell you?</li><li>Name the two instruction-set models. Which one is this, which one is x86, and which one was the AVR?</li><li>RISC-V has no flags register. How does it write <code>if (a &lt; b) goto L</code>, and what does ARM gain by having one?</li><li>Two ways exist to remember a return address. Name both, say which this chip uses, and explain what <code>push {lr}</code> is really for.</li><li>Why can a 16-bit instruction not load <code>0x40021000</code>? Give ARM&#x27;s answer and one other machine&#x27;s.</li></ol>
+<p><strong>Next:</strong> <em>Development</em> — how a <code>.c</code> file becomes the bytes in that hex record,<br>and what runs before <code>main()</code>.</p>
+</section>
+</div>
+
+<div class="bar">
+  <span><a href="index.html">&larr; all decks</a></span>
+  <span class="spacer"></span>
+  <button onclick="go(-1)">&larr;</button>
+  <span id="pos"></span>
+  <button onclick="go(1)">&rarr;</button>
+  <span class="spacer"></span>
+  <button onclick="toggleGrid()">overview (o)</button>
+  <button onclick="window.print()">print (p)</button>
+</div>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var at = 0;
+
+  function show(n) {
+    at = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === at); });
+    document.getElementById('pos').textContent = (at + 1) + ' / ' + slides.length;
+    try { localStorage.setItem('slide:01_Instruction_Set', at); } catch (e) {}
+    if (!document.body.classList.contains('grid')) window.scrollTo(0, 0);
+  }
+  function go(d) { show(at + d); }
+
+  function toggleGrid() {
+    document.body.classList.toggle('grid');
+    if (!document.body.classList.contains('grid')) show(at);
+  }
+
+  slides.forEach(function (s, i) {
+    s.addEventListener('click', function () {
+      if (document.body.classList.contains('grid')) { toggleGrid(); show(i); }
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(-1); e.preventDefault(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'o') toggleGrid();
+    else if (e.key === 'p') window.print();
+  });
+
+  var saved = 0;
+  try { saved = parseInt(localStorage.getItem('slide:01_Instruction_Set') || '0', 10) || 0; } catch (e) {}
+  show(saved);
+</script>

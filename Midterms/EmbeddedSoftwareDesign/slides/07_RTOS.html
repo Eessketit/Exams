@@ -1,0 +1,1863 @@
+<title>RTOS: Writing the Thing That Runs Your Tasks</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1c1f; --muted: #5b6270; --rule: #dfe3ea;
+    --accent: #1f5fa8; --code-bg: #f5f7fa; --code-fg: #22262b;
+    --th-bg: #eef2f7; --mark: #0a7a4a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c; --fg: #e6e9ee; --muted: #9aa3b2; --rule: #2b313b;
+      --accent: #78b4f0; --code-bg: #1b1f26; --code-fg: #dfe4ec;
+      --th-bg: #1f242c; --mark: #56d39a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171c; --fg: #e6e9ee; --muted: #9aa3b2; --rule: #2b313b;
+    --accent: #78b4f0; --code-bg: #1b1f26; --code-fg: #dfe4ec;
+    --th-bg: #1f242c; --mark: #56d39a;
+  }
+
+  body {
+    background: var(--bg); color: var(--fg); margin: 0;
+    font: 16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .slide {
+    display: none; box-sizing: border-box; min-height: 100vh;
+    padding: 4.6rem 4rem 5rem; max-width: 1180px; margin: 0 auto;
+  }
+  .slide.active { display: block; }
+  h1 { font-size: 2.3rem; line-height: 1.15; margin: 0 0 .4rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.65rem; margin: 0 0 1rem; color: var(--accent); letter-spacing: -.01em; }
+  h3 { font-size: 1.12rem; margin: 1.5rem 0 .5rem; }
+  p  { margin: .6rem 0; }
+  ul, ol { margin: .5rem 0 .9rem; padding-left: 1.4rem; }
+  li { margin: .28rem 0; }
+  a { color: var(--accent); }
+  code {
+    background: var(--code-bg); color: var(--code-fg); padding: .1em .35em;
+    border-radius: 4px; font-size: .89em;
+    font-family: "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--rule); border-radius: 8px;
+    padding: .85rem 1rem; overflow-x: auto; line-height: 1.45;
+  }
+  pre code { background: none; padding: 0; font-size: .85rem; }
+  table { border-collapse: collapse; margin: .8rem 0; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--rule); padding: .38rem .7rem; text-align: left; }
+  th { background: var(--th-bg); }
+  strong { font-weight: 650; }
+
+  .topbar {
+    position: fixed; left: 0; right: 0; top: 0; height: 2.2rem; z-index: 5;
+    display: flex; align-items: center; gap: 1rem; padding: 0 1.2rem;
+    background: var(--bg); border-bottom: 1px solid var(--rule);
+    font-size: .8rem; color: var(--muted);
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar .deck-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* ---- diagrams -------------------------------------------------------
+     A ```svg block lands here.  Shapes inherit the page colour through
+     currentColor, so one diagram works in both themes.  The helper classes
+     save every deck from restating the same fills and strokes. */
+  .diagram { margin: 1.1rem 0; text-align: center; color: var(--fg); }
+  .diagram svg { max-width: 100%; height: auto; overflow: visible; }
+  .diagram text {
+    fill: currentColor; font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px; dominant-baseline: middle;
+  }
+  .diagram .mono   { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .diagram .lbl    { fill: var(--muted); font-size: 11px; }
+  .diagram .box    { fill: var(--code-bg); stroke: currentColor; stroke-width: 1.5; }
+  .diagram .reg    { fill: none; stroke: currentColor; stroke-width: 1.2; }
+  .diagram .hi     { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .diagram .hifill { fill: var(--accent); fill-opacity: .14; stroke: var(--accent); stroke-width: 1.5; }
+  .diagram .ok     { fill: none; stroke: var(--mark); stroke-width: 2; }
+  .diagram .wire   { fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .diagram text.hi { fill: var(--accent); stroke: none; font-weight: 600; }
+  .diagram .halo   { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+  .diagram .dash   { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  .diagram figcaption { color: var(--muted); font-size: .8rem; margin-top: .4rem; }
+
+  .topbar a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .topbar a:hover { text-decoration: underline; }
+
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 2.6rem;
+    display: flex; align-items: center; gap: 1rem; padding: 0 1.2rem;
+    background: var(--bg); border-top: 1px solid var(--rule);
+    font-size: .8rem; color: var(--muted);
+  }
+  .bar .spacer { flex: 1; }
+  .bar button {
+    font: inherit; color: var(--muted); background: none;
+    border: 1px solid var(--rule); border-radius: 5px; padding: .1rem .55rem;
+    cursor: pointer;
+  }
+  .bar button:hover { color: var(--fg); }
+
+  /* overview grid */
+  body.grid .slide {
+    display: block; min-height: 0; padding: 1rem; margin: 0;
+    border: 1px solid var(--rule); border-radius: 8px;
+    zoom: .42; cursor: pointer; overflow: hidden; height: 44rem;
+  }
+  body.grid #deck {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: .8rem; padding: 3rem 1rem 4rem;
+  }
+
+  @media print {
+    .bar, .topbar { display: none; }
+    .slide { display: block !important; page-break-after: always; min-height: 0; padding: 1.2cm; }
+    pre, table { page-break-inside: avoid; }
+  }
+</style>
+
+<div class="topbar">
+  <span><a href="https://www.st.com/resource/en/reference_manual/rm0490-stm32c0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf" target="_blank" rel="noopener">STM32 Reference Manual (PDF)</a></span>
+  <span><a href="UM2953_Nucleo64_MB1717.pdf" target="_blank" rel="noopener">Board manual (PDF)</a></span>
+  <span><a href="https://docs.wokwi.com/parts/board-st-nucleo-c031c6" target="_blank" rel="noopener">Nucleo-C031C6 board</a></span>
+  <span><a href="board-pins.html" target="_blank" rel="noopener">Board pins</a></span>
+  <span><a href="https://colab.research.google.com/github/gnoejh/soc3050code/blob/main/projects2026_arm/_notebooks/SOC3050_ARM.ipynb" target="_blank" rel="noopener">Open in Colab</a></span>
+  <span class="spacer"></span>
+  <span class="deck-name">RTOS: Writing the Thing That Runs Your Tasks</span>
+</div>
+
+<div id="deck">
+<section class="slide">
+<h1>RTOS: Writing the Thing That Runs Your Tasks</h1>
+<h2>SOC3050 ARM Edition — Part 1, Instances</h2>
+<p><strong>Reference</strong>: <a href="https://www.st.com/resource/en/reference_manual/rm0490-stm32c0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf" target="_blank" rel="noopener">STM32 Reference Manual</a> ·<br><strong>Board manual</strong>: <a href="https://www.st.com/resource/en/user_manual/um2953-stm32c0-nucleo64-board-mb1717-stmicroelectronics.pdf" target="_blank" rel="noopener">UM2953, STM32 Nucleo-64 boards (MB1717)</a></p>
+<p><strong>A preemptive kernel in about 300 lines, and every one of them is yours.</strong></p>
+<p>Lesson 06 ended at the superloop&#x27;s ceiling: every job must be short, or it<br>delays all the others. This week you lift the ceiling by building what<br>FreeRTOS, Zephyr and every other embedded kernel are built on — a context<br>switch — and then use it to meet the most famous scheduling bug in the history<br>of embedded systems.</p>
+<p>Figures marked <strong>measured</strong> come from running this lesson&#x27;s kernel, unchanged,<br>on Renode&#x27;s Cortex-M0 model (slide 20 says exactly how). None has been watched<br>in Wokwi yet.</p>
+</section>
+<section class="slide">
+<h2>The Board: This Lesson&#x27;s Pins</h2>
+<p>Before any register, find the pins. Every highlighted dot is a header pin that<br>this lesson&#x27;s <code>diagram.json</code> wires something to — the same circuit you paste<br>into Wokwi — at its position on the Nucleo-C031C6, to scale. A label reads<br><em>MCU pin (header name, if different)</em> and what the pin does here.</p>
+<p>The two outer double rows are ST&#x27;s <strong>morpho</strong> headers, which reach every pin<br>of the chip; the two inner single rows are the <strong>Arduino</strong>-compatible header<br>(A0–A5 on the left, D0–D15 on the right). Some MCU pins appear on both — PA5 is<br>also <code>D13</code> — so the highlighted position is the one this lesson&#x27;s wire uses.<br>The real board&#x27;s headers are drawn in its manual, UM2953 (top bar).</p>
+<figure class="diagram"><!-- pinmap:board - generated by _build/pinmap.py; edit the lesson's diagram.json or pinmap.py, not this -->
+<svg viewBox="0 0 1020 609" role="img" aria-label="Nucleo-C031C6 headers to scale, with this lesson's pins highlighted">
+  <text x="510" y="18" text-anchor="middle" class="lbl">Nucleo-C031C6 headers, to scale, as Wokwi lays them out - this lesson's wires highlighted</text>
+  <rect class="box" x="300" y="46" width="420" height="502" rx="10"/>
+  <text x="510" y="80" text-anchor="middle" class="lbl">Nucleo-C031C6 (MB1717)</text>
+  <text x="510" y="98" text-anchor="middle" class="lbl">headers only - components not drawn</text>
+  <circle cx="316.8" cy="242.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="258.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="273.3" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="288.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="425.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="501.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="316.8" cy="517.1" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="242.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="258.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="273.3" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="288.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="319.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="349.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="395.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="440.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="486.6" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="501.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="332.0" cy="517.1" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="319.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="349.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="395.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="440.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="486.6" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="501.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="361.8" cy="517.1" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="288.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="303.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="319.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="349.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="395.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="425.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="440.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="702.0" cy="486.6" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="242.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="258.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="273.3" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="288.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="303.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="319.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="349.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="395.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="425.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="440.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="486.6" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="501.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="686.8" cy="517.1" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="242.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="258.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="273.3" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="288.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="303.8" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="319.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="334.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="349.5" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="364.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="380.0" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="410.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="425.7" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="440.9" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="456.2" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="471.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="486.6" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="655.8" cy="501.4" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <circle cx="656.1" cy="517.1" r="3.2" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <text x="324" y="566" text-anchor="middle" class="lbl">ST morpho</text>
+  <text x="362" y="582" text-anchor="middle" class="lbl">Arduino</text>
+  <text x="656" y="582" text-anchor="middle" class="lbl">Arduino</text>
+  <text x="694" y="566" text-anchor="middle" class="lbl">ST morpho</text>
+  <circle cx="316.8" cy="380.0" r="4" fill="currentColor" fill-opacity="0.45"/>
+  <circle cx="332.0" cy="288.5" r="4" fill="currentColor" fill-opacity="0.45"/>
+  <path class="dash" d="M332.0 440.9 L292.0 440.9"/>
+  <circle class="hifill" cx="332.0" cy="440.9" r="5"/>
+  <circle class="hi" cx="332.0" cy="440.9" r="5" fill="none"/>
+  <text x="286.0" y="444.9" text-anchor="end" class="mono" font-size="13">PA0  button A - bar speed, pull-up</text>
+  <path class="dash" d="M332.0 456.2 L292.0 456.2"/>
+  <circle class="hifill" cx="332.0" cy="456.2" r="5"/>
+  <circle class="hi" cx="332.0" cy="456.2" r="5" fill="none"/>
+  <text x="286.0" y="460.2" text-anchor="end" class="mono" font-size="13">PA1  button B - hog on/off, pull-up</text>
+  <path class="dash" d="M332.0 486.6 L292.0 486.6"/>
+  <circle class="hifill" cx="332.0" cy="486.6" r="5"/>
+  <circle class="hi" cx="332.0" cy="486.6" r="5" fill="none"/>
+  <text x="286.0" y="490.6" text-anchor="end" class="mono" font-size="13">PB1  LED bar bit 1</text>
+  <path class="dash" d="M316.8 517.1 L292.0 517.1"/>
+  <circle class="hifill" cx="316.8" cy="517.1" r="5"/>
+  <circle class="hi" cx="316.8" cy="517.1" r="5" fill="none"/>
+  <text x="286.0" y="521.1" text-anchor="end" class="mono" font-size="13">PA2  USART2 TX - serial monitor</text>
+  <path class="dash" d="M702.0 303.8 L728.0 303.8"/>
+  <circle class="hifill" cx="702.0" cy="303.8" r="5"/>
+  <circle class="hi" cx="702.0" cy="303.8" r="5" fill="none"/>
+  <text x="734.0" y="307.8" text-anchor="start" class="mono" font-size="13">PA3  USART2 RX - serial monitor</text>
+  <path class="dash" d="M702.0 364.7 L728.0 364.7"/>
+  <circle class="hifill" cx="702.0" cy="364.7" r="5"/>
+  <circle class="hi" cx="702.0" cy="364.7" r="5" fill="none"/>
+  <text x="734.0" y="368.7" text-anchor="start" class="mono" font-size="13">PB2  LED bar bit 2</text>
+  <path class="dash" d="M686.8 425.7 L728.0 425.7"/>
+  <circle class="hifill" cx="686.8" cy="425.7" r="5"/>
+  <circle class="hi" cx="686.8" cy="425.7" r="5" fill="none"/>
+  <text x="734.0" y="429.7" text-anchor="start" class="mono" font-size="13">PB5  LED bar bit 5</text>
+  <path class="dash" d="M686.8 440.9 L728.0 440.9"/>
+  <circle class="hifill" cx="686.8" cy="440.9" r="5"/>
+  <circle class="hi" cx="686.8" cy="440.9" r="5" fill="none"/>
+  <text x="734.0" y="444.9" text-anchor="start" class="mono" font-size="13">PB4  LED bar bit 4</text>
+  <path class="dash" d="M686.8 471.4 L728.0 471.4"/>
+  <circle class="hifill" cx="686.8" cy="471.4" r="5"/>
+  <circle class="hi" cx="686.8" cy="471.4" r="5" fill="none"/>
+  <text x="734.0" y="475.4" text-anchor="start" class="mono" font-size="13">PB3  LED bar bit 3</text>
+  <path class="dash" d="M702.0 486.6 L728.0 486.6"/>
+  <circle class="hifill" cx="702.0" cy="486.6" r="5"/>
+  <circle class="hi" cx="702.0" cy="486.6" r="5" fill="none"/>
+  <text x="734.0" y="490.6" text-anchor="start" class="mono" font-size="13">PB0 (PB0.1)  LED bar bit 0</text>
+  <path class="dash" d="M686.8 501.9 L728.0 501.9"/>
+  <circle class="hifill" cx="686.8" cy="501.9" r="5"/>
+  <circle class="hi" cx="686.8" cy="501.9" r="5" fill="none"/>
+  <text x="734.0" y="505.9" text-anchor="start" class="mono" font-size="13">PB6  LED bar bit 6</text>
+  <path class="dash" d="M686.8 517.1 L728.0 517.1"/>
+  <circle class="hifill" cx="686.8" cy="517.1" r="5"/>
+  <circle class="hi" cx="686.8" cy="517.1" r="5" fill="none"/>
+  <text x="734.0" y="521.1" text-anchor="start" class="mono" font-size="13">PB7  LED bar bit 7</text>
+  <text x="510" y="604" text-anchor="middle" class="lbl">grey dots: power and ground wires (GND)</text>
+</svg></figure>
+</section>
+<section class="slide">
+<h2>The Chip: The Same Pins, as Port Bits</h2>
+<p>Inside the chip the header positions disappear: every pin is <strong>one bit<br>position in its port&#x27;s registers</strong>. Pin <em>n</em> of GPIOA is bit <em>n</em> of<br><code>GPIOA-&gt;IDR</code>, bits 2*n*+1 : 2*n* of <code>GPIOA-&gt;MODER</code>, and so on (lesson 05,<br>slide 4). Each cell below is one pin, drawn in register order, marked with how<br>this lesson configures it.</p>
+<figure class="diagram"><!-- pinmap:chip - generated by _build/pinmap.py; edit pinmap.py's LESSONS table, not this -->
+<svg viewBox="0 0 620 275" role="img" aria-label="Ports as register bits, with this lesson's pins marked">
+  <text x="310" y="18" text-anchor="middle" class="lbl">Inside the chip: each port is 16 pins, drawn in register order - pin 15 left, pin 0 right</text>
+  <text x="76" y="62" text-anchor="end" class="mono">GPIOA</text>
+  <rect class="reg" x="88" y="40" width="29" height="34" rx="3"/>
+  <text x="102.5" y="54" text-anchor="middle" class="mono lbl">15</text>
+  <rect class="reg" x="120" y="40" width="29" height="34" rx="3"/>
+  <text x="134.5" y="54" text-anchor="middle" class="mono lbl">14</text>
+  <text x="134.5" y="68" text-anchor="middle" class="lbl">SWD</text>
+  <rect class="reg" x="152" y="40" width="29" height="34" rx="3"/>
+  <text x="166.5" y="54" text-anchor="middle" class="mono lbl">13</text>
+  <text x="166.5" y="68" text-anchor="middle" class="lbl">SWD</text>
+  <rect class="reg" x="184" y="40" width="29" height="34" rx="3"/>
+  <text x="198.5" y="54" text-anchor="middle" class="mono lbl">12</text>
+  <rect class="reg" x="216" y="40" width="29" height="34" rx="3"/>
+  <text x="230.5" y="54" text-anchor="middle" class="mono lbl">11</text>
+  <rect class="reg" x="248" y="40" width="29" height="34" rx="3"/>
+  <text x="262.5" y="54" text-anchor="middle" class="mono lbl">10</text>
+  <rect class="reg" x="280" y="40" width="29" height="34" rx="3"/>
+  <text x="294.5" y="54" text-anchor="middle" class="mono lbl">9</text>
+  <rect class="reg" x="312" y="40" width="29" height="34" rx="3"/>
+  <text x="326.5" y="54" text-anchor="middle" class="mono lbl">8</text>
+  <rect class="reg" x="344" y="40" width="29" height="34" rx="3"/>
+  <text x="358.5" y="54" text-anchor="middle" class="mono lbl">7</text>
+  <rect class="reg" x="376" y="40" width="29" height="34" rx="3"/>
+  <text x="390.5" y="54" text-anchor="middle" class="mono lbl">6</text>
+  <rect class="reg" x="408" y="40" width="29" height="34" rx="3"/>
+  <text x="422.5" y="54" text-anchor="middle" class="mono lbl">5</text>
+  <rect class="reg" x="440" y="40" width="29" height="34" rx="3"/>
+  <text x="454.5" y="54" text-anchor="middle" class="mono lbl">4</text>
+  <rect class="hifill" x="472" y="40" width="29" height="34" rx="3"/>
+  <text x="486.5" y="54" text-anchor="middle" class="mono lbl">3</text>
+  <text x="486.5" y="68" text-anchor="middle" class="mono">af1</text>
+  <rect class="hifill" x="504" y="40" width="29" height="34" rx="3"/>
+  <text x="518.5" y="54" text-anchor="middle" class="mono lbl">2</text>
+  <text x="518.5" y="68" text-anchor="middle" class="mono">af1</text>
+  <rect class="hifill" x="536" y="40" width="29" height="34" rx="3"/>
+  <text x="550.5" y="54" text-anchor="middle" class="mono lbl">1</text>
+  <text x="550.5" y="68" text-anchor="middle" class="mono">in</text>
+  <rect class="hifill" x="568" y="40" width="29" height="34" rx="3"/>
+  <text x="582.5" y="54" text-anchor="middle" class="mono lbl">0</text>
+  <text x="582.5" y="68" text-anchor="middle" class="mono">in</text>
+  <text x="88" y="94" class="mono lbl" xml:space="preserve">PA3   af1  USART2 RX - serial monitor</text>
+  <text x="88" y="109" class="mono lbl" xml:space="preserve">PA2   af1  USART2 TX - serial monitor</text>
+  <text x="88" y="124" class="mono lbl" xml:space="preserve">PA1   in   button B - hog on/off, pull-up</text>
+  <text x="88" y="139" class="mono lbl" xml:space="preserve">PA0   in   button A - bar speed, pull-up</text>
+  <text x="76" y="190" text-anchor="end" class="mono">GPIOB</text>
+  <rect class="reg" x="88" y="168" width="29" height="34" rx="3"/>
+  <text x="102.5" y="182" text-anchor="middle" class="mono lbl">15</text>
+  <rect class="reg" x="120" y="168" width="29" height="34" rx="3"/>
+  <text x="134.5" y="182" text-anchor="middle" class="mono lbl">14</text>
+  <rect class="reg" x="152" y="168" width="29" height="34" rx="3"/>
+  <text x="166.5" y="182" text-anchor="middle" class="mono lbl">13</text>
+  <rect class="reg" x="184" y="168" width="29" height="34" rx="3"/>
+  <text x="198.5" y="182" text-anchor="middle" class="mono lbl">12</text>
+  <rect class="reg" x="216" y="168" width="29" height="34" rx="3"/>
+  <text x="230.5" y="182" text-anchor="middle" class="mono lbl">11</text>
+  <rect class="reg" x="248" y="168" width="29" height="34" rx="3"/>
+  <text x="262.5" y="182" text-anchor="middle" class="mono lbl">10</text>
+  <rect class="reg" x="280" y="168" width="29" height="34" rx="3"/>
+  <text x="294.5" y="182" text-anchor="middle" class="mono lbl">9</text>
+  <rect class="reg" x="312" y="168" width="29" height="34" rx="3"/>
+  <text x="326.5" y="182" text-anchor="middle" class="mono lbl">8</text>
+  <rect class="hifill" x="344" y="168" width="29" height="34" rx="3"/>
+  <text x="358.5" y="182" text-anchor="middle" class="mono lbl">7</text>
+  <text x="358.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="376" y="168" width="29" height="34" rx="3"/>
+  <text x="390.5" y="182" text-anchor="middle" class="mono lbl">6</text>
+  <text x="390.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="408" y="168" width="29" height="34" rx="3"/>
+  <text x="422.5" y="182" text-anchor="middle" class="mono lbl">5</text>
+  <text x="422.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="440" y="168" width="29" height="34" rx="3"/>
+  <text x="454.5" y="182" text-anchor="middle" class="mono lbl">4</text>
+  <text x="454.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="472" y="168" width="29" height="34" rx="3"/>
+  <text x="486.5" y="182" text-anchor="middle" class="mono lbl">3</text>
+  <text x="486.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="504" y="168" width="29" height="34" rx="3"/>
+  <text x="518.5" y="182" text-anchor="middle" class="mono lbl">2</text>
+  <text x="518.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="536" y="168" width="29" height="34" rx="3"/>
+  <text x="550.5" y="182" text-anchor="middle" class="mono lbl">1</text>
+  <text x="550.5" y="196" text-anchor="middle" class="mono">out</text>
+  <rect class="hifill" x="568" y="168" width="29" height="34" rx="3"/>
+  <text x="582.5" y="182" text-anchor="middle" class="mono lbl">0</text>
+  <text x="582.5" y="196" text-anchor="middle" class="mono">out</text>
+  <text x="88" y="222" class="mono lbl" xml:space="preserve">PB7..PB0  out  LED bar, one bit per LED</text>
+  <text x="310" y="267" text-anchor="middle" class="lbl">in = MODER 00 · out = 01 · afN = 10 with AFR = N · an = 11 - lesson 05, slides 4-5</text>
+</svg></figure>
+</section>
+<section class="slide">
+<h2>Slide 1: The Job That Never Yields</h2>
+<p>&gt; <strong>Cooperative scheduler</strong> → one <strong>CPU hog</strong> can stop the whole system.<br>&gt; (CPU hog 하나가 시스템 전체를 멈출 수 있음)<br>&gt;<br>&gt; <strong>Preemptive scheduler</strong> → the RTOS can forcibly stop (<strong>preempt</strong>) the CPU hog.<br>&gt; (RTOS가 CPU hog를 강제로 중단(preempt)할 수 있음)</p>
+<p>Put this in lesson 06&#x27;s superloop:</p>
+<pre class="lang-c"><code>for (;;) {                               /* find primes, forever */
+    uint32_t d = 3;
+    while (d * d &lt;= n &amp;&amp; n % d != 0u) { d += 2u; }
+    if (d * d &gt; n) { primes++; }
+    n += 2u;
+}</code></pre>
+<p>It never returns to the loop, so nothing else ever runs again: the LED bar<br>freezes, the buttons die, the report stops. A job like this, one that keeps the<br>CPU and never gives it back, is a <strong>CPU hog</strong>.</p>
+<p>The superloop is a <strong>cooperative scheduler</strong>: each job runs until it <em>chooses</em><br>to return, so the system works only while every job <strong>agrees</strong> to be short.<br>One uncooperative job ends it.</p>
+<p>What we want instead: the hog runs whenever nothing more urgent needs the CPU,<br>and <strong>is stopped</strong> — mid-calculation, without its consent — the instant<br>something more urgent does. Then carried on later from exactly where it was.<br>That is a <strong>preemptive scheduler</strong>, and it is what an RTOS is.</p>
+<table><thead><tr><th>Scheduler</th><th>Who decides when a job stops</th><th>One CPU hog</th></tr></thead><tbody><tr><td><strong>Cooperative</strong> (the superloop)</td><td>the job itself, by returning</td><td><strong>can freeze the whole system</strong></td></tr><tr><td><strong>Preemptive</strong> (an RTOS)</td><td>the kernel, on a timer interrupt</td><td><strong>is preempted</strong>: the RTOS takes the CPU away by force</td></tr></tbody></table>
+<p>On a Cortex-M, preemption takes one interrupt, one exception, and a second<br>stack pointer. The rest of this lesson builds it.</p>
+</section>
+<section class="slide">
+<h2>Slide 2: A Task Is a Stack and Nine Numbers</h2>
+<p>A C function that is running <em>is</em>, at any instant:</p>
+<ul><li>its <strong>stack</strong> — local variables, return addresses, saved registers;</li><li>its <strong>registers</strong> — <code>r0</code>–<code>r12</code>, <code>lr</code>, <code>pc</code> and <code>xPSR</code>;</li><li>its <strong>stack pointer</strong> — where on that stack it currently is.</li></ul>
+<p>Save all of that, and you can put the function away. Restore it, and it<br>continues as if nothing happened — because, from its point of view, nothing<br>did. That saved state is the task&#x27;s <strong>context</strong>; swapping one for another is a<br><strong>context switch</strong>.</p>
+<pre class="lang-c"><code>typedef struct os_task {
+    uint32_t   *sp;          /* MUST be first - the assembly reads [tcb + 0] */
+    const char *name;
+    uint8_t     prio, base_prio, state;
+    uint32_t    wake;
+    ...
+} os_task_t;</code></pre>
+<p>That struct is the <strong>task control block</strong>. Each task also gets its own<br>stack — a plain array. The registers live <em>on</em> that stack while the task is<br>switched out, so the TCB only needs to remember one number: where the stack<br>pointer was.</p>
+<table><thead><tr><th>Term</th><th>What it is</th><th>In this kernel</th></tr></thead><tbody><tr><td><strong>Task</strong></td><td>a C function that runs as if it had the CPU to itself</td><td><code>bar</code>, <code>button</code>, <code>hog</code>, <code>report</code>, <code>idle</code></td></tr><tr><td><strong>Context</strong></td><td>everything that function needs to carry on: registers + stack pointer</td><td>16 words on the task&#x27;s own stack</td></tr><tr><td><strong>Context switch</strong></td><td>save one task&#x27;s context, restore another&#x27;s</td><td><code>PendSV_Handler</code>, 34 instructions</td></tr><tr><td><strong>Task control block (TCB)</strong></td><td>the kernel&#x27;s record of one task</td><td><code>os_task_t</code>; <code>sp</code> is its first field</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 3: The Core&#x27;s Own Registers — All on One Page</h2>
+<p>A context switch is made of registers that have <strong>no address</strong>. They are not<br>in the memory map at all: they live inside the core, and only two instructions<br>reach them — <code>MRS</code> (special register to <code>rN</code>) and <code>MSR</code> (<code>rN</code> to special<br>register). CMSIS wraps each one in an inline function (<code>cmsis_gcc.h</code>, which<br>pulls in <code>m-profile/cmsis_gcc_m.h</code>):</p>
+<table><thead><tr><th>Register</th><th>What it holds</th><th>Read</th><th>Write</th><th>This kernel</th><th>Slide</th></tr></thead><tbody><tr><td><strong><code>xPSR</code></strong> = APSR + IPSR + EPSR</td><td>flags <code>N Z C V</code>; the active exception&#x27;s number; the Thumb bit <code>T</code></td><td><code>MRS r, xpsr</code> · <code>__get_xPSR()</code> (also <code>__get_APSR()</code>, <code>__get_IPSR()</code>)</td><td>—</td><td>forged into every new task&#x27;s frame; decoded after a fault</td><td>8, 18</td></tr><tr><td><strong><code>MSP</code></strong></td><td>main stack pointer</td><td><code>MRS r, msp</code> · <code>__get_MSP()</code></td><td><code>MSR msp, r</code> · <code>__set_MSP()</code></td><td>handlers, and <code>main()</code> before the first switch; read by <code>HardFault_Handler</code> when a handler faulted</td><td>3b, 18</td></tr><tr><td><strong><code>PSP</code></strong></td><td>process stack pointer</td><td><code>MRS r, psp</code> · <code>__get_PSP()</code></td><td><code>MSR psp, r</code> · <code>__set_PSP()</code></td><td>every task; saved and loaded by <code>PendSV_Handler</code>, read by <code>HardFault_Handler</code></td><td>3b, 5, 6, 18</td></tr><tr><td><strong><code>PRIMASK</code></strong></td><td>1 = interrupts masked</td><td><code>MRS r, primask</code> · <code>__get_PRIMASK()</code></td><td><code>MSR primask, r</code> · <code>__set_PRIMASK()</code>; <code>cpsid i</code> / <code>cpsie i</code> · <code>__disable_irq()</code> / <code>__enable_irq()</code></td><td><code>enter()</code> / <code>leave()</code> around all kernel bookkeeping; <code>PendSV_Handler</code></td><td>6, 12</td></tr><tr><td><strong><code>CONTROL</code></strong></td><td>which stack Thread mode uses; privilege</td><td><code>MRS r, control</code> · <code>__get_CONTROL()</code></td><td><code>MSR control, r</code> · <code>__set_CONTROL()</code> (adds an <code>ISB</code>)</td><td>never written: <code>EXC_RETURN</code> sets <code>SPSEL</code></td><td>3b</td></tr><tr><td><code>BASEPRI</code>, <code>FAULTMASK</code></td><td>priority-threshold masks</td><td>—</td><td>—</td><td><strong>not on this core</strong>: CMSIS compiles them only for Thumb-2</td><td></td></tr></tbody></table>
+<p>And one value that is not a register but steers all of them: <strong><code>EXC_RETURN</code></strong>,<br>the number in <code>lr</code> while a handler runs (slides 3b, 18).</p>
+<figure class="diagram"><svg width="907" viewBox="0 0 907 429" role="img" aria-label="The five, drawn to scale.  Shaded = a field this kernel depends on.; xPSR, 32 bits; MSP, 32 bits; PSP, 32 bits; PRIMASK, 32 bits; CONTROL, 32 bits">
+<text x="454" y="16" text-anchor="middle" class="lbl">The five, drawn to scale.  Shaded = a field this kernel depends on.</text>
+<text x="16" y="59" class="mono">xPSR</text>
+<text x="16" y="74" class="lbl">APSR, IPSR and EPSR in one word</text>
+<text x="252.2" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="890.2" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="411.2" y="52" width="360.0" height="26"/>
+<text x="591.2" y="65" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="331.2" y="52" width="60.0" height="26"/>
+<text x="361.2" y="65" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="251.2" y="52" width="20.0" height="26"/>
+<text x="261.2" y="65" text-anchor="middle" class="mono">N</text>
+<rect class="reg" x="271.2" y="52" width="20.0" height="26"/>
+<text x="281.2" y="44" text-anchor="middle" class="mono lbl">30</text>
+<text x="281.2" y="65" text-anchor="middle" class="mono">Z</text>
+<rect class="reg" x="291.2" y="52" width="20.0" height="26"/>
+<text x="301.2" y="44" text-anchor="middle" class="mono lbl">29</text>
+<text x="301.2" y="65" text-anchor="middle" class="mono">C</text>
+<rect class="reg" x="311.2" y="52" width="20.0" height="26"/>
+<text x="321.2" y="44" text-anchor="middle" class="mono lbl">28</text>
+<text x="321.2" y="65" text-anchor="middle" class="mono">V</text>
+<rect class="hifill" x="391.2" y="52" width="20.0" height="26"/>
+<text x="401.2" y="44" text-anchor="middle" class="mono lbl">24</text>
+<text x="401.2" y="65" text-anchor="middle" class="mono">T</text>
+<rect class="reg" x="771.2" y="52" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M871.2 52 V56 M871.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M851.2 52 V56 M851.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M831.2 52 V56 M831.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M811.2 52 V56 M811.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M791.2 52 V56 M791.2 74 V78"/>
+<text x="772.2" y="44" text-anchor="start" class="mono lbl">5</text>
+<text x="831.2" y="65" text-anchor="middle" class="mono">ISR</text>
+<text x="16" y="128" class="mono">MSP</text>
+<text x="16" y="143" class="lbl">main stack: handlers</text>
+<text x="252.2" y="113" text-anchor="start" class="mono lbl">31</text>
+<text x="890.2" y="113" text-anchor="end" class="mono lbl">0</text>
+<rect class="hifill" x="251.2" y="121" width="640.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M871.2 121 V125 M871.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M851.2 121 V125 M851.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M831.2 121 V125 M831.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M811.2 121 V125 M811.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M791.2 121 V125 M791.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M771.2 121 V125 M771.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M751.2 121 V125 M751.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M731.2 121 V125 M731.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M711.2 121 V125 M711.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M691.2 121 V125 M691.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M671.2 121 V125 M671.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M651.2 121 V125 M651.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M631.2 121 V125 M631.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M611.2 121 V125 M611.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M591.2 121 V125 M591.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M571.2 121 V125 M571.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M551.2 121 V125 M551.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M531.2 121 V125 M531.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M511.2 121 V125 M511.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M491.2 121 V125 M491.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M471.2 121 V125 M471.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M451.2 121 V125 M451.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M431.2 121 V125 M431.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M411.2 121 V125 M411.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M391.2 121 V125 M391.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M371.2 121 V125 M371.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M351.2 121 V125 M351.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M331.2 121 V125 M331.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M311.2 121 V125 M311.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M291.2 121 V125 M291.2 143 V147"/>
+<path class="reg" stroke-width="0.6" d="M271.2 121 V125 M271.2 143 V147"/>
+<text x="571.2" y="134" text-anchor="middle" class="mono">stack address</text>
+<text x="16" y="197" class="mono">PSP</text>
+<text x="16" y="212" class="lbl">process stack: tasks</text>
+<text x="252.2" y="182" text-anchor="start" class="mono lbl">31</text>
+<text x="890.2" y="182" text-anchor="end" class="mono lbl">0</text>
+<rect class="hifill" x="251.2" y="190" width="640.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M871.2 190 V194 M871.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M851.2 190 V194 M851.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M831.2 190 V194 M831.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M811.2 190 V194 M811.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M791.2 190 V194 M791.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M771.2 190 V194 M771.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M751.2 190 V194 M751.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M731.2 190 V194 M731.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M711.2 190 V194 M711.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M691.2 190 V194 M691.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M671.2 190 V194 M671.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M651.2 190 V194 M651.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M631.2 190 V194 M631.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M611.2 190 V194 M611.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M591.2 190 V194 M591.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M571.2 190 V194 M571.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M551.2 190 V194 M551.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M531.2 190 V194 M531.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M511.2 190 V194 M511.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M491.2 190 V194 M491.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M471.2 190 V194 M471.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M451.2 190 V194 M451.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M431.2 190 V194 M431.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M411.2 190 V194 M411.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M391.2 190 V194 M391.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M371.2 190 V194 M371.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M351.2 190 V194 M351.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M331.2 190 V194 M331.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M311.2 190 V194 M311.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M291.2 190 V194 M291.2 212 V216"/>
+<path class="reg" stroke-width="0.6" d="M271.2 190 V194 M271.2 212 V216"/>
+<text x="571.2" y="203" text-anchor="middle" class="mono">stack address</text>
+<text x="16" y="266" class="mono">PRIMASK</text>
+<text x="16" y="281" class="lbl">interrupt mask</text>
+<text x="252.2" y="251" text-anchor="start" class="mono lbl">31</text>
+<text x="890.2" y="251" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="251.2" y="259" width="620.0" height="26"/>
+<text x="561.2" y="272" text-anchor="middle" class="lbl">reserved</text>
+<rect class="hifill" x="871.2" y="259" width="20.0" height="26"/>
+<text x="881.2" y="298" text-anchor="middle" class="mono halo">PM</text>
+<text x="16" y="352" class="mono">CONTROL</text>
+<text x="16" y="367" class="lbl">Thread mode&#x27;s stack and privilege</text>
+<text x="252.2" y="337" text-anchor="start" class="mono lbl">31</text>
+<text x="890.2" y="337" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="251.2" y="345" width="600.0" height="26"/>
+<text x="551.2" y="358" text-anchor="middle" class="lbl">reserved</text>
+<rect class="hifill" x="851.2" y="345" width="20.0" height="26"/>
+<text x="861.2" y="337" text-anchor="middle" class="mono lbl">1</text>
+<rect class="reg" x="871.2" y="345" width="20.0" height="26"/>
+<path class="dash" d="M881.2 371 L881.2 393"/>
+<text x="861.2" y="384" text-anchor="middle" class="mono halo">SPSEL</text>
+<text x="881.2" y="400" text-anchor="middle" class="mono halo lbl">nPRIV</text>
+</svg></figure>
+<ul><li><strong><code>xPSR</code></strong> is three registers read as one word: <code>APSR</code> holds the flags (bits 31:28), <code>IPSR</code> the exception number (5:0, zero in Thread mode), <code>EPSR</code> the <code>T</code> bit (24).</li><li><strong><code>MSP</code> and <code>PSP</code></strong> are the two stack pointers; <code>sp</code> is whichever one is selected. Slide 3b says who uses which.</li><li><strong><code>PRIMASK</code></strong> is one bit. Lesson 03&#x27;s critical section was exactly this register; slide 12 shows the kernel saving it rather than just setting it.</li><li><strong><code>CONTROL</code></strong> decides what <code>sp</code> means in Thread mode. This kernel never writes it — the exception return does.</li></ul>
+</section>
+<section class="slide">
+<h2>Slide 3b: Two Stack Pointers</h2>
+<p>The Cortex-M has <strong>two</strong> stack pointers, and you have been using one of them<br>without noticing:</p>
+<table><thead><tr><th></th><th>Used by</th><th>In this kernel</th></tr></thead><tbody><tr><td><strong>MSP</strong> — main stack pointer</td><td>every exception handler; <code>main()</code> after reset</td><td>handlers only</td></tr><tr><td><strong>PSP</strong> — process stack pointer</td><td>Thread mode, if <code>CONTROL.SPSEL = 1</code></td><td>every task, each on its own stack</td></tr></tbody></table>
+<p>The split is what makes the design clean. Interrupt handlers always run on<br>MSP, a stack no task owns, so a handler never needs space on a task&#x27;s stack<br>beyond the eight words the hardware pushes on entry. Each task&#x27;s stack only has<br>to hold <em>that task</em>.</p>
+<p>The switch between them is automatic. On exception return, <code>lr</code> holds an<br><strong>EXC_RETURN</strong> value, and one of its values means <em>go back to Thread mode and<br>use PSP</em>:</p>
+<pre><code>0xFFFFFFFD    return to Thread mode, restore from PSP, keep using PSP</code></pre>
+<figure class="diagram"><svg width="805" viewBox="0 0 805 238" role="img" aria-label="The lr value, bit by bit, and the CONTROL bit it leaves set in a task; EXC_RETURN, 32 bits; CONTROL, 32 bits">
+<text x="402" y="16" text-anchor="middle" class="lbl">The lr value, bit by bit, and the CONTROL bit it leaves set in a task</text>
+<text x="16" y="59" class="mono">EXC_RETURN</text>
+<text x="16" y="74" class="lbl">in lr</text>
+<text x="16" y="89" class="mono lbl">= 0xFFFFFFFD</text>
+<text x="149.8" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="787.8" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="148.8" y="52" width="560.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M688.8 52 V56 M688.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M668.8 52 V56 M668.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M648.8 52 V56 M648.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M628.8 52 V56 M628.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M608.8 52 V56 M608.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M588.8 52 V56 M588.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M568.8 52 V56 M568.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M548.8 52 V56 M548.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M528.8 52 V56 M528.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M508.8 52 V56 M508.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M488.8 52 V56 M488.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M468.8 52 V56 M468.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M448.8 52 V56 M448.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M428.8 52 V56 M428.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M408.8 52 V56 M408.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M388.8 52 V56 M388.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M368.8 52 V56 M368.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M348.8 52 V56 M348.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M328.8 52 V56 M328.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M308.8 52 V56 M308.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M288.8 52 V56 M288.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M268.8 52 V56 M268.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M248.8 52 V56 M248.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M228.8 52 V56 M228.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M208.8 52 V56 M208.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M188.8 52 V56 M188.8 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M168.8 52 V56 M168.8 74 V78"/>
+<text x="707.8" y="44" text-anchor="end" class="mono lbl">4</text>
+<rect class="reg" x="708.8" y="52" width="20.0" height="26"/>
+<text x="718.8" y="44" text-anchor="middle" class="mono lbl">3</text>
+<rect class="hifill" x="728.8" y="52" width="20.0" height="26"/>
+<text x="738.8" y="44" text-anchor="middle" class="mono lbl">2</text>
+<rect class="reg" x="748.8" y="52" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M768.8 52 V56 M768.8 74 V78"/>
+<text x="749.8" y="44" text-anchor="start" class="mono lbl">1</text>
+<text x="778.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="758.8" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="738.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="718.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="698.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="678.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="658.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="638.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="618.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="598.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="578.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="558.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="538.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="518.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="498.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="478.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="458.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="438.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="418.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="398.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="378.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="358.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="338.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="318.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="298.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="278.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="258.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="238.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="218.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="198.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="178.8" y="65" text-anchor="middle" class="mono">1</text>
+<text x="158.8" y="65" text-anchor="middle" class="mono">1</text>
+<path class="dash" d="M738.8 78 L738.8 100"/>
+<text x="428.8" y="91" text-anchor="middle" class="mono halo lbl">all ones</text>
+<text x="718.8" y="91" text-anchor="middle" class="mono halo lbl">Thread</text>
+<text x="738.8" y="107" text-anchor="middle" class="mono halo">PSP</text>
+<text x="16" y="161" class="mono">CONTROL</text>
+<text x="16" y="176" class="lbl">while a task runs</text>
+<text x="16" y="191" class="mono lbl">= 0x00000002</text>
+<text x="149.8" y="146" text-anchor="start" class="mono lbl">31</text>
+<text x="787.8" y="146" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="148.8" y="154" width="600.0" height="26"/>
+<rect class="hifill" x="748.8" y="154" width="20.0" height="26"/>
+<text x="758.8" y="146" text-anchor="middle" class="mono lbl">1</text>
+<rect class="reg" x="768.8" y="154" width="20.0" height="26"/>
+<text x="778.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="758.8" y="167" text-anchor="middle" class="mono">1</text>
+<text x="738.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="718.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="698.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="678.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="658.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="638.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="618.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="598.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="578.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="558.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="538.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="518.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="498.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="478.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="458.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="438.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="418.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="398.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="378.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="358.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="338.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="318.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="298.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="278.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="258.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="238.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="218.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="198.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="178.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="158.8" y="167" text-anchor="middle" class="mono lbl">0</text>
+<path class="dash" d="M778.8 180 L778.8 202"/>
+<text x="758.8" y="193" text-anchor="middle" class="mono halo">SPSEL</text>
+<text x="778.8" y="209" text-anchor="middle" class="mono halo lbl">nPRIV</text>
+</svg></figure>
+<p>Every switch in this kernel returns with exactly that value.</p>
+</section>
+<section class="slide">
+<h2>Slide 4: The System Control Block — Every Register on One Page</h2>
+<p>The registers that <em>are</em> memory-mapped come next. The kernel&#x27;s other half — pending<br>a switch, and putting it at the right priority — is done through the<br><strong>System Control Block</strong>, <code>SCB_Type</code> in <code>core_cm0plus.h</code>, at <strong>0xE000ED00</strong><br>(<code>SCS_BASE</code> 0xE000E000 + 0xD00). Like SysTick, it is part of the core: the<br>same registers on every Cortex-M0+.</p>
+<table><thead><tr><th>Offset</th><th>Register</th><th>Its job</th><th>This kernel</th><th>Slide</th></tr></thead><tbody><tr><td>0x00</td><td><code>CPUID</code></td><td>read-only: which core this is</td><td>—</td><td></td></tr><tr><td>0x04</td><td><strong><code>ICSR</code></strong></td><td>pend or un-pend PendSV, SysTick, NMI; which exception is active and which is pending</td><td>writes <code>PENDSVSET</code>, <code>PENDSVCLR</code></td><td>4b</td></tr><tr><td>0x08</td><td><code>VTOR</code></td><td>where the vector table is</td><td>— (never written)</td><td></td></tr><tr><td>0x0C</td><td><code>AIRCR</code></td><td>software reset; key-protected</td><td>—</td><td></td></tr><tr><td>0x10</td><td><code>SCR</code></td><td>sleep behaviour</td><td>—</td><td></td></tr><tr><td>0x14</td><td><code>CCR</code></td><td>stack alignment, unaligned-access trap</td><td>—</td><td>20</td></tr><tr><td>0x18</td><td>—</td><td>reserved</td><td></td><td></td></tr><tr><td>0x1C</td><td><code>SHPR2</code> (<code>SHPR[0]</code>)</td><td>priority of SVCall</td><td>—</td><td></td></tr><tr><td>0x20</td><td><strong><code>SHPR3</code></strong> (<code>SHPR[1]</code>)</td><td>priority of PendSV and SysTick</td><td>both set to 3</td><td>4b</td></tr><tr><td>0x24</td><td><code>SHCSR</code></td><td>is SVCall pending</td><td>—</td><td></td></tr></tbody></table>
+<p><strong>Two registers out of nine</strong> carry the whole scheduler&#x27;s hardware side:</p>
+<figure class="diagram"><svg width="808" viewBox="0 0 808 887" role="img" aria-label="The whole SCB, drawn to scale.  Shaded = a field this kernel writes.; CPUID, 32 bits; ICSR, 32 bits; VTOR, 32 bits; AIRCR, 32 bits; SCR, 32 bits; CCR, 32 bits; SHPR2, 32 bits; SHPR3, 32 bits; SHCSR, 32 bits">
+<text x="399" y="16" text-anchor="middle" class="lbl">The whole SCB, drawn to scale.  Shaded = a field this kernel writes.</text>
+<text x="16" y="59" class="mono">CPUID</text>
+<text x="16" y="74" class="lbl">+0x00, read-only</text>
+<text x="143.4" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="142.4" y="52" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M282.4 52 V56 M282.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M262.4 52 V56 M262.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M242.4 52 V56 M242.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M222.4 52 V56 M222.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M202.4 52 V56 M202.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M182.4 52 V56 M182.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M162.4 52 V56 M162.4 74 V78"/>
+<text x="301.4" y="44" text-anchor="end" class="mono lbl">24</text>
+<text x="222.4" y="65" text-anchor="middle" class="mono">IMPLEMENTER</text>
+<rect class="reg" x="302.4" y="52" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M362.4 52 V56 M362.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M342.4 52 V56 M342.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M322.4 52 V56 M322.4 74 V78"/>
+<text x="381.4" y="44" text-anchor="end" class="mono lbl">20</text>
+<text x="342.4" y="65" text-anchor="middle" class="mono">VARIANT</text>
+<rect class="reg" x="382.4" y="52" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M442.4 52 V56 M442.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M422.4 52 V56 M422.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M402.4 52 V56 M402.4 74 V78"/>
+<text x="461.4" y="44" text-anchor="end" class="mono lbl">16</text>
+<rect class="reg" x="462.4" y="52" width="240.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M682.4 52 V56 M682.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M662.4 52 V56 M662.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M642.4 52 V56 M642.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M622.4 52 V56 M622.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M602.4 52 V56 M602.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M582.4 52 V56 M582.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M562.4 52 V56 M562.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M542.4 52 V56 M542.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M522.4 52 V56 M522.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M502.4 52 V56 M502.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M482.4 52 V56 M482.4 74 V78"/>
+<text x="701.4" y="44" text-anchor="end" class="mono lbl">4</text>
+<text x="582.4" y="65" text-anchor="middle" class="mono">PARTNO</text>
+<rect class="reg" x="702.4" y="52" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M762.4 52 V56 M762.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M742.4 52 V56 M742.4 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M722.4 52 V56 M722.4 74 V78"/>
+<text x="742.4" y="65" text-anchor="middle" class="mono">REVISION</text>
+<text x="422.4" y="91" text-anchor="middle" class="mono halo lbl">ARCHITECTURE</text>
+<text x="16" y="145" class="mono">ICSR</text>
+<text x="16" y="160" class="lbl">+0x04</text>
+<text x="143.4" y="130" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="130" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="542.4" y="138" width="120.0" height="26"/>
+<text x="602.4" y="151" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="342.4" y="138" width="80.0" height="26"/>
+<text x="382.4" y="151" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="282.4" y="138" width="20.0" height="26"/>
+<rect class="dash" x="162.4" y="138" width="40.0" height="26"/>
+<rect class="reg" x="142.4" y="138" width="20.0" height="26"/>
+<rect class="hifill" x="202.4" y="138" width="20.0" height="26"/>
+<text x="212.4" y="130" text-anchor="middle" class="mono lbl">28</text>
+<rect class="hifill" x="222.4" y="138" width="20.0" height="26"/>
+<text x="232.4" y="130" text-anchor="middle" class="mono lbl">27</text>
+<rect class="reg" x="242.4" y="138" width="20.0" height="26"/>
+<rect class="reg" x="262.4" y="138" width="20.0" height="26"/>
+<rect class="reg" x="302.4" y="138" width="20.0" height="26"/>
+<rect class="reg" x="322.4" y="138" width="20.0" height="26"/>
+<rect class="reg" x="422.4" y="138" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M522.4 138 V142 M522.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M502.4 138 V142 M502.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M482.4 138 V142 M482.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M462.4 138 V142 M462.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M442.4 138 V142 M442.4 160 V164"/>
+<text x="482.4" y="151" text-anchor="middle" class="mono">VECTPENDING</text>
+<rect class="reg" x="662.4" y="138" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M762.4 138 V142 M762.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M742.4 138 V142 M742.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M722.4 138 V142 M722.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M702.4 138 V142 M702.4 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M682.4 138 V142 M682.4 160 V164"/>
+<text x="722.4" y="151" text-anchor="middle" class="mono">VECTACTIVE</text>
+<path class="dash" d="M152.4 164 L181.9 170"/>
+<path class="dash" d="M212.4 164 L212.4 186"/>
+<path class="dash" d="M232.4 164 L232.4 202"/>
+<path class="dash" d="M252.4 164 L252.4 218"/>
+<path class="dash" d="M312.4 164 L312.4 186"/>
+<path class="dash" d="M332.4 164 L332.4 202"/>
+<text x="181.9" y="177" text-anchor="middle" class="mono halo lbl">NMIPENDSET</text>
+<text x="212.4" y="193" text-anchor="middle" class="mono halo">PENDSVSET</text>
+<text x="232.4" y="209" text-anchor="middle" class="mono halo">PENDSVCLR</text>
+<text x="252.4" y="225" text-anchor="middle" class="mono halo lbl">PENDSTSET</text>
+<text x="272.4" y="177" text-anchor="middle" class="mono halo lbl">PENDSTCLR</text>
+<text x="312.4" y="193" text-anchor="middle" class="mono halo lbl">ISRPREEMPT</text>
+<text x="332.4" y="209" text-anchor="middle" class="mono halo lbl">ISRPENDING</text>
+<text x="16" y="279" class="mono">VTOR</text>
+<text x="16" y="294" class="lbl">+0x08</text>
+<text x="143.4" y="264" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="264" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="622.4" y="272" width="160.0" height="26"/>
+<text x="702.4" y="285" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="142.4" y="272" width="480.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M602.4 272 V276 M602.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M582.4 272 V276 M582.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M562.4 272 V276 M562.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M542.4 272 V276 M542.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M522.4 272 V276 M522.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M502.4 272 V276 M502.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M482.4 272 V276 M482.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M462.4 272 V276 M462.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M442.4 272 V276 M442.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M422.4 272 V276 M422.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M402.4 272 V276 M402.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M382.4 272 V276 M382.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M362.4 272 V276 M362.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M342.4 272 V276 M342.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M322.4 272 V276 M322.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M302.4 272 V276 M302.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M282.4 272 V276 M282.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M262.4 272 V276 M262.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M242.4 272 V276 M242.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M222.4 272 V276 M222.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M202.4 272 V276 M202.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M182.4 272 V276 M182.4 294 V298"/>
+<path class="reg" stroke-width="0.6" d="M162.4 272 V276 M162.4 294 V298"/>
+<text x="621.4" y="264" text-anchor="end" class="mono lbl">8</text>
+<text x="382.4" y="285" text-anchor="middle" class="mono">TBLOFF</text>
+<text x="16" y="348" class="mono">AIRCR</text>
+<text x="16" y="363" class="lbl">+0x0C</text>
+<text x="143.4" y="333" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="333" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="762.4" y="341" width="20.0" height="26"/>
+<rect class="dash" x="482.4" y="341" width="240.0" height="26"/>
+<text x="602.4" y="354" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="142.4" y="341" width="320.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M442.4 341 V345 M442.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M422.4 341 V345 M422.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M402.4 341 V345 M402.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M382.4 341 V345 M382.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M362.4 341 V345 M362.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M342.4 341 V345 M342.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M322.4 341 V345 M322.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M302.4 341 V345 M302.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M282.4 341 V345 M282.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M262.4 341 V345 M262.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M242.4 341 V345 M242.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M222.4 341 V345 M222.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M202.4 341 V345 M202.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M182.4 341 V345 M182.4 363 V367"/>
+<path class="reg" stroke-width="0.6" d="M162.4 341 V345 M162.4 363 V367"/>
+<text x="461.4" y="333" text-anchor="end" class="mono lbl">16</text>
+<text x="302.4" y="354" text-anchor="middle" class="mono">VECTKEY</text>
+<rect class="reg" x="462.4" y="341" width="20.0" height="26"/>
+<text x="472.4" y="333" text-anchor="middle" class="mono lbl">15</text>
+<rect class="reg" x="722.4" y="341" width="20.0" height="26"/>
+<text x="732.4" y="333" text-anchor="middle" class="mono lbl">2</text>
+<rect class="reg" x="742.4" y="341" width="20.0" height="26"/>
+<text x="752.4" y="333" text-anchor="middle" class="mono lbl">1</text>
+<path class="dash" d="M752.4 367 L752.4 389"/>
+<text x="472.4" y="380" text-anchor="middle" class="mono halo lbl">ENDIANNESS</text>
+<text x="732.4" y="380" text-anchor="middle" class="mono halo lbl">SYSRESETREQ</text>
+<text x="752.4" y="396" text-anchor="middle" class="mono halo lbl">VECTCLRACTIVE</text>
+<text x="16" y="450" class="mono">SCR</text>
+<text x="16" y="465" class="lbl">+0x10</text>
+<text x="143.4" y="435" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="435" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="762.4" y="443" width="20.0" height="26"/>
+<rect class="dash" x="702.4" y="443" width="20.0" height="26"/>
+<rect class="dash" x="142.4" y="443" width="540.0" height="26"/>
+<text x="412.4" y="456" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="682.4" y="443" width="20.0" height="26"/>
+<text x="692.4" y="435" text-anchor="middle" class="mono lbl">4</text>
+<rect class="reg" x="722.4" y="443" width="20.0" height="26"/>
+<text x="732.4" y="435" text-anchor="middle" class="mono lbl">2</text>
+<rect class="reg" x="742.4" y="443" width="20.0" height="26"/>
+<text x="752.4" y="435" text-anchor="middle" class="mono lbl">1</text>
+<path class="dash" d="M732.4 469 L732.4 491"/>
+<path class="dash" d="M752.4 469 L752.4 507"/>
+<text x="692.4" y="482" text-anchor="middle" class="mono halo lbl">SEVONPEND</text>
+<text x="732.4" y="498" text-anchor="middle" class="mono halo lbl">SLEEPDEEP</text>
+<text x="752.4" y="514" text-anchor="middle" class="mono halo lbl">SLEEPONEXIT</text>
+<text x="16" y="568" class="mono">CCR</text>
+<text x="16" y="583" class="lbl">+0x14</text>
+<text x="143.4" y="553" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="553" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="722.4" y="561" width="60.0" height="26"/>
+<text x="752.4" y="574" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="602.4" y="561" width="100.0" height="26"/>
+<text x="652.4" y="574" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="142.4" y="561" width="440.0" height="26"/>
+<text x="362.4" y="574" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="582.4" y="561" width="20.0" height="26"/>
+<text x="592.4" y="553" text-anchor="middle" class="mono lbl">9</text>
+<rect class="reg" x="702.4" y="561" width="20.0" height="26"/>
+<text x="712.4" y="553" text-anchor="middle" class="mono lbl">3</text>
+<text x="592.4" y="600" text-anchor="middle" class="mono halo lbl">STKALIGN</text>
+<text x="712.4" y="600" text-anchor="middle" class="mono halo lbl">UNALIGN_TRP</text>
+<text x="16" y="654" class="mono">SHPR2</text>
+<text x="16" y="669" class="lbl">+0x1C</text>
+<text x="143.4" y="639" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="639" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="182.4" y="647" width="600.0" height="26"/>
+<text x="482.4" y="660" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="142.4" y="647" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M162.4 647 V651 M162.4 669 V673"/>
+<text x="181.4" y="639" text-anchor="end" class="mono lbl">30</text>
+<path class="dash" d="M162.4 673 L166.1 679"/>
+<text x="166.1" y="686" text-anchor="middle" class="mono halo lbl">SVCall</text>
+<text x="16" y="740" class="mono">SHPR3</text>
+<text x="16" y="755" class="lbl">+0x20</text>
+<text x="143.4" y="725" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="725" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="342.4" y="733" width="440.0" height="26"/>
+<text x="562.4" y="746" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="182.4" y="733" width="120.0" height="26"/>
+<text x="242.4" y="746" text-anchor="middle" class="lbl">reserved</text>
+<rect class="hifill" x="142.4" y="733" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M162.4 733 V737 M162.4 755 V759"/>
+<text x="181.4" y="725" text-anchor="end" class="mono lbl">30</text>
+<rect class="hifill" x="302.4" y="733" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M322.4 733 V737 M322.4 755 V759"/>
+<text x="303.4" y="725" text-anchor="start" class="mono lbl">23</text>
+<text x="341.4" y="725" text-anchor="end" class="mono lbl">22</text>
+<path class="dash" d="M162.4 759 L170.1 765"/>
+<text x="170.1" y="772" text-anchor="middle" class="mono halo">SysTick</text>
+<text x="322.4" y="772" text-anchor="middle" class="mono halo">PendSV</text>
+<text x="16" y="826" class="mono">SHCSR</text>
+<text x="16" y="841" class="lbl">+0x24</text>
+<text x="143.4" y="811" text-anchor="start" class="mono lbl">31</text>
+<text x="781.4" y="811" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="482.4" y="819" width="300.0" height="26"/>
+<text x="632.4" y="832" text-anchor="middle" class="lbl">reserved</text>
+<rect class="dash" x="142.4" y="819" width="320.0" height="26"/>
+<text x="302.4" y="832" text-anchor="middle" class="lbl">reserved</text>
+<rect class="reg" x="462.4" y="819" width="20.0" height="26"/>
+<text x="472.4" y="811" text-anchor="middle" class="mono lbl">15</text>
+<text x="472.4" y="858" text-anchor="middle" class="mono halo lbl">SVCALLPENDED</text>
+</svg></figure>
+<ul><li><strong><code>ICSR</code> is write-1-to-act.</strong> Writing <code>PENDSVSET</code> pends PendSV; writing <code>PENDSVCLR</code> cancels a pending one; zeros do nothing. So the kernel writes the bit alone with <code>=</code>, never <code>|=</code>.</li><li><strong><code>SHPR2</code>/<code>SHPR3</code> hold one byte per system exception</strong>, and this chip implements only the top two bits of each (<code>__NVIC_PRIO_BITS</code> = 2 in <code>stm32c031xx.h</code>): four levels, 0–3. CMSIS calls the pair <code>SHPR[0]</code> and <code>SHPR[1]</code>; <code>NVIC_SetPriority()</code> picks the word and byte from the exception number (<code>_SHP_IDX</code>, <code>_BIT_SHIFT</code>), so <code>NVIC_SetPriority(PendSV_IRQn, 3)</code> writes SCB, not the NVIC.</li><li><strong>SysTick</strong> (0xE000E010) is the kernel&#x27;s third core block, used exactly as lesson 06 set it up — <code>SysTick_Config()</code>, mapped on lesson 06&#x27;s slide 1.</li></ul>
+</section>
+<section class="slide">
+<h2>Slide 4b: PendSV — an Exception You Pend Yourself</h2>
+<p>A switch must never happen <em>inside</em> another interrupt handler: that handler&#x27;s<br>frame is on MSP, half-finished, and swapping the task beneath it would return<br>it into the wrong world. So switches happen in one place only — <strong>PendSV</strong>, a<br>system exception with two properties:</p>
+<ul><li><strong>It is triggered by software.</strong> <code>SCB-&gt;ICSR = SCB_ICSR_PENDSVSET_Msk</code> sets its pending bit. Nothing else ever raises it.</li><li><strong>This kernel gives it the lowest priority</strong>, 3. So it runs only when <em>no other handler is active</em> — after every other interrupt has finished, on the way back to a task.</li></ul>
+<figure class="diagram"><svg width="818" viewBox="0 0 818 222" role="img" aria-label="The write that pends it, and both system handlers at priority 3; ICSR, 32 bits; SHPR3, 32 bits">
+<text x="409" y="16" text-anchor="middle" class="lbl">The write that pends it, and both system handlers at priority 3</text>
+<text x="16" y="59" class="mono">ICSR</text>
+<text x="16" y="74" class="lbl">SCB, the write</text>
+<text x="16" y="89" class="mono lbl">= 0x10000000</text>
+<text x="162.6" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="800.6" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="561.6" y="52" width="120.0" height="26"/>
+<rect class="dash" x="361.6" y="52" width="80.0" height="26"/>
+<rect class="dash" x="301.6" y="52" width="20.0" height="26"/>
+<rect class="dash" x="181.6" y="52" width="40.0" height="26"/>
+<rect class="reg" x="161.6" y="52" width="20.0" height="26"/>
+<rect class="hifill" x="221.6" y="52" width="20.0" height="26"/>
+<text x="231.6" y="44" text-anchor="middle" class="mono lbl">28</text>
+<rect class="reg" x="241.6" y="52" width="20.0" height="26"/>
+<rect class="reg" x="261.6" y="52" width="20.0" height="26"/>
+<rect class="reg" x="281.6" y="52" width="20.0" height="26"/>
+<rect class="reg" x="321.6" y="52" width="20.0" height="26"/>
+<rect class="reg" x="341.6" y="52" width="20.0" height="26"/>
+<rect class="reg" x="441.6" y="52" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M541.6 52 V56 M541.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M521.6 52 V56 M521.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M501.6 52 V56 M501.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M481.6 52 V56 M481.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M461.6 52 V56 M461.6 74 V78"/>
+<rect class="reg" x="681.6" y="52" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M781.6 52 V56 M781.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M761.6 52 V56 M761.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M741.6 52 V56 M741.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M721.6 52 V56 M721.6 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M701.6 52 V56 M701.6 74 V78"/>
+<text x="791.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="771.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="751.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="731.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="711.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="691.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="671.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="651.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="631.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="611.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="591.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="571.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="551.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="531.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="511.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="491.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="471.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="451.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="431.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="411.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="391.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="371.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="351.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="331.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="311.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="291.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="271.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="251.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="231.6" y="65" text-anchor="middle" class="mono">1</text>
+<text x="211.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="191.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="171.6" y="65" text-anchor="middle" class="mono lbl">0</text>
+<path class="dash" d="M171.6 78 L201.1 84"/>
+<path class="dash" d="M231.6 78 L231.6 100"/>
+<text x="201.1" y="91" text-anchor="middle" class="mono halo lbl">NMIPENDSET</text>
+<text x="231.6" y="107" text-anchor="middle" class="mono halo">PENDSVSET</text>
+<text x="501.6" y="91" text-anchor="middle" class="mono halo lbl">VECTPENDING</text>
+<text x="741.6" y="91" text-anchor="middle" class="mono halo lbl">VECTACTIVE</text>
+<text x="16" y="161" class="mono">SHPR3</text>
+<text x="16" y="176" class="lbl">SCB, after os_start</text>
+<text x="16" y="191" class="mono lbl">= 0xC0C00000</text>
+<text x="162.6" y="146" text-anchor="start" class="mono lbl">31</text>
+<text x="800.6" y="146" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="361.6" y="154" width="440.0" height="26"/>
+<rect class="dash" x="201.6" y="154" width="120.0" height="26"/>
+<rect class="hifill" x="161.6" y="154" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M181.6 154 V158 M181.6 176 V180"/>
+<text x="200.6" y="146" text-anchor="end" class="mono lbl">30</text>
+<rect class="hifill" x="321.6" y="154" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M341.6 154 V158 M341.6 176 V180"/>
+<text x="322.6" y="146" text-anchor="start" class="mono lbl">23</text>
+<text x="360.6" y="146" text-anchor="end" class="mono lbl">22</text>
+<text x="791.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="771.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="751.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="731.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="711.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="691.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="671.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="651.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="631.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="611.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="591.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="571.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="551.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="531.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="511.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="491.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="471.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="451.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="431.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="411.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="391.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="371.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="351.6" y="167" text-anchor="middle" class="mono">1</text>
+<text x="331.6" y="167" text-anchor="middle" class="mono">1</text>
+<text x="311.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="291.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="271.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="251.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="231.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="211.6" y="167" text-anchor="middle" class="mono lbl">0</text>
+<text x="191.6" y="167" text-anchor="middle" class="mono">1</text>
+<text x="171.6" y="167" text-anchor="middle" class="mono">1</text>
+<path class="dash" d="M181.6 180 L189.3 186"/>
+<text x="189.3" y="193" text-anchor="middle" class="mono halo">SysTick</text>
+<text x="341.6" y="193" text-anchor="middle" class="mono halo">PendSV</text>
+</svg></figure>
+<figure class="diagram"><svg viewBox="0 0 580 170" role="img" aria-label="SysTick decides a switch is needed and pends PendSV; PendSV runs after SysTick returns">
+  <defs><marker id="r4" markerWidth="8" markerHeight="8" refX="7" refY="3.4" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.5 0.8 L7 3.4 L0.5 6 z" fill="currentColor"/></marker></defs>
+  <rect class="box" x="10" y="60" width="110" height="40" rx="5"/>
+  <text x="65" y="85" text-anchor="middle" class="mono">task A</text>
+  <path class="wire" d="M120 80 H150" marker-end="url(#r4)"/>
+  <rect class="reg" x="154" y="60" width="130" height="40" rx="5"/>
+  <text x="219" y="78" text-anchor="middle" class="mono">SysTick_Handler</text>
+  <text x="219" y="93" text-anchor="middle" class="lbl">decides; pends PendSV</text>
+  <path class="wire" d="M284 80 H314" marker-end="url(#r4)"/>
+  <rect class="hifill" x="318" y="60" width="130" height="40" rx="5"/>
+  <text x="383" y="78" text-anchor="middle" class="mono">PendSV_Handler</text>
+  <text x="383" y="93" text-anchor="middle" class="lbl">tail-chained: switches</text>
+  <path class="wire" d="M448 80 H478" marker-end="url(#r4)"/>
+  <rect class="box" x="482" y="60" width="90" height="40" rx="5"/>
+  <text x="527" y="85" text-anchor="middle" class="mono">task B</text>
+  <text x="290" y="140" text-anchor="middle" class="lbl">Deciding and switching are separate, and switching always waits for the calm.</text>
+</svg></figure>
+<p>Deciding <em>who</em> runs next happens anywhere — the tick, a mutex unlock, a queue<br>put from a UART interrupt. <strong>Doing</strong> the switch happens only in PendSV.</p>
+<table><thead><tr><th></th><th><strong>Deciding</strong> — <code>schedule()</code></th><th><strong>Switching</strong> — <code>PendSV_Handler</code></th></tr></thead><tbody><tr><td>What it does</td><td>picks the next task, pends PendSV if it differs</td><td>saves the old context, restores the new one</td></tr><tr><td>Where it runs</td><td>the tick, <code>os_delay</code>, mutex unlock, queue put — in tasks <em>and</em> in ISRs</td><td>in one place only</td></tr><tr><td>When</td><td>the moment something changes</td><td>when no other handler is active: priority 3, the lowest</td></tr><tr><td>Can it change its mind?</td><td>yes: if the current task should keep running it writes <code>PENDSVCLR</code></td><td>no: once PendSV runs, the switch happens</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 4c: Task Switching, Step by Step — the Flow</h2>
+<p>One switch from task A to task B, from start to finish. Read it top to bottom:<br>the outline of each box says <strong>who</strong> does that step: dashed for the hardware, solid for kernel code, filled for the switch itself.</p>
+<figure class="diagram"><svg viewBox="0 0 620 770" role="img" aria-label="Flowchart of one task switch: SysTick interrupt, schedule decides, PendSV is pended, PendSV saves task A and loads task B, the exception return resumes task B">
+  <defs><marker id="f4c" markerWidth="8" markerHeight="8" refX="7" refY="3.4" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.5 0.8 L7 3.4 L0.5 6 z" fill="currentColor"/></marker></defs>
+
+  <!-- 1. task A -->
+  <rect class="box" x="150" y="20" width="320" height="44" rx="8"/>
+  <text x="310" y="40" text-anchor="middle" class="mono">1. Task A runs</text>
+  <text x="310" y="56" text-anchor="middle" class="lbl">Thread mode · stack = PSP (A's own stack)</text>
+  <path class="wire" d="M310 64 V84" marker-end="url(#f4c)"/>
+
+  <!-- 2. SysTick -->
+  <rect class="reg" style="stroke-dasharray:6 4" x="150" y="88" width="320" height="48" rx="5"/>
+  <text x="310" y="108" text-anchor="middle" class="mono">2. SysTick interrupt, every 1 ms</text>
+  <text x="310" y="126" text-anchor="middle" class="lbl">hardware saves 8 words of A on A's stack</text>
+  <path class="wire" d="M310 136 V156" marker-end="url(#f4c)"/>
+
+  <!-- 3. SysTick_Handler -->
+  <rect class="box" x="150" y="160" width="320" height="48" rx="5"/>
+  <text x="310" y="180" text-anchor="middle" class="mono">3. SysTick_Handler</text>
+  <text x="310" y="198" text-anchor="middle" class="lbl">ticks++ · wake sleepers · schedule() → pick()</text>
+  <path class="wire" d="M310 208 V228" marker-end="url(#f4c)"/>
+
+  <!-- 4. decision -->
+  <path class="box" d="M310 232 L425 272 L310 312 L195 272 Z"/>
+  <text x="310" y="268" text-anchor="middle" class="mono">4. next ≠ current?</text>
+  <text x="310" y="284" text-anchor="middle" class="lbl">a more urgent task READY?</text>
+  <path class="wire" d="M425 272 H565 V42 H474" marker-end="url(#f4c)"/>
+  <text x="472" y="264" class="lbl">No: return to A</text>
+  <path class="wire" d="M310 312 V336" marker-end="url(#f4c)"/>
+  <text x="318" y="328" class="lbl">Yes</text>
+
+  <!-- 5. pend PendSV -->
+  <rect class="box" x="150" y="340" width="320" height="48" rx="5"/>
+  <text x="310" y="360" text-anchor="middle" class="mono">5. SCB->ICSR = PENDSVSET</text>
+  <text x="310" y="378" text-anchor="middle" class="lbl">the DECISION is made; the switch is only requested</text>
+  <path class="wire" d="M310 388 V408" marker-end="url(#f4c)"/>
+
+  <!-- 6. tail-chain -->
+  <rect class="reg" style="stroke-dasharray:6 4" x="150" y="412" width="320" height="48" rx="5"/>
+  <text x="310" y="432" text-anchor="middle" class="mono">6. tail-chain into PendSV</text>
+  <text x="310" y="450" text-anchor="middle" class="lbl">hardware: priority 3, so only when no handler is busy</text>
+  <path class="wire" d="M310 460 V480" marker-end="url(#f4c)"/>
+
+  <!-- 7. save A -->
+  <rect class="hifill" x="150" y="484" width="320" height="48" rx="5"/>
+  <text x="310" y="504" text-anchor="middle" class="mono">7. PendSV_Handler: save A</text>
+  <text x="310" y="522" text-anchor="middle" class="lbl">push A's r4–r11 · A.tcb->sp = PSP − 32</text>
+  <path class="wire" d="M310 532 V552" marker-end="url(#f4c)"/>
+
+  <!-- 8. load B -->
+  <rect class="hifill" x="150" y="556" width="320" height="48" rx="5"/>
+  <text x="310" y="576" text-anchor="middle" class="mono">8. PendSV_Handler: load B</text>
+  <text x="310" y="594" text-anchor="middle" class="lbl">os_current = B · pop B's r4–r11 · PSP = B's frame</text>
+  <path class="wire" d="M310 604 V624" marker-end="url(#f4c)"/>
+
+  <!-- 9. exception return -->
+  <rect class="reg" style="stroke-dasharray:6 4" x="150" y="628" width="320" height="48" rx="5"/>
+  <text x="310" y="648" text-anchor="middle" class="mono">9. bx 0xFFFFFFFD</text>
+  <text x="310" y="666" text-anchor="middle" class="lbl">hardware restores B's 8 words — pc included</text>
+  <path class="wire" d="M310 676 V696" marker-end="url(#f4c)"/>
+
+  <!-- 10. task B -->
+  <rect class="box" x="150" y="700" width="320" height="44" rx="8"/>
+  <text x="310" y="720" text-anchor="middle" class="mono">10. Task B runs</text>
+  <text x="310" y="736" text-anchor="middle" class="lbl">from exactly where it was last stopped</text>
+
+  <!-- the mode bracket -->
+  <path class="dash" d="M135 88 V676"/>
+  <text x="125" y="380" text-anchor="end" class="lbl">Handler mode</text>
+  <text x="125" y="395" text-anchor="end" class="lbl">stack = MSP</text>
+  <text x="125" y="46" text-anchor="end" class="lbl">Thread mode</text>
+  <text x="125" y="726" text-anchor="end" class="lbl">Thread mode</text>
+
+  <!-- legend -->
+  <rect class="reg" style="stroke-dasharray:6 4" x="490" y="490" width="22" height="14" rx="2"/>
+  <text x="518" y="501" class="lbl">hardware</text>
+  <rect class="box" x="490" y="514" width="22" height="14" rx="2"/>
+  <text x="518" y="525" class="lbl">kernel code</text>
+  <rect class="hifill" x="490" y="538" width="22" height="14" rx="2"/>
+  <text x="518" y="549" class="lbl">the switch</text>
+</svg></figure>
+<table><thead><tr><th>Step</th><th>What happens</th><th>Who</th><th>Slide</th></tr></thead><tbody><tr><td>1→2.</td><td>A is interrupted; the hardware pushes <strong>half</strong> of A&#x27;s context (r0–r3, r12, lr, pc, xPSR) onto A&#x27;s own stack</td><td>hardware</td><td>lesson 03</td></tr><tr><td>3→4.</td><td>the kernel <strong>decides</strong>: wakes sleepers, then <code>pick()</code> finds the most urgent <code>READY</code> task</td><td><code>SysTick_Handler</code></td><td>9, 10</td></tr><tr><td>5.</td><td>if that is not A, request the switch by pending PendSV — nothing is switched yet</td><td><code>schedule()</code></td><td>4b</td></tr><tr><td>6.</td><td>PendSV waits until no other handler is running, then runs</td><td>hardware</td><td>4b</td></tr><tr><td>7→8.</td><td>the <strong>switch</strong>: save the other half of A, load B&#x27;s</td><td><code>PendSV_Handler</code></td><td>5, 6, 7</td></tr><tr><td>9→10.</td><td>the exception return pops B&#x27;s half the hardware saved — and B&#x27;s <code>pc</code>, so B resumes</td><td>hardware</td><td>3b</td></tr></tbody></table>
+<p><strong>Three things to see in the picture:</strong></p>
+<ul><li><strong>Deciding and switching are different boxes.</strong> 3–5. can happen anywhere; 7–8. happen only in PendSV.</li><li><strong>SysTick is only one way in.</strong> <code>os_delay()</code>, a mutex unlock and a queue put also call <code>schedule()</code>, and join the flow at 4. A task that sleeps does not wait for the tick to be switched out.</li><li><strong>The hardware does half the work.</strong> It saves and restores 8 of the 16 words; the kernel&#x27;s 34 instructions do the rest.</li></ul>
+</section>
+<section class="slide">
+<h2>Slide 5: The Switch, Drawn</h2>
+<p>When PendSV starts, the hardware has already pushed half of task A&#x27;s context<br>onto A&#x27;s stack (lesson 03, slide 2). PendSV pushes the other half beside it:</p>
+<figure class="diagram"><svg viewBox="0 0 580 250" role="img" aria-label="Saved context layout on a task stack: r4-r7, r8-r11 saved by PendSV, then the hardware frame">
+  <text x="100" y="20" text-anchor="middle" class="lbl">task A's stack, after the save</text>
+  <rect class="hifill" x="30" y="30" width="140" height="30"/>
+  <text x="100" y="50" text-anchor="middle" class="mono">r4 r5 r6 r7</text>
+  <rect class="hifill" x="30" y="60" width="140" height="30"/>
+  <text x="100" y="80" text-anchor="middle" class="mono">r8 r9 r10 r11</text>
+  <rect class="box" x="30" y="90" width="140" height="30"/>
+  <text x="100" y="110" text-anchor="middle" class="mono">r0 r1 r2 r3</text>
+  <rect class="box" x="30" y="120" width="140" height="30"/>
+  <text x="100" y="140" text-anchor="middle" class="mono">r12 lr pc xPSR</text>
+  <rect class="dash" x="30" y="150" width="140" height="40"/>
+  <text x="100" y="175" text-anchor="middle" class="lbl">A's own locals</text>
+  <text x="180" y="50" class="mono">&lt;- tcb->sp</text>
+  <text x="200" y="80" class="lbl">PendSV saves these (8 words)</text>
+  <text x="200" y="125" class="lbl">the hardware saved these (8 words)</text>
+  <text x="300" y="175" class="lbl">low addresses at the top; stacks grow up the page</text>
+  <text x="290" y="228" text-anchor="middle" class="hi">Sixteen words and one pointer: that is a whole paused program.</text>
+</svg></figure>
+<p>Then the reverse for task B: load B&#x27;s saved <code>sp</code>, pop <em>its</em> <code>r4</code>–<code>r11</code>, set<br>PSP to B&#x27;s hardware frame, return with <code>0xFFFFFFFD</code>. The hardware pops the<br>rest — including B&#x27;s <code>pc</code> — and B resumes.</p>
+</section>
+<section class="slide">
+<h2>Slide 6: The Switch, as Compiled</h2>
+<p><code>PendSV_Handler</code> in <code>os.c</code> is a <code>naked</code> function: no compiler prologue, every<br>instruction written out. From this lesson&#x27;s <code>Main.elf</code>:</p>
+<pre><code>08000700 &lt;PendSV_Handler&gt;:
+ cpsid  i
+ ldr    r3, =os_current      ; r1 = the task being left
+ ldr    r1, [r3, #0]
+ cmp    r1, #0               ; the very first switch has nothing to save
+ beq    1f
+ mrs    r0, PSP
+ subs   r0, #32
+ str    r0, [r1, #0]         ; tcb-&gt;sp = psp - 32
+ stmia  r0!, {r4, r5, r6, r7}
+ mov    r4, r8  ...  mov r7, fp
+ stmia  r0!, {r4, r5, r6, r7}
+1: ...                       ; os_current = os_next; switch count++
+ ldr    r0, [r1, #0]         ; r0 = the new task&#x27;s saved sp
+ adds   r0, #16
+ ldmia  r0!, {r4, r5, r6, r7}
+ mov    r8, r4  ...  mov fp, r7
+ msr    PSP, r0
+ subs   r0, #32
+ ldmia  r0!, {r4, r5, r6, r7}
+ cpsie  i
+ ldr    r0, =0xFFFFFFFD
+ bx     r0</code></pre>
+<p><strong>34 instructions, 88 bytes</strong> with its literal pool. That is the whole of<br>multitasking.</p>
+<p>What those instructions do to the stack. Both tasks&#x27; stacks have the same<br>shape, so one stack is drawn: the <strong>left</strong> side is the save of task A, the<br><strong>right</strong> side the restore of task B, numbered in the order the code runs.</p>
+<figure class="diagram"><svg viewBox="0 0 690 300" role="img" aria-label="One task stack, sixteen words: PendSV saves r4 to r11 below the hardware frame for task A, and restores them for task B">
+  <defs><marker id="s6" markerWidth="8" markerHeight="8" refX="7" refY="3.4" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.5 0.8 L7 3.4 L0.5 6 z" fill="currentColor"/></marker></defs>
+  <text x="125" y="22" text-anchor="middle" class="hi">SAVE task A</text>
+  <text x="560" y="22" text-anchor="middle" class="hi">RESTORE task B</text>
+  <text x="320" y="44" text-anchor="middle" class="lbl">one task's stack · low addresses at the top</text>
+
+  <!-- the sixteen words -->
+  <rect class="hifill" x="250" y="56" width="140" height="34"/>
+  <text x="320" y="78" text-anchor="middle" class="mono">r4 r5 r6 r7</text>
+  <rect class="hifill" x="250" y="90" width="140" height="34"/>
+  <text x="320" y="112" text-anchor="middle" class="mono">r8 r9 r10 r11</text>
+  <rect class="box" x="250" y="124" width="140" height="34" style="stroke-dasharray:6 4"/>
+  <text x="320" y="146" text-anchor="middle" class="mono">r0 r1 r2 r3</text>
+  <rect class="box" x="250" y="158" width="140" height="34" style="stroke-dasharray:6 4"/>
+  <text x="320" y="180" text-anchor="middle" class="mono">r12 lr pc xPSR</text>
+  <rect class="dash" x="250" y="192" width="140" height="30"/>
+  <text x="320" y="212" text-anchor="middle" class="lbl">the task's own locals</text>
+  <text x="400" y="78" class="lbl">+0</text>
+  <text x="400" y="112" class="lbl">+16</text>
+  <text x="400" y="146" class="lbl">+32</text>
+  <text x="400" y="180" class="lbl">+48</text>
+
+  <!-- SAVE, left side -->
+  <path class="wire" d="M232 56 H248" marker-end="url(#s6)"/>
+  <text x="228" y="60" text-anchor="end" class="lbl">2. subs r0,#32 · str: tcb->sp</text>
+  <text x="240" y="82" text-anchor="end" class="lbl">3. stmia {r4–r7}</text>
+  <text x="240" y="112" text-anchor="end" class="lbl">4. mov r8–r11 → r4–r7, stmia</text>
+  <path class="wire" d="M232 124 H248" marker-end="url(#s6)"/>
+  <text x="228" y="128" text-anchor="end" class="lbl">1. PSP on entry</text>
+  <text x="240" y="170" text-anchor="end" class="lbl">pushed by the hardware</text>
+  <text x="240" y="184" text-anchor="end" class="lbl">before PendSV ran</text>
+
+  <!-- RESTORE, right side -->
+  <path class="wire" d="M450 56 H434" marker-end="url(#s6)"/>
+  <text x="454" y="60" class="lbl">5. r0 = B's tcb->sp</text>
+  <text x="440" y="82" class="lbl">8. subs r0,#32 · ldmia {r4–r7}</text>
+  <text x="440" y="112" class="lbl">6. adds r0,#16 · ldmia, mov → r8–r11</text>
+  <path class="wire" d="M450 124 H434" marker-end="url(#s6)"/>
+  <text x="454" y="128" class="lbl">7. msr PSP, r0  (r0 = +32)</text>
+  <text x="440" y="170" class="lbl">9. bx 0xFFFFFFFD: the hardware</text>
+  <text x="440" y="184" class="lbl">pops these, B's pc included</text>
+
+  <text x="320" y="252" text-anchor="middle" class="hi">A task switched out: tcb->sp points at its r4; its hardware frame starts 32 bytes on, at r0.</text>
+  <text x="320" y="274" text-anchor="middle" class="lbl">The kernel moves the top 8 words; the hardware moves the bottom 8.</text>
+</svg></figure>
+<table><thead><tr><th>Step</th><th>Instructions</th><th>The stack, afterwards</th></tr></thead><tbody><tr><td>1</td><td><code>mrs r0, PSP</code></td><td><code>r0</code> points at A&#x27;s hardware frame, <code>r0</code>–<code>xPSR</code></td></tr><tr><td>2</td><td><code>subs r0, #32</code> · <code>str r0, [r1]</code></td><td>8 words reserved above it; A&#x27;s TCB remembers where</td></tr><tr><td>3</td><td><code>stmia r0!, {r4–r7}</code></td><td><code>r4</code>–<code>r7</code> saved at +0; <code>r0</code> moves to +16</td></tr><tr><td>4</td><td><code>mov r4, r8</code> … · <code>stmia r0!, {r4–r7}</code></td><td><code>r8</code>–<code>r11</code> saved at +16 — A is fully saved</td></tr><tr><td>5</td><td><code>ldr r0, [r1]</code></td><td><code>r0</code> = B&#x27;s saved stack pointer, at B&#x27;s <code>r4</code></td></tr><tr><td>6</td><td><code>adds r0, #16</code> · <code>ldmia</code> · <code>mov r8, r4</code> …</td><td>B&#x27;s <code>r8</code>–<code>r11</code> restored first; <code>r0</code> ends at +32</td></tr><tr><td>7</td><td><code>msr PSP, r0</code></td><td>PSP points at B&#x27;s hardware frame</td></tr><tr><td>8</td><td><code>subs r0, #32</code> · <code>ldmia r0!, {r4–r7}</code></td><td>B&#x27;s <code>r4</code>–<code>r7</code> restored last, so the copy in step 6 is not overwritten</td></tr><tr><td>9</td><td><code>bx r0</code> with <code>0xFFFFFFFD</code></td><td>the hardware pops B&#x27;s 8 words and jumps to B&#x27;s <code>pc</code></td></tr></tbody></table>
+<p>The same job on a desktop OS. The shape is the same — decide in one place,<br>switch later in a deferred low-priority step, save half the registers on entry<br>and the other half in the switch — but much more state moves:</p>
+<table><thead><tr><th></th><th><strong>This kernel (Cortex-M0+)</strong></th><th><strong>Windows (x86-64)</strong></th><th><strong>Linux (x86-64)</strong></th></tr></thead><tbody><tr><td>Unit switched</td><td>task: a stack + a TCB</td><td>thread: <code>KTHREAD</code> + kernel stack</td><td>task: <code>task_struct</code> + kernel stack (threads and processes alike)</td></tr><tr><td>What triggers it</td><td>SysTick, or a task blocking or yielding (<code>os_delay</code>, mutex, queue, <code>os_yield</code>)</td><td>clock interrupt ends the quantum; a wait; a higher-priority thread becomes ready</td><td>timer tick; a sleep or wait; a wakeup of a task that should preempt</td></tr><tr><td>The deferred step</td><td><strong>PendSV</strong> pended, runs at priority 3 when no handler is busy</td><td><strong>DISPATCH_LEVEL</strong> software interrupt (IRQL 2) runs the dispatcher</td><td><code>TIF_NEED_RESCHED</code> flag, acted on at the next return from interrupt or syscall</td></tr><tr><td>Who picks next</td><td><code>pick()</code> in <code>os.c</code>: highest priority ready, round-robin among equals</td><td>dispatcher: 32 priority levels (31 highest), with dynamic boosts</td><td><code>__schedule()</code>: real-time classes (<code>SCHED_FIFO</code>/<code>RR</code>, 1–99) first, then the fair class (CFS, EEVDF since 6.6)</td></tr><tr><td>Saved on entry</td><td>hardware: <code>r0</code>–<code>r3</code>, <code>r12</code>, <code>lr</code>, <code>pc</code>, <code>xPSR</code> (8 words)</td><td>trap frame: the volatile registers</td><td><code>pt_regs</code>: every user register</td></tr><tr><td>Saved by the switch</td><td><code>r4</code>–<code>r11</code> (8 words), 34 instructions</td><td><code>SwapContext</code>: nonvolatile integer regs + <code>xmm6</code>–<code>xmm15</code></td><td><code>__switch_to_asm</code>: <code>rbx</code>, <code>rbp</code>, <code>r12</code>–<code>r15</code>, then the stack pointer</td></tr><tr><td>Where it is kept</td><td>the task&#x27;s own stack; <code>tcb-&gt;sp</code> points at it</td><td>the thread&#x27;s kernel stack; <code>KTHREAD.KernelStack</code></td><td>the task&#x27;s kernel stack; <code>task_struct.thread.sp</code></td></tr><tr><td>Floating point</td><td>none — the M0+ has no FPU</td><td><code>XSAVE</code> area per thread</td><td><code>XSAVE</code> area; restore deferred until the return to user mode</td></tr><tr><td>Address space</td><td>one, shared — no MMU</td><td><code>CR3</code> reloaded if the new thread is in another process</td><td><code>CR3</code> reloaded unless the next task shares the <code>mm</code></td></tr><tr><td>Also flushed or swapped</td><td>nothing</td><td>TLB entries (unless PCID), kernel stack in the TSS, segment bases</td><td>same: TLB (unless PCID), <code>TSS.sp0</code>, FS/GS base</td></tr><tr><td>Rough cost</td><td>tens of cycles</td><td>a few µs once cache and TLB misses are counted</td><td>a few µs, the same reasons</td></tr></tbody></table>
+<p><strong>What makes the RTOS switch cheap is what it leaves out:</strong> no address space,<br>no FPU state, no privilege change to undo. That is also why one bad pointer in<br>any task can overwrite every other task.</p>
+</section>
+<section class="slide">
+<h2>Slide 7: Why <code>r8</code>–<code>r11</code> Go the Long Way Round</h2>
+<p><code>stmia r0!, {r4-r11}</code> would do it in one instruction — on a Cortex-M3. On<br>this core it does not exist.</p>
+<p>The M0+ runs <strong>Thumb-1 plus six</strong> (lesson 01, slide 17). Its <code>stm</code> and <code>ldm</code><br>reach only the <strong>low registers</strong>, <code>r0</code>–<code>r7</code>. So <code>r8</code>–<code>r11</code> are saved by<br>copying them into <code>r4</code>–<code>r7</code> — which have <em>already</em> been saved and are free —<br>and storing those. Restoring runs the same trick backwards, which is why the<br>code restores <code>r8</code>–<code>r11</code> <strong>first</strong> and <code>r4</code>–<code>r7</code> last.</p>
+<p>The encodings show why. <code>stmia</code> has an 8-bit register list — one bit per<br>register, <code>r0</code> to <code>r7</code>, no room for more; <code>mov</code> has a 4-bit <code>Rm</code>:</p>
+<figure class="diagram"><svg width="518" viewBox="0 0 518 206" role="img" aria-label="Two halfwords from this lesson&#x27;s PendSV_Handler; stmia r0!, {r4-r7}, 16 bits; mov r4, r8, 16 bits">
+<text x="259" y="16" text-anchor="middle" class="lbl">Two halfwords from this lesson&#x27;s PendSV_Handler</text>
+<text x="16" y="59" class="mono">stmia r0!, {r4-r7}</text>
+<text x="16" y="74" class="mono lbl">= 0xC0F0</text>
+<text x="183.2" y="44" text-anchor="start" class="mono lbl">15</text>
+<text x="501.2" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="182.2" y="52" width="100.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M262.2 52 V56 M262.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M242.2 52 V56 M242.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M222.2 52 V56 M222.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M202.2 52 V56 M202.2 74 V78"/>
+<text x="281.2" y="44" text-anchor="end" class="mono lbl">11</text>
+<rect class="reg" x="282.2" y="52" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M322.2 52 V56 M322.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M302.2 52 V56 M302.2 74 V78"/>
+<text x="341.2" y="44" text-anchor="end" class="mono lbl">8</text>
+<rect class="hifill" x="342.2" y="52" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M482.2 52 V56 M482.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M462.2 52 V56 M462.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M442.2 52 V56 M442.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M422.2 52 V56 M422.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M402.2 52 V56 M402.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M382.2 52 V56 M382.2 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M362.2 52 V56 M362.2 74 V78"/>
+<text x="492.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="472.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="432.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="412.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="392.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="372.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="352.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="332.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="312.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="292.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="272.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="252.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="232.2" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="212.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="192.2" y="65" text-anchor="middle" class="mono">1</text>
+<text x="232.2" y="91" text-anchor="middle" class="mono halo lbl">STMIA</text>
+<text x="312.2" y="91" text-anchor="middle" class="mono halo lbl">Rn</text>
+<text x="422.2" y="91" text-anchor="middle" class="mono halo">register list</text>
+<text x="16" y="145" class="mono">mov r4, r8</text>
+<text x="16" y="160" class="mono lbl">= 0x4644</text>
+<text x="183.2" y="130" text-anchor="start" class="mono lbl">15</text>
+<text x="501.2" y="130" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="182.2" y="138" width="160.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M322.2 138 V142 M322.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M302.2 138 V142 M302.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M282.2 138 V142 M282.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M262.2 138 V142 M262.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M242.2 138 V142 M242.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M222.2 138 V142 M222.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M202.2 138 V142 M202.2 160 V164"/>
+<text x="341.2" y="130" text-anchor="end" class="mono lbl">8</text>
+<rect class="reg" x="342.2" y="138" width="20.0" height="26"/>
+<text x="352.2" y="130" text-anchor="middle" class="mono lbl">7</text>
+<rect class="hifill" x="362.2" y="138" width="80.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M422.2 138 V142 M422.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M402.2 138 V142 M402.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M382.2 138 V142 M382.2 160 V164"/>
+<text x="363.2" y="130" text-anchor="start" class="mono lbl">6</text>
+<text x="441.2" y="130" text-anchor="end" class="mono lbl">3</text>
+<rect class="reg" x="442.2" y="138" width="60.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M482.2 138 V142 M482.2 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M462.2 138 V142 M462.2 160 V164"/>
+<text x="492.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="472.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="452.2" y="151" text-anchor="middle" class="mono">1</text>
+<text x="432.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="412.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="392.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="372.2" y="151" text-anchor="middle" class="mono">1</text>
+<text x="352.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="332.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="312.2" y="151" text-anchor="middle" class="mono">1</text>
+<text x="292.2" y="151" text-anchor="middle" class="mono">1</text>
+<text x="272.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="252.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="232.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="212.2" y="151" text-anchor="middle" class="mono">1</text>
+<text x="192.2" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="262.2" y="177" text-anchor="middle" class="mono halo lbl">MOV hi</text>
+<text x="352.2" y="177" text-anchor="middle" class="mono halo lbl">D</text>
+<text x="402.2" y="177" text-anchor="middle" class="mono halo">Rm</text>
+<text x="472.2" y="177" text-anchor="middle" class="mono halo lbl">Rd</text>
+</svg></figure>
+<p>Two more details the listing shows:</p>
+<ul><li><code>mov r4, r8</code> is legal: <code>mov</code> between low and high registers is one of the few instructions Thumb-1 allows on <code>r8</code>–<code>r12</code>.</li><li><code>sl</code> and <code>fp</code> in the disassembly are <code>r10</code> and <code>r11</code> — their old APCS names. Same registers.</li></ul>
+<p>The assembler rejected the first draft outright: <code>subs r0, #32</code> is not<br>accepted in GCC&#x27;s default inline-assembly syntax for this core. One line,<br><code>.syntax unified</code>, at the top of the block fixed it. Silent failures get<br>slides in this course; loud ones deserve a sentence.</p>
+</section>
+<section class="slide">
+<h2>Slide 8: The First Switch — Forging a Frame</h2>
+<p>A new task has never run, so it has never been preempted, so there is no<br>saved context to restore. <code>os_task_create()</code> <strong>builds one</strong>: the stack a task<br>would have if it had just been interrupted at its first instruction.</p>
+<pre class="lang-c"><code>*--sp = 0x01000000u;                   /* xPSR: only the Thumb bit     */
+*--sp = (uint32_t)fn &amp; ~1u;            /* pc:   the function&#x27;s start   */
+*--sp = (uint32_t)task_exit;           /* lr:   where it goes if it returns */
+*--sp = 0u; *--sp = 0u; *--sp = 0u; *--sp = 0u;   /* r12, r3, r2, r1  */
+*--sp = (uint32_t)arg;                 /* r0:   its argument (AAPCS)   */
+for (int i = 0; i &lt; 8; i++) *--sp = 0u;           /* r11..r4           */</code></pre>
+<figure class="diagram"><svg width="786" viewBox="0 0 786 96" role="img" aria-label="xPSR, 32 bits">
+<text x="16" y="35" class="mono">xPSR</text>
+<text x="16" y="50" class="lbl">forged: T only</text>
+<text x="16" y="65" class="mono lbl">= 0x01000000</text>
+<text x="131.0" y="20" text-anchor="start" class="mono lbl">31</text>
+<text x="769.0" y="20" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="290.0" y="28" width="360.0" height="26"/>
+<rect class="dash" x="210.0" y="28" width="60.0" height="26"/>
+<rect class="reg" x="130.0" y="28" width="20.0" height="26"/>
+<rect class="reg" x="150.0" y="28" width="20.0" height="26"/>
+<text x="160.0" y="20" text-anchor="middle" class="mono lbl">30</text>
+<rect class="reg" x="170.0" y="28" width="20.0" height="26"/>
+<text x="180.0" y="20" text-anchor="middle" class="mono lbl">29</text>
+<rect class="reg" x="190.0" y="28" width="20.0" height="26"/>
+<text x="200.0" y="20" text-anchor="middle" class="mono lbl">28</text>
+<rect class="hifill" x="270.0" y="28" width="20.0" height="26"/>
+<text x="280.0" y="20" text-anchor="middle" class="mono lbl">24</text>
+<rect class="reg" x="650.0" y="28" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M750.0 28 V32 M750.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M730.0 28 V32 M730.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M710.0 28 V32 M710.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M690.0 28 V32 M690.0 50 V54"/>
+<path class="reg" stroke-width="0.6" d="M670.0 28 V32 M670.0 50 V54"/>
+<text x="651.0" y="20" text-anchor="start" class="mono lbl">5</text>
+<text x="760.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="740.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="720.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="700.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="680.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="660.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="640.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="620.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="600.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="580.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="560.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="540.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="520.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="500.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="480.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="460.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="440.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="420.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="400.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="380.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="360.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="340.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="320.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="300.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="280.0" y="41" text-anchor="middle" class="mono">1</text>
+<text x="260.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="240.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="220.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="200.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="180.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="160.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="140.0" y="41" text-anchor="middle" class="mono lbl">0</text>
+<text x="140.0" y="67" text-anchor="middle" class="mono halo lbl">N</text>
+<text x="160.0" y="67" text-anchor="middle" class="mono halo lbl">Z</text>
+<text x="180.0" y="67" text-anchor="middle" class="mono halo lbl">C</text>
+<text x="200.0" y="67" text-anchor="middle" class="mono halo lbl">V</text>
+<text x="280.0" y="67" text-anchor="middle" class="mono halo">T</text>
+<text x="710.0" y="67" text-anchor="middle" class="mono halo lbl">ISR</text>
+</svg></figure>
+<ul><li><strong>xPSR&#x27;s T bit must be 1.</strong> Returning with it clear means switching to ARM state, which the M0+ does not have: a HardFault on the first switch.</li><li><strong><code>arg</code> goes in the <code>r0</code> slot</strong>, because that is where AAPCS puts a function&#x27;s first argument (lesson 01, slide 18). The task receives it as a normal parameter.</li><li><strong><code>lr</code> is <code>task_exit</code></strong>, so a task function that returns does not wander off into memory — it is parked for good.</li></ul>
+<p>To the switch, a brand-new task and a task preempted a second ago look<br>identical. That is the trick.</p>
+</section>
+<section class="slide">
+<h2>Slide 9: Who Runs Next</h2>
+<pre class="lang-c"><code>static os_task_t *pick(void)
+{
+    uint32_t cur = os_current ? (uint32_t)(os_current - tasks) : 0u;
+    os_task_t *best = 0;
+    for (uint32_t i = 1; i &lt;= n_tasks; i++) {
+        os_task_t *t = &amp;tasks[(cur + i) % n_tasks];
+        if (t-&gt;state == OS_READY &amp;&amp; (best == 0 || t-&gt;prio &gt; best-&gt;prio)) best = t;
+    }
+    return best;
+}</code></pre>
+<ul><li><strong>Fixed-priority preemptive</strong>: the highest-priority <code>READY</code> task runs, always.</li><li><strong>Round-robin among equals</strong>: the search starts <em>after</em> the current task, and only a strictly higher priority replaces a find, so tasks of equal priority take turns — one tick each.</li><li><strong>Idle</strong>, priority 0, is always ready, so there is always an answer.</li></ul>
+<p>The policies, by name — this kernel uses the second and the third together:</p>
+<table><thead><tr><th>Policy</th><th>Who stops a running task</th><th>Used here</th></tr></thead><tbody><tr><td><strong>Cooperative</strong></td><td>nobody: it runs until it returns or yields</td><td>lesson 06&#x27;s superloop (slide 1)</td></tr><tr><td><strong>Fixed-priority preemptive</strong></td><td>a <em>more urgent</em> task becoming <code>READY</code></td><td>yes — the rule <code>pick()</code> applies</td></tr><tr><td><strong>Round-robin time slicing</strong></td><td>the tick, among tasks of <em>equal</em> priority</td><td>yes — the search starts after the current task</td></tr><tr><td><strong>Idle task</strong></td><td>— it runs only when nothing else can</td><td><code>idle</code>, priority 0, always <code>READY</code></td></tr></tbody></table>
+<p><strong>Priority numbers here run the other way from the NVIC.</strong> In this kernel —<br>as in FreeRTOS — a <em>higher</em> number is <em>more</em> urgent. In the NVIC, 0 is most<br>urgent. Two numbering schemes on one chip: always say which one you mean.</p>
+<table><thead><tr><th></th><th>This kernel (and FreeRTOS)</th><th>The NVIC (hardware)</th></tr></thead><tbody><tr><td>Most urgent</td><td>the <strong>highest</strong> number</td><td><strong>0</strong></td></tr><tr><td>Range here</td><td>0 (idle) … 3 (button)</td><td>0 … 3 (<code>__NVIC_PRIO_BITS</code> = 2)</td></tr><tr><td>Ranks</td><td>tasks</td><td>interrupts and exceptions</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 10: The Tick, and Sleeping</h2>
+<p><code>SysTick_Handler</code> is now the kernel&#x27;s heartbeat:</p>
+<pre class="lang-c"><code>ticks++;
+if (os_current) os_current-&gt;ticks++;           /* who was running: CPU use */
+for each task: if SLEEPING and (int32_t)(ticks - wake) &gt;= 0 -&gt; READY;
+schedule();                                     /* pend PendSV if needed    */</code></pre>
+<p>A task that wants to wait calls <code>os_delay(ms)</code>: it marks itself <code>SLEEPING</code>,<br>asks for a switch, and is gone until the tick wakes it. <strong>The CPU is not<br>waiting for it</strong> — someone else runs.</p>
+<p><code>os_delay_until(&amp;last, period)</code> is lesson 06&#x27;s <code>at += period</code> turned into a<br>call: the task wakes on a fixed grid however long its own work took. The LED<br>bar uses it, so its frames stay exactly 60 ms apart while the hog runs flat<br>out underneath.</p>
+<p>Every task is always in one of three <strong>states</strong> (<code>os_state_t</code>). The one<br><em>running</em> is simply the <code>READY</code> task <code>pick()</code> chose — <code>os_current</code>:</p>
+<table><thead><tr><th>State</th><th>Means</th><th>Gets there by</th><th>Leaves by</th></tr></thead><tbody><tr><td><strong><code>READY</code></strong></td><td>could run now</td><td>created; woken</td><td>being picked, then running</td></tr><tr><td><strong><code>SLEEPING</code></strong></td><td>waiting for a time</td><td><code>os_delay</code>, <code>os_delay_until</code></td><td>the tick reaching <code>wake</code></td></tr><tr><td><strong><code>BLOCKED</code></strong></td><td>waiting for a thing</td><td>a held mutex, an empty or full queue</td><td>the owner unlocks; an item arrives or leaves</td></tr></tbody></table>
+<table><thead><tr><th></th><th><strong>Busy-waiting</strong> (lesson 05)</th><th><strong>Sleeping</strong> (<code>os_delay</code>)</th></tr></thead><tbody><tr><td>The task while it waits</td><td>spins, checking the clock</td><td>off the CPU, <code>SLEEPING</code></td></tr><tr><td>Who else runs meanwhile</td><td>nobody</td><td>every other <code>READY</code> task</td></tr><tr><td>CPU it costs</td><td>100%</td><td>none</td></tr></tbody></table>
+<p>The per-task <code>ticks</code> counter is <strong>statistical profiling</strong>: at each tick, charge<br>one millisecond to whoever was running. Over a second, it is each task&#x27;s CPU<br>share — the table the report prints.</p>
+</section>
+<section class="slide">
+<h2>Slide 11: Measured — a Hog That Does Not Hurt</h2>
+<p>Scenario 1, one second&#x27;s report, <strong>measured</strong> (hog on, then after button B):</p>
+<pre><code>t=  3001 ms   switches/s 419                t=  5001 ms   switches/s 429
+  task      prio  st  cpu%   stack            task      prio  st  cpu%
+  bar       2/2   S     0     24 / 128          bar       2/2   S     0
+  button    3/3   S     0     30 / 128          button    3/3   S     0
+  hog       1/1   R   100     20 / 128          hog       1/1   S     0
+  report    1/1   R     0    115 / 512          report    1/1   R     0
+  idle      0/0   R     0     16 / 64           idle      0/0   R   100</code></pre>
+<p>The hog takes <strong>every spare cycle</strong> — 100% — and yet the bar and the buttons,<br>at higher priority, are serviced on time: each wakes, preempts the hog within a<br>tick, does a few microseconds of work, and sleeps again. That is why they show<br>0% and still work.</p>
+<p>Press B and the hog&#x27;s share passes, whole, to <strong>idle</strong>. Nothing else changed.<br>In lesson 06&#x27;s superloop, the left-hand column is impossible.</p>
+<p>~420 switches a second: the button task wakes 200 times a second and the bar<br>about 17, and each visit is two switches — in and out.</p>
+</section>
+<section class="slide">
+<h2>Slide 12: Sharing — the Mutex</h2>
+<p>Two tasks that touch the same thing — a buffer, a peripheral, the UART — need<br><strong>mutual exclusion</strong>, as in lesson 03. Masking interrupts works, but for a long<br>critical section it freezes the whole system. A <strong>mutex</strong> blocks only the tasks<br>that want <em>this</em> resource:</p>
+<pre class="lang-c"><code>void os_mutex_lock(os_mutex_t *m)
+{
+    uint32_t pm = enter();                       /* PRIMASK, as always   */
+    while (m-&gt;owner != 0) {
+        os_current-&gt;state      = OS_BLOCKED;     /* wait - off the CPU   */
+        os_current-&gt;waiting_on = m;
+        schedule(); leave(pm);  pm = enter();    /* switched out here    */
+    }
+    m-&gt;owner = os_current;
+    leave(pm);
+}</code></pre>
+<p>Look at what it is made of: the kernel&#x27;s own bookkeeping is protected by<br><strong>masking interrupts for a few instructions</strong> — lesson 03&#x27;s tool, unchanged.<br>The mutex is a way to make a <em>long</em> critical section cheap for everyone who<br>does not need it.</p>
+<table><thead><tr><th></th><th><strong>Masking interrupts</strong> (<code>PRIMASK</code>)</th><th><strong>A mutex</strong></th></tr></thead><tbody><tr><td>Who is held up</td><td><strong>everything</strong>: every task and every interrupt</td><td>only tasks that want <em>this</em> resource</td></tr><tr><td>How long it may last</td><td>a few instructions</td><td>as long as the work takes</td></tr><tr><td>A waiter, meanwhile</td><td>— nothing else runs</td><td><code>BLOCKED</code>, off the CPU</td></tr><tr><td>Usable from an ISR</td><td>yes</td><td><strong>no</strong>: an ISR cannot block</td></tr><tr><td>Used here for</td><td>the kernel&#x27;s own lists and counters</td><td><code>shared</code>, which low and high take turns with (scenario 2)</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 13: Priority Inversion</h2>
+<p>Three tasks. <strong>High</strong> needs the mutex briefly every 100 ms. <strong>Low</strong> holds it for<br>30 ms at a time. <strong>Mid</strong> never touches it, but computes for 120 ms every<br>250 ms.</p>
+<figure class="diagram"><svg viewBox="0 0 580 200" role="img" aria-label="Priority inversion timeline: high blocks on low's mutex, mid preempts low, high waits for mid">
+  <text x="10" y="40" class="mono">high</text>
+  <text x="10" y="90" class="mono">mid</text>
+  <text x="10" y="140" class="mono">low</text>
+  <rect class="box" x="60" y="125" width="60" height="22"/>
+  <text x="90" y="140" text-anchor="middle" class="lbl">lock</text>
+  <rect class="hifill" x="120" y="25" width="16" height="22"/>
+  <text x="128" y="20" text-anchor="middle" class="lbl">wants it</text>
+  <path class="dash" d="M136 36 H470"/>
+  <text x="300" y="30" text-anchor="middle" class="hi">BLOCKED — waiting for low</text>
+  <rect class="box" x="136" y="125" width="20" height="22"/>
+  <rect class="hifill" x="156" y="75" width="280" height="22"/>
+  <text x="296" y="90" text-anchor="middle" class="mono">mid runs 120 ms</text>
+  <rect class="box" x="436" y="125" width="34" height="22"/>
+  <text x="453" y="162" text-anchor="middle" class="lbl">unlock</text>
+  <rect class="box" x="470" y="25" width="40" height="22"/>
+  <text x="290" y="190" text-anchor="middle" class="lbl">high waits for mid — a task it outranks, that shares nothing with it.</text>
+</svg></figure>
+<p>High is blocked by low, which is legitimate — low holds what high needs. But<br>then mid preempts <strong>low</strong>, and while mid runs, low cannot finish and release<br>the mutex. <strong>High is now waiting for mid</strong>, a lower-priority task it has<br>nothing to do with. The priorities have been turned upside down.</p>
+<table><thead><tr><th>Term</th><th>Meaning</th><th>Here</th></tr></thead><tbody><tr><td><strong>Blocking</strong></td><td>a task waits for a resource another task holds</td><td>high waits for low&#x27;s mutex: expected, at most 30 ms</td></tr><tr><td><strong>Priority inversion</strong></td><td>a task waits, in effect, for a task it outranks</td><td>high waits behind mid</td></tr><tr><td><strong>Unbounded inversion</strong></td><td>that wait has no limit: it lasts as long as mid runs</td><td>up to 120 ms here; forever if mid never stops</td></tr></tbody></table>
+<p>This happened on Mars. In 1997 the Pathfinder lander&#x27;s computer kept<br>resetting, because a high-priority bus task was starved through exactly this<br>pattern. Engineers found it by reproducing it on the ground, and fixed it by<br>turning on one flag, remotely — the one on the next slide.</p>
+</section>
+<section class="slide">
+<h2>Slide 14: Priority Inheritance — Measured</h2>
+<p>The fix: while low holds a mutex that high is waiting for, <strong>low borrows<br>high&#x27;s priority</strong>. Mid can no longer preempt it; low finishes its 30 ms,<br>unlocks, drops back to priority 1, and high goes.</p>
+<pre class="lang-c"><code>#if OS_PRIORITY_INHERIT
+    if (m-&gt;owner-&gt;prio &lt; os_current-&gt;prio) m-&gt;owner-&gt;prio = os_current-&gt;prio;
+#endif</code></pre>
+<p>and <code>os_mutex_unlock()</code> restores <code>base_prio</code>. Scenario 2, <strong>measured</strong>, five<br>seconds each:</p>
+<table><thead><tr><th><code>OS_PRIORITY_INHERIT</code></th><th>High&#x27;s worst wait</th><th>Waits over 40 ms</th></tr></thead><tbody><tr><td><strong>1</strong></td><td><strong>10 ms</strong></td><td><strong>0</strong></td></tr><tr><td>0</td><td><strong>110 ms</strong></td><td>6 in 49 locks</td></tr></tbody></table>
+<p>Same tasks, same code, one <code>#define</code>. Low&#x27;s critical section is 30 ms, so any<br>wait over 40 ms is time high spent waiting for <em>mid</em>. With inheritance there<br>are none.</p>
+<p>Limitation, stated plainly: this kernel&#x27;s inheritance is right for one mutex<br>at a time. A task holding two, with different waiters, needs a real<br>implementation — FreeRTOS&#x27;s is several hundred lines.</p>
+</section>
+<section class="slide">
+<h2>Slide 15: Queues — Data Between Tasks, and From Interrupts</h2>
+<p>A mutex protects shared data. Often the better design is <strong>not to share it</strong>:<br>give it to someone. A queue copies items in and out, and blocks a reader while<br>it is empty and a writer while it is full:</p>
+<pre class="lang-c"><code>os_queue_put(&amp;q, &amp;item);            /* task: blocks if full   */
+os_queue_get(&amp;q, &amp;item);            /* task: blocks if empty  */
+os_queue_put_from_isr(&amp;q, &amp;item);   /* ISR: never blocks - returns 0 if full */</code></pre>
+<p>The ISR version is the important one. An interrupt handler <strong>must never<br>block</strong> — there is no task to put to sleep, only a handler on MSP. So it<br>reports &quot;full&quot; and lets the handler decide. And because it calls <code>schedule()</code>,<br>a task waiting on the queue can be made ready <em>from inside the interrupt</em>; the<br>switch to it happens the moment the last handler returns.</p>
+<p>That is exactly lesson 08&#x27;s design: the UART receive interrupt puts bytes in a<br>queue, and a protocol task blocks on it — using no CPU at all until a byte<br>arrives.</p>
+<table><thead><tr><th></th><th><strong>Mutex</strong></th><th><strong>Queue</strong></th></tr></thead><tbody><tr><td>The data</td><td>stays where it is, <em>shared</em></td><td>is <em>copied</em> to whoever needs it</td></tr><tr><td>Who waits</td><td>anyone who wants it while it is held</td><td>a reader while empty, a writer while full</td></tr><tr><td>From an ISR</td><td>never</td><td><code>os_queue_put_from_isr()</code> only</td></tr></tbody></table>
+<table><thead><tr><th></th><th><strong>Task API</strong></th><th><strong>ISR API</strong></th></tr></thead><tbody><tr><td>Full or empty</td><td>the caller blocks until it is not</td><td>returns at once: 0 means &quot;full&quot;</td></tr><tr><td>Why</td><td>a task can be put to sleep</td><td>a handler has no task to put to sleep</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 16: Sizing a Stack — the High-Water Mark</h2>
+<p>Every task needs its own stack, and RAM is 12 KB. How big?</p>
+<p><code>os_task_create()</code> fills each stack with <code>0xDEADBEEF</code>. The stack grows down, so<br>the words that still say <code>0xDEADBEEF</code> at the bottom were never reached. Count<br>them:</p>
+<pre><code>  task      stack used/size       (measured)
+  bar          24 / 128
+  button       30 / 128
+  hog          20 / 128
+  report      115 / 512      &lt;- printf
+  idle         16 / 64</code></pre>
+<p><code>printf</code> is the expensive one: 115 words — 460 bytes — for newlib-nano&#x27;s<br>formatter and our <code>_write</code>. Every task that prints needs room for that.</p>
+<p>The method matters more than the numbers: <strong>run the program, exercise every<br>path, read the high-water mark, add a margin.</strong> A stack sized by guessing is<br>wrong in one of two directions, and only one of them is visible.</p>
+</section>
+<section class="slide">
+<h2>Slide 17: When It Is Too Small — Measured</h2>
+<p>Give the report task 96 words instead of 512. It needs 115. <strong>Measured</strong>:</p>
+<pre><code>  report    1/1   R     0      96 / 96    OVERFLOW
+  bar 60 ms/frame   hog ON , 5539 primes/s
+  ...
+  bar 60 ms/frame   hog ON , 536871010 primes/s</code></pre>
+<p><strong>Nothing crashed.</strong> The report task wrote 19 words below its stack, and the<br>linker had put <code>primes</code> — another task&#x27;s variable — right there, at<br><code>0x20000084</code>, the word under <code>stk_report</code> at <code>0x20000088</code>. 536 871 010 is<br><code>0x20000062</code>: a stack address, now sitting in a prime counter.</p>
+<p>That is what a stack overflow usually looks like on a microcontroller: not a<br>crash, but <em>somebody else&#x27;s data quietly wrong</em>, far from the cause. The<br>high-water mark caught it; without one you would be debugging the hog.</p>
+<table><thead><tr><th></th><th><strong>Stack overflow</strong> — what people expect</th><th>What it usually is on an MCU</th></tr></thead><tbody><tr><td>What you see</td><td>a crash, at the guilty task</td><td><strong>another task&#x27;s data quietly wrong</strong></td></tr><tr><td>Where the bug looks like it is</td><td>the overflowing task</td><td>the victim: here, the hog&#x27;s prime counter</td></tr><tr><td>What catches it</td><td>—</td><td>the high-water mark; on bigger cores, an MPU guard region</td></tr></tbody></table>
+</section>
+<section class="slide">
+<h2>Slide 18: A HardFault That Says Where</h2>
+<p>When something does fault, the hardware stacks the usual eight words and<br>enters <code>HardFault_Handler</code> — on PSP&#x27;s stack if a task was running. Bit 2 of<br><code>lr</code> says which stack; word 6 of the frame is the <code>pc</code> that faulted. This<br>lesson&#x27;s handler prints them. <strong>Measured</strong>, with <code>__builtin_trap()</code> placed in<br>the hog:</p>
+<pre><code>*** HardFault in task &#x27;hog&#x27;
+    pc   = 0x08000422   &lt;- the instruction that faulted
+    lr   = 0x08000415   &lt;- where it would have returned to
+    xPSR = 0x61000000
+    Find the line:  arm-none-eabi-addr2line -e Main.elf 0x08000422</code></pre>
+<p>and <code>addr2line</code> answers with the exact line of <code>Main.c</code>. The instruction at<br>that address is <code>udf #255</code> — <em>undefined</em>, deliberately.</p>
+<figure class="diagram"><svg width="824" viewBox="0 0 824 324" role="img" aria-label="The printed xPSR decoded, and the lr bit that picks the stack; xPSR, 32 bits; EXC_RETURN, 32 bits; EXC_RETURN, 32 bits">
+<text x="412" y="16" text-anchor="middle" class="lbl">The printed xPSR decoded, and the lr bit that picks the stack</text>
+<text x="16" y="59" class="mono">xPSR</text>
+<text x="16" y="74" class="lbl">stacked at the fault</text>
+<text x="16" y="89" class="mono lbl">= 0x61000000</text>
+<text x="169.0" y="44" text-anchor="start" class="mono lbl">31</text>
+<text x="807.0" y="44" text-anchor="end" class="mono lbl">0</text>
+<rect class="dash" x="328.0" y="52" width="360.0" height="26"/>
+<rect class="dash" x="248.0" y="52" width="60.0" height="26"/>
+<rect class="reg" x="168.0" y="52" width="20.0" height="26"/>
+<rect class="hifill" x="188.0" y="52" width="20.0" height="26"/>
+<text x="198.0" y="44" text-anchor="middle" class="mono lbl">30</text>
+<rect class="hifill" x="208.0" y="52" width="20.0" height="26"/>
+<text x="218.0" y="44" text-anchor="middle" class="mono lbl">29</text>
+<rect class="reg" x="228.0" y="52" width="20.0" height="26"/>
+<text x="238.0" y="44" text-anchor="middle" class="mono lbl">28</text>
+<rect class="hifill" x="308.0" y="52" width="20.0" height="26"/>
+<text x="318.0" y="44" text-anchor="middle" class="mono lbl">24</text>
+<rect class="reg" x="688.0" y="52" width="120.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M788.0 52 V56 M788.0 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M768.0 52 V56 M768.0 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M748.0 52 V56 M748.0 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M728.0 52 V56 M728.0 74 V78"/>
+<path class="reg" stroke-width="0.6" d="M708.0 52 V56 M708.0 74 V78"/>
+<text x="689.0" y="44" text-anchor="start" class="mono lbl">5</text>
+<text x="798.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="778.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="758.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="738.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="718.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="698.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="678.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="658.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="638.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="618.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="598.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="578.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="558.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="538.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="518.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="498.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="478.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="458.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="438.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="418.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="398.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="378.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="358.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="338.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="318.0" y="65" text-anchor="middle" class="mono">1</text>
+<text x="298.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="278.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="258.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="238.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="218.0" y="65" text-anchor="middle" class="mono">1</text>
+<text x="198.0" y="65" text-anchor="middle" class="mono">1</text>
+<text x="178.0" y="65" text-anchor="middle" class="mono lbl">0</text>
+<text x="178.0" y="91" text-anchor="middle" class="mono halo lbl">N</text>
+<text x="198.0" y="91" text-anchor="middle" class="mono halo">Z</text>
+<text x="218.0" y="91" text-anchor="middle" class="mono halo">C</text>
+<text x="238.0" y="91" text-anchor="middle" class="mono halo lbl">V</text>
+<text x="318.0" y="91" text-anchor="middle" class="mono halo">T</text>
+<text x="748.0" y="91" text-anchor="middle" class="mono halo lbl">ISR</text>
+<text x="16" y="145" class="mono">EXC_RETURN</text>
+<text x="16" y="160" class="lbl">a task faulted</text>
+<text x="16" y="175" class="mono lbl">= 0xFFFFFFFD</text>
+<text x="169.0" y="130" text-anchor="start" class="mono lbl">31</text>
+<text x="807.0" y="130" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="168.0" y="138" width="560.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M708.0 138 V142 M708.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M688.0 138 V142 M688.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M668.0 138 V142 M668.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M648.0 138 V142 M648.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M628.0 138 V142 M628.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M608.0 138 V142 M608.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M588.0 138 V142 M588.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M568.0 138 V142 M568.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M548.0 138 V142 M548.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M528.0 138 V142 M528.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M508.0 138 V142 M508.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M488.0 138 V142 M488.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M468.0 138 V142 M468.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M448.0 138 V142 M448.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M428.0 138 V142 M428.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M408.0 138 V142 M408.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M388.0 138 V142 M388.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M368.0 138 V142 M368.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M348.0 138 V142 M348.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M328.0 138 V142 M328.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M308.0 138 V142 M308.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M288.0 138 V142 M288.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M268.0 138 V142 M268.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M248.0 138 V142 M248.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M228.0 138 V142 M228.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M208.0 138 V142 M208.0 160 V164"/>
+<path class="reg" stroke-width="0.6" d="M188.0 138 V142 M188.0 160 V164"/>
+<text x="727.0" y="130" text-anchor="end" class="mono lbl">4</text>
+<rect class="reg" x="728.0" y="138" width="20.0" height="26"/>
+<text x="738.0" y="130" text-anchor="middle" class="mono lbl">3</text>
+<rect class="hifill" x="748.0" y="138" width="20.0" height="26"/>
+<text x="758.0" y="130" text-anchor="middle" class="mono lbl">2</text>
+<rect class="reg" x="768.0" y="138" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M788.0 138 V142 M788.0 160 V164"/>
+<text x="769.0" y="130" text-anchor="start" class="mono lbl">1</text>
+<text x="798.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="778.0" y="151" text-anchor="middle" class="mono lbl">0</text>
+<text x="758.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="738.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="718.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="698.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="678.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="658.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="638.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="618.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="598.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="578.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="558.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="538.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="518.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="498.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="478.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="458.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="438.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="418.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="398.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="378.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="358.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="338.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="318.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="298.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="278.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="258.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="238.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="218.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="198.0" y="151" text-anchor="middle" class="mono">1</text>
+<text x="178.0" y="151" text-anchor="middle" class="mono">1</text>
+<path class="dash" d="M758.0 164 L758.0 186"/>
+<text x="448.0" y="177" text-anchor="middle" class="mono halo lbl">all ones</text>
+<text x="738.0" y="177" text-anchor="middle" class="mono halo lbl">Thread</text>
+<text x="758.0" y="193" text-anchor="middle" class="mono halo">PSP</text>
+<text x="16" y="247" class="mono">EXC_RETURN</text>
+<text x="16" y="262" class="lbl">a handler faulted</text>
+<text x="16" y="277" class="mono lbl">= 0xFFFFFFF1</text>
+<text x="169.0" y="232" text-anchor="start" class="mono lbl">31</text>
+<text x="807.0" y="232" text-anchor="end" class="mono lbl">0</text>
+<rect class="reg" x="168.0" y="240" width="560.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M708.0 240 V244 M708.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M688.0 240 V244 M688.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M668.0 240 V244 M668.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M648.0 240 V244 M648.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M628.0 240 V244 M628.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M608.0 240 V244 M608.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M588.0 240 V244 M588.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M568.0 240 V244 M568.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M548.0 240 V244 M548.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M528.0 240 V244 M528.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M508.0 240 V244 M508.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M488.0 240 V244 M488.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M468.0 240 V244 M468.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M448.0 240 V244 M448.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M428.0 240 V244 M428.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M408.0 240 V244 M408.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M388.0 240 V244 M388.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M368.0 240 V244 M368.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M348.0 240 V244 M348.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M328.0 240 V244 M328.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M308.0 240 V244 M308.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M288.0 240 V244 M288.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M268.0 240 V244 M268.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M248.0 240 V244 M248.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M228.0 240 V244 M228.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M208.0 240 V244 M208.0 262 V266"/>
+<path class="reg" stroke-width="0.6" d="M188.0 240 V244 M188.0 262 V266"/>
+<text x="727.0" y="232" text-anchor="end" class="mono lbl">4</text>
+<rect class="reg" x="728.0" y="240" width="20.0" height="26"/>
+<text x="738.0" y="232" text-anchor="middle" class="mono lbl">3</text>
+<rect class="hifill" x="748.0" y="240" width="20.0" height="26"/>
+<text x="758.0" y="232" text-anchor="middle" class="mono lbl">2</text>
+<rect class="reg" x="768.0" y="240" width="40.0" height="26"/>
+<path class="reg" stroke-width="0.6" d="M788.0 240 V244 M788.0 262 V266"/>
+<text x="769.0" y="232" text-anchor="start" class="mono lbl">1</text>
+<text x="798.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="778.0" y="253" text-anchor="middle" class="mono lbl">0</text>
+<text x="758.0" y="253" text-anchor="middle" class="mono lbl">0</text>
+<text x="738.0" y="253" text-anchor="middle" class="mono lbl">0</text>
+<text x="718.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="698.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="678.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="658.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="638.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="618.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="598.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="578.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="558.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="538.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="518.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="498.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="478.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="458.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="438.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="418.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="398.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="378.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="358.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="338.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="318.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="298.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="278.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="258.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="238.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="218.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="198.0" y="253" text-anchor="middle" class="mono">1</text>
+<text x="178.0" y="253" text-anchor="middle" class="mono">1</text>
+<path class="dash" d="M758.0 266 L758.0 288"/>
+<text x="448.0" y="279" text-anchor="middle" class="mono halo lbl">all ones</text>
+<text x="738.0" y="279" text-anchor="middle" class="mono halo lbl">Thread</text>
+<text x="758.0" y="295" text-anchor="middle" class="mono halo">PSP</text>
+</svg></figure>
+<p>The M0+ has one fault handler and no fault-status registers; the reason is<br>lost. On the Cortex-M4 in lesson 11, <code>CFSR</code> says <em>why</em> as well as <em>where</em>.</p>
+</section>
+<section class="slide">
+<h2>Slide 19: What You Built, and What a Real RTOS Adds</h2>
+<table><thead><tr><th>This kernel</th><th>FreeRTOS / Zephyr add</th></tr></thead><tbody><tr><td>fixed-priority preemptive, round-robin</td><td>tickless idle, deadline scheduling (Zephyr)</td></tr><tr><td>sleep, mutex with inheritance, queue</td><td>semaphores, event groups, timers, message buffers</td></tr><tr><td>one mutex&#x27;s inheritance</td><td>nested inheritance, recursive mutexes</td></tr><tr><td>high-water marks by pattern</td><td>overflow checks on every switch, MPU guard regions</td></tr><tr><td>34-instruction PendSV</td><td>the same switch — with FPU state on an M4F</td></tr></tbody></table>
+<p>The core is the same, instruction for instruction. That is the point of<br>writing it: <code>xTaskCreate</code>, <code>vTaskDelayUntil</code> and <code>xQueueSendFromISR</code> are no<br>longer names — they are <code>os_task_create</code>, <code>os_delay_until</code> and<br><code>os_queue_put_from_isr</code>, and you know what is under each.</p>
+<p><strong>From here on, lessons are written as tasks.</strong> Lesson 08&#x27;s UART is an<br>interrupt feeding a queue feeding a task.</p>
+</section>
+<section class="slide">
+<h2>Slide 20: How the Measurements Were Made</h2>
+<p>Wokwi could not be driven from the command line, so the kernel was run in<br><strong>Renode 1.17.0</strong> on its STM32F072 platform — a Cortex-M0, the same ARMv6-M<br>architecture as this chip, with SysTick, PendSV and the NVIC modelled.</p>
+<ul><li><code>os.c</code> and <code>Main.c</code> were compiled <strong>unchanged</strong>.</li><li>A <strong>test-only</strong> <code>startup.c</code> skipped the C0&#x27;s clock and flash-latency waits, which the F0 model does not answer the same way.</li><li>The C0&#x27;s GPIO block was mapped as plain memory so button presses could be written in.</li><li>The F0&#x27;s USART2 sits at the C0&#x27;s USART2 address with the same registers, so <code>printf</code> needed nothing.</li></ul>
+<p>One difference was found and matters: <strong>Renode does not fault on an unaligned<br>word access</strong>; ARMv6-M silicon does. So the lab faults with<br><code>__builtin_trap()</code>, which faults everywhere. Whether Wokwi faults on the<br>unaligned access is Lab Part 6&#x27;s open question.</p>
+</section>
+</div>
+
+<div class="bar">
+  <span><a href="index.html">&larr; all decks</a></span>
+  <span class="spacer"></span>
+  <button onclick="go(-1)">&larr;</button>
+  <span id="pos"></span>
+  <button onclick="go(1)">&rarr;</button>
+  <span class="spacer"></span>
+  <button onclick="toggleGrid()">overview (o)</button>
+  <button onclick="window.print()">print (p)</button>
+</div>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var at = 0;
+
+  function show(n) {
+    at = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === at); });
+    document.getElementById('pos').textContent = (at + 1) + ' / ' + slides.length;
+    try { localStorage.setItem('slide:07_RTOS', at); } catch (e) {}
+    if (!document.body.classList.contains('grid')) window.scrollTo(0, 0);
+  }
+  function go(d) { show(at + d); }
+
+  function toggleGrid() {
+    document.body.classList.toggle('grid');
+    if (!document.body.classList.contains('grid')) show(at);
+  }
+
+  slides.forEach(function (s, i) {
+    s.addEventListener('click', function () {
+      if (document.body.classList.contains('grid')) { toggleGrid(); show(i); }
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(-1); e.preventDefault(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'o') toggleGrid();
+    else if (e.key === 'p') window.print();
+  });
+
+  var saved = 0;
+  try { saved = parseInt(localStorage.getItem('slide:07_RTOS') || '0', 10) || 0; } catch (e) {}
+  show(saved);
+</script>

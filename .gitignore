@@ -1,0 +1,26 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Secrets: never commit credentials, eClass session cookies or keys
+.env
+.env.*
+*.pem
+*.key
+*.p12
+cookies*.txt
+*cookies*.json
+credentials*
+secrets*
