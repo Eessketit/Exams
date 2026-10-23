@@ -12,7 +12,8 @@ c) 352.8 kbps
 d) 705.6 kbps
 
 > **Answer: c)** Bit rate = f_s x bits x channels = 11,025 x 16 x 2 = 352,800 bps. a) forgets the 2 channels; b) is 44.1 kB/s (bytes, not bits).  
-> Source: L2 p.34-35
+> **Source:** L2 p.34 bit rate definition · L2 p.35 table of sampling rates and bit rates  
+> **Notes:** [Lecture 2 › Bit rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#8-bit-rate-slides-34-35)
 
 **2.** Which is the correct order of the blocks in a PCM speech encoder?
 
@@ -22,7 +23,8 @@ c) low-pass filter → digital-to-analog converter → μ-law expander → trans
 d) bandlimiting filter → μ-law compressor → linear PCM → transmission
 
 > **Answer: d)** Encoder: bandlimiting filter → μ-law/A-law compressor → linear PCM → transmission. The expander, DAC and low-pass filter belong to the decoder.  
-> Source: L3 p.44
+> **Source:** L3 p.44 PCM encoder and decoder blocks  
+> **Notes:** [Lecture 3 › Coding of audio and PCM](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#12-coding-of-audio-and-pcm-slides-42-44)
 
 **3.** Run-length coding compresses well because it:
 
@@ -32,7 +34,8 @@ c) gives shorter codewords to more probable symbols, using a tree built bottom-u
 d) builds a dictionary of repeated strings while it scans the input
 
 > **Answer: a)** RLC exploits memory in the source: it codes the symbol and the length of its group. b) is the opposite case; c) is Huffman; d) is LZW.  
-> Source: L4 p.14-15
+> **Source:** L4 p.14 memoryless source vs RLC exploiting memory · L4 p.15 runs coded as count + symbol  
+> **Notes:** [Lecture 4 › Run length coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#6-run-length-coding-repetition-suppression-pattern-substitution-slides-14-18)
 
 **4.** What is MP4 (MPEG-4 Part 14)?
 
@@ -42,7 +45,8 @@ c) MPEG-1 Audio Layer III
 d) A lossless audio format, like FLAC
 
 > **Answer: b)** MPEG-4 Part 14 (.mp4) is a container (wrapper) format for video and audio streams. a) describes AAC.  
-> Source: L5 p.52
+> **Source:** L5 p.52 MPEG-4 Part 14, container format  
+> **Notes:** [Lecture 5 › MPEG4 audio, AAC and MP4](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#13-mpeg4-audio-aac-and-mp4-slides-47-53)
 
 **5.** How many bits are needed to store a 512 x 512 gray-scale image with 64 gray levels?
 
@@ -52,7 +56,8 @@ c) 16,777,216 bits
 d) 196,608 bits
 
 > **Answer: a)** b = M x N x k with k = log2 64 = 6: 512 x 512 x 6 = 1,572,864 bits. c) uses L = 64 in place of k; b) assumes 8 bits; d) is the answer in bytes.  
-> Source: L6 p.26-28
+> **Source:** L6 p.26 L = 2^k gray levels · L6 p.27-28 b = M x N x k  
+> **Notes:** [Lecture 6 › Dynamic range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26) · [Lecture 6 › Representing and storing a digital image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28)
 
 **6.** In the CIE XYZ color system, which tristimulus value represents luminance (perceived brightness)?
 
@@ -62,7 +67,8 @@ c) Y
 d) x = X / (X + Y + Z)
 
 > **Answer: c)** Y = luminance; X = "red mix"; Z = "blue response". x is a chromaticity coordinate, which ignores luminance.  
-> Source: L7 p.47
+> **Source:** L7 p.47 meaning of X, Y, Z  
+> **Notes:** [Lecture 7 › CIE XYZ color coordinate system](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#10-cie-xyz-color-coordinate-system-slides-42-53)
 
 **7.** Adding the constant 40 to every pixel of an 8-bit image (with clamping at 255) mainly:
 
@@ -72,7 +78,8 @@ c) flattens the histogram, as histogram equalization does
 d) inverts the image, as the NOT operation does
 
 > **Answer: b)** Addition and subtraction adjust brightness; they cannot adjust contrast (multiplication and division do).  
-> Source: L9 p.46-48
+> **Source:** L9 p.46 add/subtract = brightness, multiply/divide = contrast · L9 p.47 image + 40 example · L9 p.48 adding cannot adjust contrast  
+> **Notes:** [Lecture 9 › Arithmetic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#10-arithmetic-operations-slides-46-53)
 
 **8.** Which morphological operation makes foreground (bright) regions shrink and the holes inside them grow?
 
@@ -82,7 +89,8 @@ c) Region filling
 d) Erosion
 
 > **Answer: d)** Erosion (erode, shrink, reduce): foreground areas shrink and holes inside them grow. Dilation and closing do the opposite.  
-> Source: L10 p.15, 18
+> **Source:** L10 p.15 erosion: foreground shrinks, holes grow · L10 p.18 erosion = local minimum  
+> **Notes:** [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25)
 
 **9.** The 3x3 Gaussian smoothing mask is written as (1/16) x [1 2 1; 2 4 2; 1 2 1]. Why the factor 1/16?
 
@@ -92,7 +100,8 @@ c) 16 is the sum of the weights, so the mask sums to 1 and a flat region keeps i
 d) It equals 1/σ² for σ = 4
 
 > **Answer: c)** 1+2+1+2+4+2+1+2+1 = 16, so the mask sums to 1. The window has 9 pixels, not 16; a sum of 0 is a high-pass/Laplacian mask.  
-> Source: L11 p.19
+> **Source:** L11 p.19 Gaussian smoothing mask  
+> **Notes:** [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19)
 
 **10.** In a pattern recognition system, which stage should produce features that are invariant to translation, rotation and scale?
 
@@ -102,7 +111,8 @@ c) Segmentation and grouping
 d) Post-processing
 
 > **Answer: a)** Feature extraction: "discriminative features", "invariant features with respect to translation, rotation and scale".  
-> Source: L12 p.19
+> **Source:** L12 p.19 feature extraction: invariant features  
+> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 

@@ -11,7 +11,8 @@ c) 32 levels, step 0.125 V
 d) 25 levels, step 0.16 V
 
 > **Answer: c)** b bits give 2^b = 2^5 = 32 levels; step δ = R/2^b = 4/32 = 0.125 V. (a) uses b instead of 2^b.  
-> Source: L2 p.29-30
+> **Source:** L2 p.29 2^b levels, step δ = R/2^b · L2 p.30 one signal at 8, 4 and 3 bits  
+> **Notes:** [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33)
 
 **2.** Using SQNR = 6.02N dB, going from 8-bit to 12-bit audio samples raises the maximum SQNR by about:  
 a) 4 dB  
@@ -20,7 +21,8 @@ c) 48 dB
 d) 24 dB
 
 > **Answer: d)** Each bit adds about 6 dB: 6.02 x 12 - 6.02 x 8 = 72.24 - 48.16 = 24.08 dB. (c) 48 dB is the 8-bit SQNR itself, not the gain.  
-> Source: L3 p.9
+> **Source:** L3 p.9 each bit adds about 6 dB  
+> **Notes:** [Lecture 3 › SQNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#3-signal-to-quantization-noise-ratio-sqnr-slides-7-9)
 
 **3.** LZW starts with the dictionary 1 = A, 2 = B. What is the output for the input string BABAA?  
 a) 2 1 3 1  
@@ -29,7 +31,8 @@ c) 2 1 3 5
 d) 2 1 4 1
 
 > **Answer: a)** (B,A) out 2, add 3 = BA; (A,B) out 1, add 4 = AB; (BA,A) out 3, add 5 = BAA; A at EOF, out 1. (c) wrongly emits the code that was only just added.  
-> Source: L4 p.39-41
+> **Source:** L4 p.39 Algorithm 7.2, LZW compression · L4 p.40-41 worked example ABABBABCABABBA  
+> **Notes:** [Lecture 4 › LZW dictionary coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#11-lzw-dictionary-coding-slides-37-45)
 
 **4.** In lossy compression, the main source of the loss is:  
 a) entropy coding (e.g. Huffman)  
@@ -38,7 +41,8 @@ c) the transformation stage (e.g. prediction)
 d) run-length coding
 
 > **Answer: b)** "Quantization ... main source of the loss in lossy compression." Huffman and run-length coding are lossless; the transformation is reversible.  
-> Source: L5 p.13
+> **Source:** L5 p.13 quantization is the main source of the loss  
+> **Notes:** [Lecture 5 › Lossy compression and rate distortion](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#6-lossy-compression-rate-distortion-and-quantization-slides-11-13)
 
 **5.** On a background of intensity I = 200, the just noticeable difference is ΔIc = 4. The Weber ratio and its meaning are:  
 a) 0.02, poor brightness discrimination  
@@ -47,7 +51,8 @@ c) 0.02, good brightness discrimination
 d) 0.2, poor brightness discrimination
 
 > **Answer: c)** Weber ratio = ΔIc/I = 4/200 = 0.02; a small ratio means good brightness discrimination. (b) inverts the ratio.  
-> Source: L6 p.6-7
+> **Source:** L6 p.6 Weber ratio ΔIc/I · L6 p.7 discrimination at different intensity levels  
+> **Notes:** [Lecture 6 › Brightness adaptation and Weber ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)
 
 **6.** A color has tristimulus values X = 30, Y = 45, Z = 75. Its chromaticity coordinates are:  
 a) x = 0.40, y = 0.60 (z is not used)  
@@ -56,7 +61,8 @@ c) x = 0.67, y = 1.00, z = 1.67
 d) x = 0.30, y = 0.45, z = 0.75, so x + y + z = 1.5
 
 > **Answer: b)** x = X/(X+Y+Z) = 30/150 = 0.2, y = 45/150 = 0.3, z = 75/150 = 0.5; x + y + z = 1 always. (a) leaves Z out of the sum.  
-> Source: L7 p.54
+> **Source:** L7 p.54 chromaticity coordinates x, y, z  
+> **Notes:** [Lecture 7 › CIE chromaticity diagram](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60)
 
 **7.** In histogram specification, T is the equalization of the input image and G is the equalization of the desired histogram. The output level z for an input level r is:  
 a) z = G⁻¹[T(r)]  
@@ -65,7 +71,8 @@ c) z = G[T(r)]
 d) z = T[G⁻¹(r)]
 
 > **Answer: a)** (1) s = T(r), (2) v = G(z), (3) z = G⁻¹(s) = G⁻¹[T(r)].  
-> Source: L9 p.42
+> **Source:** L9 p.42 the three steps, z = G⁻¹[T(r)]  
+> **Notes:** [Lecture 9 › Histogram specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)
 
 **8.** Which expression is the dilation of A by the structuring element B?  
 a) {z | (B)z ⊆ A}  
@@ -74,7 +81,8 @@ c) {z | (B̂)z ∩ A = ∅}
 d) {z | (B̂)z ∩ A ≠ ∅}
 
 > **Answer: d)** Dilation = all z where the reflected, shifted B̂ and A overlap by at least one element. (a) is erosion, (b) is opening.  
-> Source: L10 p.20
+> **Source:** L10 p.20 set definition of dilation  
+> **Notes:** [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)
 
 **9.** According to the lecture, the Sobel operator is:  
 a) more sensitive to vertical and horizontal edges than to diagonal edges  
@@ -83,7 +91,8 @@ c) a second-order operator that produces double edges
 d) the operator with the smallest effective area, most susceptible to noise
 
 > **Answer: b)** Slide: Sobel is "more sensitive to diagonal edges than vertical and horizontal edges". (a) is Prewitt, (c) the Laplacian, (d) Roberts.  
-> Source: L11 p.38
+> **Source:** L11 p.38 Roberts, Sobel and Prewitt properties  
+> **Notes:** [Lecture 11 › First order derivative operators](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44)
 
 **10.** In the pattern recognition system flow chart, which stage receives "costs" as an input and exploits context (input-dependent information other than from the target pattern itself) to improve performance?  
 a) Segmentation  
@@ -92,7 +101,8 @@ c) Classification
 d) Post-processing
 
 > **Answer: d)** Post-processing: "exploit context input dependent information other than from the target pattern itself to improve performance"; the "costs" arrow enters it. Classification gets context and missing-feature adjustments, not costs.  
-> Source: L12 p.18-19
+> **Source:** L12 p.18 flow chart, "costs" enter post-processing · L12 p.19 feature extraction, classification, post-processing  
+> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 

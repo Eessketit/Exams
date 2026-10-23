@@ -11,7 +11,8 @@ c) 57,800 m
 d) 5.88 ms
 
 > **Answer: b)** λ = v/f = vT = 340/170 = 2 m. a) is f/v, c) is v x f, d) is the period 1/f (a time, not a length).  
-> Source: L2 p.25-26
+> **Source:** L2 p.25 wavelength and period · L2 p.26 λ = vT  
+> **Notes:** [Lecture 2 › Sine wave parameters](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)
 
 **2.** In MIDI, the value of a status byte lies in the range:  
 a) 0 to 127  
@@ -20,7 +21,8 @@ c) 128 to 255
 d) 0 to 255
 
 > **Answer: c)** "The data in a MIDI status byte is between 128 and 255; each of the data bytes is between 0 and 127." The status byte has its MSB = 1. b) 0-15 is the channel nibble.  
-> Source: L3 p.25, p.35
+> **Source:** L3 p.25 status bytes 128-255, data bytes 0-127 · L3 p.35 status byte MSB = 1, channel in the four low bits  
+> **Notes:** [Lecture 3 › MIDI bytes](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#8-midi-bytes-envelope-and-sequencers-slides-22-25-30) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)
 
 **3.** Which statement about Shannon-Fano and Huffman coding is correct?  
 a) Shannon-Fano is top-down (sort, then recursively split into two parts with about equal counts); Huffman is bottom-up (repeatedly merge the two least probable nodes)  
@@ -29,7 +31,8 @@ c) Both are top-down; they differ only in which branch gets 0 and which gets 1
 d) Both build a dictionary of variable-length strings and send fixed-length codes
 
 > **Answer: a)** Slide titles: "Shannon-Fano Algorithm, a top-down approach" and "Huffman Coding Algorithm, a bottom-up approach". b) swaps them. d) describes LZW.  
-> Source: L4 p.19, p.27
+> **Source:** L4 p.19 Shannon-Fano, top-down · L4 p.27 Algorithm 7.1 Huffman, bottom-up  
+> **Notes:** [Lecture 4 › Shannon Fano algorithm](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#7-shannon-fano-algorithm-slides-19-23) · [Lecture 4 › Huffman coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29)
 
 **4.** On the MPEG-1 Audio encoding characteristics slide, which bit-rate range and target belong to Layer 3 (MP3)?  
 a) 32-448 kbps, target 192 kbps  
@@ -38,7 +41,8 @@ c) 32-320 kbps, target 64 kbps
 d) 32-320 kbps, target 320 kbps
 
 > **Answer: c)** "Layer 3: 32-320 kbps, target 64 kbps". a) is Layer 1 and b) is Layer 2. (The "128 kbps" on slide 25 is the stereo goal, 64 kbps per channel.)  
-> Source: L5 p.23
+> **Source:** L5 p.23 MPEG-1 layers, bit rates and targets  
+> **Notes:** [Lecture 5 › MPEG audio history and MPEG1 layers](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#9-mpeg-audio-history-and-mpeg1-layers-i-ii-iii-slides-21-28-42)
 
 **5.** Which image interpolation method gives the sharpest images and preserves fine details, but is slow?  
 a) Nearest neighbor  
@@ -47,7 +51,8 @@ c) All three methods give the same sharpness; they differ only in speed
 d) Bicubic
 
 > **Answer: d)** Bicubic: "Images are sharpest; fine details are preserved; slow". Nearest neighbor is fast and simple, with loss of sharpness and checkerboard artifacts.  
-> Source: L6 p.36
+> **Source:** L6 p.36 nearest neighbor, bilinear and bicubic trade-offs  
+> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)
 
 **6.** How many pixels are in N4(p) for p = (3, 5), and which are they?  
 a) 4: (2,5), (4,5), (3,4), (3,6)  
@@ -56,7 +61,8 @@ c) 8: every pixel with D8 = 1 from p
 d) 4: (1,5), (5,5), (3,3), (3,7)
 
 > **Answer: a)** N4(p) = (x+1,y), (x−1,y), (x,y+1), (x,y−1), which is 4 pixels. b) is N_D (the diagonals), c) is N8, d) are pixels at distance 2.  
-> Source: L7 p.21
+> **Source:** L7 p.21 N4, ND and N8  
+> **Notes:** [Lecture 7 › Neighbors of a pixel](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#4-neighbors-of-a-pixel-slide-21)
 
 **7.** Which statement about the XOR operation on images is correct?  
 a) XOR sets bits that are the same in both operands to 1 and bits that differ to 0  
@@ -65,7 +71,8 @@ c) XOR with 255 gives the same result as adding 255 with clamping
 d) XOR is used to adjust the contrast of an image, like multiplication
 
 > **Answer: b)** XOR sets equal bits to 0 and different bits to 1, so p XOR v = 0 only when p = v ("sets the pixels that are specified to black"). a) is reversed. c) XOR 255 = NOT = 255 − p. d) is multiplication.  
-> Source: L9 p.56
+> **Source:** L9 p.56 XOR operation and its use  
+> **Notes:** [Lecture 9 › Logic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#11-logic-operations-slides-54-59)
 
 **8.** The hit-or-miss transform A ⊛ B = (A ⊖ X) ∩ [A^c ⊖ (W − X)] gives:  
 a) the boundary of A, that is A − (A ⊖ B)  
@@ -74,7 +81,8 @@ c) the erosion of A followed by a dilation
 d) the points where the shape X fits in A and, at the same time, its local background W − X fits in A^c
 
 > **Answer: d)** Hit-or-miss finds the location of shape X: B1 = X must hit A and B2 = W − X must hit A^c at the same time. a) is boundary extraction, b) region filling, c) opening.  
-> Source: L10 p.36-37
+> **Source:** L10 p.36-37 hit-or-miss transform  
+> **Notes:** [Lecture 10 › Hit or miss transform](../notes/10_Week5_Morphology.md#6-hit-or-miss-transform-slides-36-37)
 
 **9.** Which is a disadvantage of the Laplacian edge detector?  
 a) It is sensitive to noise, produces double edges and cannot detect edge direction  
@@ -83,7 +91,8 @@ c) It has no zero crossing, so edges cannot be localized
 d) It is a first order operator, so it gives one thick spike per edge
 
 > **Answer: a)** Laplacian disadvantages: "sensitive to noise", "produce double edges", "unable to detect edge direction". It has better localization through zero crossings (c is wrong). b) describes the compass operators.  
-> Source: L11 p.45
+> **Source:** L11 p.45 Laplacian: zero crossing and disadvantages  
+> **Notes:** [Lecture 11 › Second order operators](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47)
 
 **10.** How does a nearest neighbor classifier assign a class to a feature vector?  
 a) It computes the mean of each class and chooses the closest mean, rejecting the vector if it is too far  
@@ -92,7 +101,8 @@ c) It keeps all training samples, finds the training sample closest to the featu
 d) It converts the pattern into a grammar and parses it
 
 > **Answer: c)** "Keep all the training samples ... find the nearest neighbor ... assign the class of the neighbor. Can be extended to K nearest neighbors." a) is nearest class mean, b) unsupervised learning, d) structural PR.  
-> Source: L12 p.41
+> **Source:** L12 p.41 nearest neighbor classification  
+> **Notes:** [Lecture 12 › Nearest neighbor and k nearest neighbors](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 

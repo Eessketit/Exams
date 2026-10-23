@@ -13,7 +13,8 @@ c) 25 kHz
 d) 20 kHz
 
 > **Answer: d)** Need $f_s > 2f_{max} = 24$ kHz. 20 kHz is below that, so it undersamples and aliases; 25 kHz is (just) enough.  
-> Source: L2 p.47, 51
+> **Source:** L2 p.47 sample at more than twice the highest frequency · L2 p.51 undersampling causes aliasing  
+> **Notes:** [Lecture 2 › Sampling theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50) · [Lecture 2 › Aliasing](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#14-aliasing-undersampling-spatial-and-temporal-slides-51-55)
 
 **2.** How many MIDI channels are there, and where is the channel number stored in a channel message?  
 a) 16 channels (0 to 15), in the four low-order bits of the status byte  
@@ -22,7 +23,8 @@ c) 8 channels, in the three message bits of the status byte
 d) 128 channels, in the first data byte
 
 > **Answer: a)** "16 channels, numbered from 0 to 15"; status byte = `1ttt nnnn`, channel = the four low-order bits. The 3 middle bits hold the message type, not the channel.  
-> Source: L3 p.18, 35
+> **Source:** L3 p.18 16 MIDI channels, 0 to 15 · L3 p.35 channel number in the four low-order bits of the status byte  
+> **Notes:** [Lecture 3 › MIDI basics](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#7-midi-basics-concepts-and-terminology-slides-15-24) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)
 
 **3.** A source emits 8 different symbols. Its entropy is largest when ... , and the largest value is ...  
 a) one symbol has probability close to 1; 3 bits/symbol  
@@ -31,7 +33,8 @@ c) all symbols are equally likely; 3 bits/symbol
 d) all symbols are equally likely; 1 bit/symbol
 
 > **Answer: c)** Entropy is largest when all symbols are equally likely: $\log_2 8 = 3$ bits/symbol. 8 is the number of symbols, not bits (8 bits needs 256 equally likely levels).  
-> Source: L4 p.12-13
+> **Source:** L4 p.12 entropy formula · L4 p.13 a uniform distribution gives the maximum (log2 256 = 8)  
+> **Notes:** [Lecture 4 › Entropy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)
 
 **4.** Which statement about frequency masking, as used by MPEG audio (MP3), is true?  
 a) A higher tone masks a lower tone better than the reverse  
@@ -40,7 +43,8 @@ c) Two tones that are widely separated in frequency mask each other strongly
 d) The weaker the masking tone, the wider the range of frequencies it masks
 
 > **Answer: b)** "A lower tone can mask a higher tone"; the reverse is not true. A stronger masker masks a wider range; widely separated tones give little masking.  
-> Source: L5 p.14
+> **Source:** L5 p.14 frequency masking  
+> **Notes:** [Lecture 5 › Psychoacoustics: masking](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#7-psychoacoustics-masking-and-threshold-of-hearing-slides-14-16-33-36)
 
 **5.** When an image is resampled, bilinear interpolation computes each new pixel from how many nearest original pixels?  
 a) 1  
@@ -49,7 +53,8 @@ c) 9
 d) 16
 
 > **Answer: b)** Bilinear uses the 2x2 = 4 nearest pixels. Nearest neighbour uses 1, bicubic 16 (the slide only lists the methods; the counts are textbook context).  
-> Source: L6 p.36
+> **Source:** L6 p.36 resampling and interpolation methods (pixel counts are textbook context)  
+> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)
 
 **6.** Why is m-adjacency (mixed adjacency) used?  
 a) To eliminate the multiple path connections that arise with 8-adjacency  
@@ -58,7 +63,8 @@ c) To make every diagonal neighbour adjacent, exactly as 8-adjacency does
 d) To measure the city-block (D4) distance between two pixels
 
 > **Answer: a)** "m-connectivity eliminates the multiple path connections that arises in 8-connectivity." Both pixels must still be in V, and some diagonals are dropped, so b) and c) are wrong.  
-> Source: L7 p.23-24
+> **Source:** L7 p.23 m-connectivity definition · L7 p.24 m-connectivity removes the multiple paths of 8-connectivity  
+> **Notes:** [Lecture 7 › Connectivity and adjacency](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#5-connectivity-and-adjacency-4-8-and-m-slides-22-24-26)
 
 **7.** A 3-bit image is passed through the look-up table (LUT) below. What does a pixel with value 5 become?
 
@@ -72,7 +78,8 @@ c) 6
 d) 7
 
 > **Answer: c)** The pixel value is the array index: LUT[5] = 6. a) is the 1-based slip (5th entry = 4).  
-> Source: L9 p.9-11
+> **Source:** L9 p.9 LUT definition · L9 p.10-11 pixel value as the array index, 3-bit LUT  
+> **Notes:** [Lecture 9 › Lookup tables](../notes/09_Week5_Intensity_Transforms_Histogram.md#3-lookup-tables-slides-9-12)
 
 **8.** Morphological closing of a binary image with a small structuring element is:  
 a) an erosion followed by a dilation; it removes small bright spots  
@@ -81,7 +88,8 @@ c) an erosion followed by a dilation; it fills small holes
 d) a dilation followed by an erosion; it fills small holes (dark spots) and narrow gaps
 
 > **Answer: d)** Closing = dilation followed by erosion; it "removes small dark spots", fills small holes and gaps. b) describes opening.  
-> Source: L10 p.28-29
+> **Source:** L10 p.28 closing = dilation then erosion, removes small dark spots · L10 p.29 opening vs closing effects  
+> **Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35)
 
 **9.** Which filter is best for removing salt-and-pepper (impulse) noise while preserving edges?  
 a) 3x3 average (low-pass) filter  
@@ -90,7 +98,8 @@ c) Max filter
 d) Laplacian filter
 
 > **Answer: b)** Median: "an effective method for removing impulse noise" that preserves sharp edges. Low-pass suits Gaussian noise; max removes only dark spikes, and min/max fail on mixed impulse noise.  
-> Source: L11 p.53, 60
+> **Source:** L11 p.53 median vs low-pass filter · L11 p.60 min/max filtering  
+> **Notes:** [Lecture 11 › Median and color median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Minimum and maximum filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)
 
 **10.** In a statistical pattern recognition system, the "reject class" is:  
 a) the class with the largest number of training samples  
@@ -99,7 +108,8 @@ c) a generic class for objects that are not in any of the designated known class
 d) the cluster that unsupervised learning forms first
 
 > **Answer: c)** Reject class: "a generic class for objects not in any of the designated known classes". The classifier assigns a class or "reject".  
-> Source: L12 p.31, 36
+> **Source:** L12 p.31 classifier assigns a class or "reject" · L12 p.36 reject class definition  
+> **Notes:** [Lecture 12 › Learning, statistical and structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31) · [Lecture 12 › Feature vectors and terminology](../notes/12_Week7_Pattern_Recognition.md#7-feature-vectors-character-features-and-terminology-slides-32-34-36)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 

@@ -11,7 +11,8 @@ c) 10 ms
 d) 20 ms
 
 > **Answer: b)** T = 1/f = 1/50 = 20 ms. 90 degrees = pi/2 rad = a shift of T/4 = 5 ms. (10 ms is 180 degrees = T/2; 20 ms is a full period.)  
-> Source: L2 p.16, p.21, p.24
+> **Source:** L2 p.16 amplitude, frequency, period T = 1/f, phase · L2 p.21 period and frequency are inverses · L2 p.24 same wave at different phases  
+> **Notes:** [Lecture 2 › Sine Wave Parameters: Amplitude, Frequency, Period, Phase, Wavelength](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)
 
 **2.** An audio signal contains frequencies up to 12 kHz. What is the Nyquist sampling frequency for this signal (the frequency the sampling rate must be greater than)?  
 a) 6 kHz  
@@ -20,7 +21,8 @@ c) 24 kHz
 d) 48 kHz
 
 > **Answer: c)** Sample at more than twice the maximum frequency. The slide calls 2 x f_max = 2 x 12 = 24 kHz the "Nyquist sampling frequency". 6 kHz is the f_s/2 mix-up.  
-> Source: L2 p.47-48
+> **Source:** L2 p.47 sample at more than twice the highest frequency · L2 p.48 2 x f_max is the "Nyquist sampling frequency"  
+> **Notes:** [Lecture 2 › Sampling Theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50)
 
 **3.** The signal voltage is 100 times the noise voltage. The SNR is:  
 a) 40 dB  
@@ -29,7 +31,8 @@ c) 100 dB
 d) 2 dB
 
 > **Answer: a)** Voltages use 20 log10: 20 log10(100) = 40 dB. 20 dB comes from wrongly using 10 log10, which is the power form.  
-> Source: L3 p.6
+> **Source:** L3 p.6 SNR = 20 log10 of the voltage ratio  
+> **Notes:** [Lecture 3 › Signal to Noise Ratio (SNR)](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#2-signal-to-noise-ratio-snr-slides-4-6)
 
 **4.** Which property of Huffman codes makes it possible to decode a bitstream without any ambiguity, with no separators between codewords?  
 a) The two least frequent symbols have codes of the same length  
@@ -38,7 +41,9 @@ c) More frequent symbols get shorter codes
 d) No codeword is a prefix of any other codeword
 
 > **Answer: d)** Unique prefix property: "no Huffman code is a prefix of any other ... precludes any ambiguity in decoding". a, b and c are true optimality properties, but they are not what makes decoding unambiguous.  
-> Source: L4 p.30
+> **Source:** L4 p.30 unique prefix property and optimality properties  
+> **Notes:** [Lecture 4 › Properties of Huffman Coding and Extended Huffman](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#9-properties-of-huffman-coding-and-extended-huffman-slides-30-32)  
+> **Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)
 
 **5.** Why does arithmetic coding usually outperform Huffman coding?  
 a) It is lossy, so it can drop rarely used symbols  
@@ -47,7 +52,8 @@ c) It builds a dictionary of repeated strings and sends a fixed-length code for 
 d) It codes each run of identical symbols as a count followed by the symbol
 
 > **Answer: b)** Slide wording: Huffman uses an integral bit length per symbol, while arithmetic coding treats the whole message as one unit, an interval [a, b). Arithmetic coding is lossless; c is LZW and d is RLE.  
-> Source: L5 p.3
+> **Source:** L5 p.3 integral bit length per symbol vs the whole message as one interval  
+> **Notes:** [Lecture 5 › Arithmetic Coding Basics](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#1-arithmetic-coding-basics-slides-3-4)
 
 **6.** Which statement about the two receptors in the retina is correct?  
 a) Rods are located in the fovea and are highly sensitive to color  
@@ -56,7 +62,8 @@ c) Cones are located in the fovea and are highly sensitive to color; rods are in
 d) Rods dominate photopic vision and provide color
 
 > **Answer: c)** Cones sit in the fovea and see color. Rods are insensitive to color and sensitive to low illumination. Scotopic vision is rod-dominant (b and d swap rods and cones).  
-> Source: L6 p.4-5
+> **Source:** L6 p.4 rods and cones in the retina · L6 p.5 scotopic (rods) vs photopic (cones) vision  
+> **Notes:** [Lecture 6 › Human Eye Structure](../notes/06_Week3_Image_Basics_Perception_Resampling.md#1-human-eye-structure-slides-3-4) · [Lecture 6 › Brightness Adaptation and Weber Ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)
 
 **7.** Two pixels are p = (1, 2) and q = (6, 4). The chessboard distance D8(p, q) is:  
 a) 2  
@@ -65,7 +72,8 @@ c) 7
 d) 5
 
 > **Answer: d)** D8 = max(|1-6|, |2-4|) = max(5, 2) = 5. 7 is D4 (city block) and 5.39 is the Euclidean distance.  
-> Source: L7 p.31-33
+> **Source:** L7 p.31 Euclidean distance · L7 p.32 city-block distance D4 · L7 p.33 chessboard distance D8  
+> **Notes:** [Lecture 7 › Distance Measures](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#7-distance-measures-slides-30-34)
 
 **8.** The goal of histogram equalization is to:  
 a) obtain a uniform histogram for the output image, by mapping gray level r to s so that s is uniformly distributed  
@@ -74,7 +82,8 @@ c) make the output histogram match a desired histogram given by the user
 d) reduce the number of gray levels so that the image needs less storage
 
 > **Answer: a)** The goal on slide 20 is a uniform output histogram. c is histogram specification, b is brightness addition, d is posterizing.  
-> Source: L9 p.20, p.40
+> **Source:** L9 p.20 goal: a uniform output histogram · L9 p.40 histogram specification  
+> **Notes:** [Lecture 9 › Histogram Equalization, Theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram Specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)
 
 **9.** Morphological opening of image A by structuring element B is:  
 a) a dilation followed by an erosion  
@@ -83,7 +92,8 @@ c) an erosion followed by a dilation
 d) an erosion followed by a second erosion
 
 > **Answer: c)** Opening = erosion followed by dilation. a is closing; b is the morphological gradient.  
-> Source: L10 p.26, p.28, p.55
+> **Source:** L10 p.26 opening = erosion then dilation · L10 p.28 closing = dilation then erosion · L10 p.55 morphological gradient  
+> **Notes:** [Lecture 10 › Opening and Closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Gray Scale Morphology, Gradient, Top Hat](../notes/10_Week5_Morphology.md#11-gray-scale-morphology-gradient-top-hat-slides-52-56)
 
 **10.** In pattern recognition, unsupervised learning means that:  
 a) a teacher provides a category label or cost for each pattern in the training set  
@@ -92,7 +102,8 @@ c) every pattern is put in the reject class until a teacher labels it
 d) each pattern is compared with a stored template of every class
 
 > **Answer: b)** Unsupervised learning = the system forms clusters or "natural groupings". a is supervised learning.  
-> Source: L12 p.28
+> **Source:** L12 p.28 supervised vs unsupervised learning  
+> **Notes:** [Lecture 12 › Learning, Statistical and Structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -333,7 +344,8 @@ A source emits 5 symbols with these probabilities:
 **Answer**
 
 **Source:** L4 p.24-27 Huffman outline and Algorithm 7.1 (bottom-up) · L4 p.12 entropy · L4 p.26 average length and efficiency table · L4 p.30 properties ($\eta\le\bar l<\eta+1$)  
-**Notes:** [Lecture 4 › Huffman Coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29) · [Lecture 4 › Entropy: Basics of Information Theory](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)
+**Notes:** [Lecture 4 › Huffman Coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29) · [Lecture 4 › Entropy: Basics of Information Theory](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)  
+**Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)
 
 **Rules used:**
 - Always merge the two smallest probabilities. This source has no ties.
