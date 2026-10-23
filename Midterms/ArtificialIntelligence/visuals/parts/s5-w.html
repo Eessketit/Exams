@@ -1,0 +1,605 @@
+<article class="q" id="s5-w1" data-part="w" data-num="1" data-topic="Model evaluation">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Open question · Lecture 3.1, Evaluating learning algorithms</p>
+    <h3 class="q-title">Evaluating learning algorithms</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Why do we evaluate machine learning models? Give the five reasons from the lecture.</span></li>
+      <li><span class="tag">(b)</span><span>Define overfitting and underfitting in terms of training and test performance.</span></li>
+      <li><span class="tag">(c)</span><span>Give the formulas of MSE, RMSE, MAE and R², and say what each one tells you.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>The goal is not only a low training error but good performance on <b>new, unseen data</b>. Evaluation shows the strengths, the weaknesses and what to improve.</li>
+        <li><b>1. Generalization ability</b>: will the model work on new data? Evaluation detects over- and underfitting.</li>
+        <li><b>2. Model selection</b>: metrics give a standard way to compare candidate models.</li>
+        <li><b>3. Parameter tuning</b>: measure the effect of different hyperparameter settings.</li>
+        <li><b>4. Understanding strengths and weaknesses</b>: e.g. good in high-dimensional spaces but bad with noisy data.</li>
+        <li><b>5. Benchmarking</b>: compare with baselines, previous models and competitors.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <ul>
+        <li><b>Overfitting</b>: the model performs well on training data but poorly on test data. It has learned the noise of the training set.</li>
+        <li><b>Underfitting</b>: the model performs poorly on both. It is too simple for the pattern in the data.</li>
+        <li>The metrics are computed by feeding a <b>test set</b> to the trained model, so the gap between training and test error is what you look at.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Training error keeps falling, test error does not</h4></div>
+        <p class="fig-lede">Seven training points and six test points from the same curved pattern (toy data). A polynomial of degree d is fit to the training points only. Drag d. Degree 1 is poor on both sets, degree 2 is good on both, and degree 6 passes through every training point but misses the test points.</p>
+        <div data-viz="fit-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Training MSE</span><span class="v pri" data-role="fit-tr">0.504</span><span class="sub">7 blue points</span></div>
+          <div class="stat"><span class="label">Test MSE</span><span class="v sec" data-role="fit-te">0.114</span><span class="sub">6 plum points, never seen</span></div>
+        </div>
+        <p class="verdict" data-role="fit-verdict"></p>
+        <div data-viz="fit"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>training data and training MSE</span>
+          <span><i class="sw-sec"></i>test data and test MSE</span>
+          <span><i class="sw-ter"></i>fitted model</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Formulas and meaning</h4>
+      <pre class="calc">MSE  = (1/m) • Σ (hθ(x)⁽ⁱ⁾ − y⁽ⁱ⁾)²
+RMSE = √MSE
+MAE  = (1/m) • Σ |hθ(x)⁽ⁱ⁾ − y⁽ⁱ⁾|
+R²   = 1 − Σ (y⁽ⁱ⁾ − hθ(x)⁽ⁱ⁾)² / Σ (y⁽ⁱ⁾ − ȳ)²</pre>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Metric</th><th class="l">What it tells you</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>MSE</b></td><td class="l">average squared error; <b>sensitive to large errors</b> (outliers)</td></tr>
+            <tr><td class="l"><b>RMSE</b></td><td class="l">the error in the <b>same units as the target</b></td></tr>
+            <tr><td class="l"><b>MAE</b></td><td class="l">average absolute error; <b>less sensitive to large errors</b> than MSE</td></tr>
+            <tr><td class="l"><b>R²</b></td><td class="l">share of the target's variance the model explains; <b>close to 1 = good fit</b>, 0 = no better than predicting the mean</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>MSE here uses 1/m. The cost J(θ) used for gradient descent has 1/2m.</li>
+        <li>Slide 26 example, m = 10: errors h − y = 1, −1, −2, −5, 8, 0, −4, −2, 1, −1.</li>
+      </ul>
+      <pre class="calc">Σ (h − y)² = 1 + 1 + 4 + 25 + 64 + 0 + 16 + 4 + 1 + 1 = 117
+MSE  = 117 / 10 = 11.7
+RMSE = √11.7 = 3.42
+Σ |h − y| = 1 + 1 + 2 + 5 + 8 + 0 + 4 + 2 + 1 + 1 = 25
+MAE  = 25 / 10 = 2.5
+ȳ = 540 / 10 = 54,  Σ (y − ȳ)² = 8440
+R²   = 1 − 117 / 8440 = 0.986</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>One large error owns most of the MSE but not of the MAE</h4></div>
+        <p class="fig-lede">Top: the ten errors of the slide 26 example. Bottom: each error's share of the squared sum (MSE) and of the absolute sum (MAE). Example 5 has error 8: 64 of the 117 in the MSE sum, but only 8 of the 25 in the MAE sum. Drag its error to see MSE grow with the square and MAE only linearly.</p>
+        <div data-viz="err-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">MSE</span><span class="v pri" data-role="m-mse">11.7</span><span class="sub">Σ(h − y)² / 10</span></div>
+          <div class="stat"><span class="label">RMSE</span><span class="v pri" data-role="m-rmse">3.42</span><span class="sub">√MSE, units of y</span></div>
+          <div class="stat"><span class="label">MAE</span><span class="v sec" data-role="m-mae">2.5</span><span class="sub">Σ|h − y| / 10</span></div>
+          <div class="stat"><span class="label">R²</span><span class="v ok" data-role="m-r2">0.986</span><span class="sub">1 − SS<sub>res</sub> / 8440</span></div>
+        </div>
+        <div data-viz="err"></div>
+        <div class="legend">
+          <span><i class="sw-ter"></i>example 5</span>
+          <span><i class="sw-pri"></i>the other nine examples</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>R² compares the model's errors with the spread around the mean</h4></div>
+        <p class="fig-lede">Ochre: how far each actual y is from the mean ȳ = 54. Their squares add up to SS<sub>tot</sub> = 8440. Red: how far each prediction is from y, squares adding up to SS<sub>res</sub> = 117. The bars below are drawn to scale. The residual part is a sliver, so R² = 1 − 117/8440 is close to 1.</p>
+        <div data-viz="r2"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>actual y</span>
+          <span><i class="sw-sec"></i>prediction h</span>
+          <span><i class="sw-ter"></i>y − ȳ, total spread</span>
+          <span><i class="sw-bad"></i>h − y, residual</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">MSE 11.7, RMSE 3.42, MAE 2.5, R² 0.986.</span> One error of 8 gives 64 of the 117 in the MSE sum but only 8 of the 25 in the MAE sum.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Evaluate for generalization ability, model selection, parameter tuning, strengths and weaknesses, and benchmarking. Overfitting: good on training data, poor on test data. Underfitting: poor on both. MSE is sensitive to large errors, RMSE is in the target's units, MAE is less sensitive to large errors, and R² close to 1 is a good fit.</p>
+    <p class="source">Source: L3.1 p.3-6 why evaluate, five reasons · L3.1 p.4 overfitting and underfitting · L3.1 p.10-13 MSE, RMSE, MAE, R² · L3.1 p.26 worked regression example · Notes: L3.1 › Why evaluate · L3.1 › Regression metrics: MSE, RMSE, MAE · L3.1 › R-squared</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w2" data-part="w" data-num="2" data-topic="Decision trees">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Open question · Lecture 4.1, Decision tree</p>
+    <h3 class="q-title">Decision trees</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Explain the terms root node, decision node, leaf node, splitting, sub-tree, pruning, and parent and child node.</span></li>
+      <li><span class="tag">(b)</span><span>Compare the decision tree algorithms ID3, C4.5 and CART.</span></li>
+      <li><span class="tag">(c)</span><span>Define entropy and information gain. How does the tree pick the attribute for a node? What are the main problems of decision trees, and how are they handled?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Term</th><th class="l">Meaning</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Root node</b></td><td class="l">the first node; the whole dataset starts dividing here</td></tr>
+            <tr><td class="l"><b>Splitting</b></td><td class="l">dividing a node into sub-nodes</td></tr>
+            <tr><td class="l"><b>Decision node</b></td><td class="l">a sub-node that is split further</td></tr>
+            <tr><td class="l"><b>Leaf / terminal node</b></td><td class="l">not split any more; holds the final class</td></tr>
+            <tr><td class="l"><b>Sub-tree / branch</b></td><td class="l">a sub-section of the tree</td></tr>
+            <tr><td class="l"><b>Pruning</b></td><td class="l">removing nodes to prevent overfitting and simplify the model</td></tr>
+            <tr><td class="l"><b>Parent / child</b></td><td class="l">a node that is split is the parent of the sub-nodes it produces</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Every term on the PlayTennis tree of slide 34</h4></div>
+        <p class="fig-lede">The tree ID3 builds in the lecture. Each node shows its Yes and No counts. Pick a term to light up the nodes or edges it names.</p>
+        <div data-viz="term-steps"></div>
+        <p class="step-note" data-role="term-note" aria-live="polite"></p>
+        <div data-viz="term"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l"></th><th class="l">ID3</th><th class="l">C4.5</th><th class="l">CART</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Split criterion</b></td><td class="l">entropy / information gain</td><td class="l">gain ratio (textbook context)</td><td class="l">Gini impurity</td></tr>
+            <tr><td class="l"><b>Splits</b></td><td class="l">one branch per value</td><td class="l">one branch per value</td><td class="l">binary</td></tr>
+            <tr><td class="l"><b>Data</b></td><td class="l">categorical attributes</td><td class="l">handles missing data and continuous attributes</td><td class="l">categorical and numerical</td></tr>
+            <tr><td class="l"><b>Task</b></td><td class="l">classification</td><td class="l">classification; an improved ID3</td><td class="l">classification and regression</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The same root node, split three ways</h4></div>
+        <p class="fig-lede">The PlayTennis root has 9 Yes and 5 No. ID3 and C4.5 give Outlook one branch per value and score it by information gain or gain ratio. CART asks a yes/no question and scores it by the drop in Gini impurity. The gain ratio and the Gini numbers are textbook context, computed on the slide data.</p>
+        <div data-viz="algos"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Yes rows</span>
+          <span><i class="sw-sec"></i>No rows</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li><b>Entropy</b> E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ measures impurity: 0 for a pure node, 1 for a 50/50 node. Higher entropy means lower purity.</li>
+        <li><b>Information gain</b> IG(S, a) = E(S) − Σᵥ (|Sᵥ|/|S|) E(Sᵥ): how much the entropy decreases after splitting on a. Each child is weighted by its share of the rows.</li>
+        <li><b>Choosing the attribute</b>: at each node compute IG for every attribute and take the <b>highest</b>. A node that is 100% pure becomes a leaf. Then repeat on every branch.</li>
+        <li><b>Problems</b>: trees <b>overfit</b> easily (they capture noise); the greedy split is only locally optimal; they are sensitive to outliers and to the sample size; missing values must be imputed first.</li>
+        <li><b>Handling</b>: <b>pruning</b> and stopping criteria (max depth, min samples per node, IG threshold; textbook context for the list), or a <b>random forest</b> of many trees.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Entropy is 0 for a pure node and 1 for a 50/50 node</h4></div>
+        <p class="fig-lede">A node with 14 rows. Drag the number of Yes rows. Entropy (blue) and Gini (plum, the CART measure) both peak at a 50/50 split and both fall to 0 when the node is pure, which is when it becomes a leaf.</p>
+        <div data-viz="ent-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Entropy E(S)</span><span class="v pri" data-role="ent-e">0.940</span><span class="sub">−p₊ log₂ p₊ − p₋ log₂ p₋</span></div>
+          <div class="stat"><span class="label">Gini</span><span class="v sec" data-role="ent-g">0.459</span><span class="sub">1 − p₊² − p₋²</span></div>
+        </div>
+        <p class="verdict" data-role="ent-verdict"></p>
+        <div data-viz="ent"></div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Overfitting: the full tree carves out a box for one noisy row</h4></div>
+        <p class="fig-lede">Toy data with two numeric features. Growing until every leaf is pure adds two splits just to isolate one No row (the noise) on the Yes side. A new point that lands in that box gets the wrong class. Pruning cuts the sub-tree back to one leaf.</p>
+        <div data-viz="prune-steps"></div>
+        <p class="step-note" data-role="prune-note" aria-live="polite"></p>
+        <div data-viz="prune"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Yes row</span>
+          <span><i class="sw-sec"></i>No row</span>
+          <span><i class="sw-ter"></i>new point, really Yes</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Root node: the whole dataset starts here; decision node: split further; leaf: final class; pruning removes nodes to prevent overfitting. ID3 uses entropy / information gain, C4.5 handles missing data and continuous attributes, CART uses Gini and does classification and regression. Pick the attribute with the highest IG = E(S) − Σ (|Sᵥ|/|S|) E(Sᵥ).</p>
+    <p class="source">Source: L4.1 p.5 definition · L4.1 p.6-8 ID3, C4.5, CART · L4.1 p.10-13 terminology · L4.1 p.15-20 how it works and assumptions · L4.1 p.22-31 entropy and information gain · Notes: L4.1 › Decision tree definition and types: ID3, C4.5, CART · L4.1 › Terminology · L4.1 › How the algorithm works and its assumptions · L4.1 › Stopping, overfitting and pruning</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w3" data-part="w" data-num="3" data-topic="Scaling and leakage">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Open question · Lecture 5.2, Data preparation</p>
+    <h3 class="q-title">Feature scaling, encoding and data leakage</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Give the formulas of min-max scaling, standardization and robust scaling, and when to use each.</span></li>
+      <li><span class="tag">(b)</span><span>Compare label encoding, one-hot encoding and target encoding.</span></li>
+      <li><span class="tag">(c)</span><span>What is data leakage, and how is it avoided? How should a heavily imbalanced dataset be handled?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Method</th><th class="l">Formula</th><th class="l">Output</th><th class="l">Use</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Min-Max</b></td><td class="l">(x − min)/(max − min)</td><td class="l">[0, 1]</td><td class="l">neural networks, KNN, SVM; very sensitive to outliers</td></tr>
+            <tr><td class="l"><b>Standardization</b> (z-score)</td><td class="l">(x − μ)/σ</td><td class="l">mean 0, std 1, unbounded</td><td class="l">linear and logistic regression, PCA</td></tr>
+            <tr><td class="l"><b>Robust</b></td><td class="l">(x − Q2)/(Q3 − Q1)</td><td class="l">median-centred, IQR-scaled</td><td class="l">data with many outliers</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Why scale: features on very different ranges (age vs income) are weighted unequally.</li>
+        <li>Start with standardization for linear models. Switch to Robust when a boxplot shows heavy outliers you want to keep. Trees do not need scaling.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>One outlier squeezes min-max and z-score, but not robust scaling</h4></div>
+        <p class="fig-lede">Seven incomes in k$ (32, 38, 41, 45, 50, 54, 60; toy data), scaled with and without one extra income of 250. The blue band is where the seven normal values land. Min-max and z-score use the max and σ, which the outlier inflates. Robust scaling uses the median and the IQR, which barely move.</p>
+        <div data-viz="scale"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>the seven normal values</span>
+          <span><i class="sw-bad"></i>the outlier 250</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <ul>
+        <li><b>Label encoding</b> (0, 1, 2): for <b>ordinal</b> categories (small &lt; medium &lt; large). On nominal data it invents a false order.</li>
+        <li><b>One-hot encoding</b> (one 0/1 column per category): for <b>nominal</b> categories with a manageable number of values (Tashkent / Samarkand / Bukhara).</li>
+        <li><b>Target encoding</b>: replace each category by the <b>mean of the target</b> for it (e.g. average salary per city); for high cardinality (hundreds of categories). It uses y, so it must be fit on the training data only.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>What each encoding tells the model about distance</h4></div>
+        <p class="fig-lede">The slide 21-22 city column, encoded three ways. A model sees only the numbers, so it reads distances and order into them. Pick an encoding.</p>
+        <div data-viz="enc-steps"></div>
+        <p class="step-note" data-role="enc-note" aria-live="polite"></p>
+        <div data-viz="enc-table"></div>
+        <div data-viz="enc"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li><b>Data leakage</b>: information from the test set gets into training, e.g. a scaler, encoder, imputer or SMOTE fit on the whole data. The metrics look great and the model fails in production.</li>
+        <li>Avoid it: <b>split first</b>, then fit every preprocessing step on the <b>training set only</b>, and only <code>transform</code> the test set. Use a time-based split without shuffling for time series.</li>
+        <li><b>Imbalance</b> (e.g. 9,980 normal vs 20 fraud): a model that always says "normal" gets 99.8% accuracy and recall 0.</li>
+        <li>Use precision, recall, F1 or PR-AUC; a <b>stratified</b> split; and <b>SMOTE</b> (synthetic minority points interpolated between a minority point and its nearest minority neighbours) or class weights, <b>on the training data only</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Fit before the split and the test value leaks into μ</h4></div>
+        <p class="fig-lede">Toy ages: three training rows and one test row (90). Top: the scaler is fit on all four rows, so its mean already contains the test value. Bottom: the data is split first, the scaler is fit on the training rows only, and the test row is only transformed.</p>
+        <div data-viz="leak"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>training rows</span>
+          <span><i class="sw-sec-soft"></i>test row</span>
+          <span><i class="sw-bad"></i>leak</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Imbalance hides behind accuracy; SMOTE adds minority points</h4></div>
+        <p class="fig-lede">Top: the slide 24 fraud data. Always predicting "Normal" is right 9,980 times out of 10,000 and finds no fraud. Below: SMOTE on a toy training set. Step through its four steps.</p>
+        <div class="stats">
+          <div class="stat"><span class="label">Accuracy, always "Normal"</span><span class="v">99.8%</span><span class="sub">9,980 / 10,000</span></div>
+          <div class="stat"><span class="label">Fraud recall</span><span class="v pri">0</span><span class="sub">0 of 20 fraud cases found</span></div>
+        </div>
+        <div data-viz="imb"></div>
+        <div data-viz="smote-steps"></div>
+        <p class="step-note" data-role="smote-note" aria-live="polite"></p>
+        <div data-viz="smote"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>majority class (gray rings)</span>
+          <span><i class="sw-pri"></i>minority class</span>
+          <span><i class="sw-ter"></i>synthetic minority point</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Min-Max (x − min)/(max − min) to [0, 1], sensitive to outliers; standardization (x − μ)/σ for linear models and PCA; Robust (x − Q2)/(Q3 − Q1) for data with many outliers. Label encoding for ordinal, one-hot for nominal, target encoding for high cardinality. Split first and fit every scaler, encoder, imputer and SMOTE on the training set only.</p>
+    <p class="source">Source: L5.2 p.18-20 scaling methods · L5.2 p.21-22 encodings · L5.2 p.24-25 class imbalance and SMOTE · L5.2 p.34 splitting · L5.2 p.36 common mistakes · Notes: L5.2 › Feature scaling · L5.2 › Categorical encoding · L5.2 › Big data and class imbalance · L5.2 › Splitting and data leakage</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w4" data-part="w" data-num="4" data-topic="SVM by hand">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Problem · Lecture 4.2, Support vector machine</p>
+    <h3 class="q-title">Support vector machine by hand</h3>
+  </div>
+  <div class="prompt">
+    <p>Training data: negative class (y = −1): (1, 2), (0, 1), (1, 0); positive class (y = +1): (3, 4), (4, 3), (5, 5). A linear SVM gives w = (0.5, 0.5), b = −2.5.</p>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Check that every point satisfies the hard-margin constraint yᵢ(w·xᵢ + b) ≥ 1. Which points are the support vectors?</span></li>
+      <li><span class="tag">(b)</span><span>Write the decision boundary and the two margin lines, and compute the margin width.</span></li>
+      <li><span class="tag">(c)</span><span>Classify the new points (2, 2) and (4, 4) and give their distance to the hyperplane.</span></li>
+      <li><span class="tag">(d)</span><span>Two more training points are added: (3, 3) with y = −1 and (2, 3) with y = +1. Keeping the same w and b, compute their slack ζ and the soft-margin cost J = ½‖w‖² + C Σζᵢ for C = 1 and C = 10.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>f(x) = w·x + b = 0.5x₁ + 0.5x₂ − 2.5. Compute y·f(x) for every point.</li>
+      </ul>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Point</th><th>y</th><th>f(x)</th><th>y·f(x)</th><th class="l">Status</th></tr></thead>
+          <tbody>
+            <tr class="on"><td class="l">(1, 2)</td><td>−1</td><td>−1</td><td class="hl">1</td><td class="l">on L2, <b>support vector</b></td></tr>
+            <tr><td class="l">(0, 1)</td><td>−1</td><td>−2</td><td>2</td><td class="l">beyond the margin</td></tr>
+            <tr><td class="l">(1, 0)</td><td>−1</td><td>−2</td><td>2</td><td class="l">beyond the margin</td></tr>
+            <tr class="on"><td class="l">(3, 4)</td><td>+1</td><td>1</td><td class="hl">1</td><td class="l">on L1, <b>support vector</b></td></tr>
+            <tr class="on"><td class="l">(4, 3)</td><td>+1</td><td>1</td><td class="hl">1</td><td class="l">on L1, <b>support vector</b></td></tr>
+            <tr><td class="l">(5, 5)</td><td>+1</td><td>2.5</td><td>2.5</td><td class="l">beyond the margin</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>All values are ≥ 1, so the constraints hold.</li>
+        <li>The support vectors are the points with y·f(x) = 1, the ones closest to the hyperplane.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Three points sit exactly on the margin lines</h4></div>
+        <p class="fig-lede">The six training points with the boundary x₁ + x₂ = 5 and the margin lines x₁ + x₂ = 3 and 7. Pick a point to see its constraint check. The ringed points have y·f(x) = 1.</p>
+        <div data-viz="sv-steps"></div>
+        <p class="step-note" data-role="sv-note" aria-live="polite"></p>
+        <div data-viz="sv"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>y = +1</span>
+          <span><i class="sw-sec"></i>y = −1</span>
+          <span><i class="sw-ok"></i>support vector</span>
+          <span><i class="sw-seg"></i>margin</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">every yᵢ·f(xᵢ) ≥ 1; support vectors (1, 2), (3, 4), (4, 3).</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) and (c) Worked solution</h4>
+      <pre class="calc">boundary  L:  0.5x₁ + 0.5x₂ − 2.5 = 0   →  x₁ + x₂ = 5
+L1 (+1):      w·x + b = +1             →  x₁ + x₂ = 7
+L2 (−1):      w·x + b = −1             →  x₁ + x₂ = 3
+‖w‖ = √(0.25 + 0.25) = 0.7071          d = 2/‖w‖ = 2.828
+check: |(3, 4) − (1, 2)| = √(4 + 4) = 2.828, along w
+
+distance = |f(x)| / ‖w‖
+(2, 2):  f = 1 + 1 − 2.5 = −0.5 &lt; 0  →  y = −1,  0.5 / 0.7071 = 0.707  (inside the margin)
+(4, 4):  f = 2 + 2 − 2.5 =  1.5 ≥ 0  →  y = +1,  1.5 / 0.7071 = 2.121</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Margin width 2/‖w‖ and the distances of the new points</h4></div>
+        <p class="fig-lede">w is perpendicular to the boundary, so distances are measured along w. The segment from (1, 2) to (3, 4) crosses the whole margin. Both new points lie on the line x₁ = x₂, which meets the boundary at (2.5, 2.5).</p>
+        <div data-viz="mg-steps"></div>
+        <p class="step-note" data-role="mg-note" aria-live="polite"></p>
+        <div data-viz="mg"></div>
+        <div class="legend">
+          <span><i class="sw-ok"></i>margin width d</span>
+          <span><i class="sw-ter"></i>new point and its distance</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">boundary x₁ + x₂ = 5, L1: x₁ + x₂ = 7, L2: x₁ + x₂ = 3, d = 2.828; (2, 2) → −1 at 0.707, (4, 4) → +1 at 2.121.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Worked solution</h4>
+      <pre class="calc">ζ = max(0, 1 − y·f(x))
+(3, 3), y = −1:  f = 0.5,  y·f = −0.5,  ζ = 1.5   (> 1: misclassified, on the positive side)
+(2, 3), y = +1:  f = 0,    y·f = 0,     ζ = 1     (on the hyperplane, inside the margin)
+½‖w‖² = ½ · 0.5 = 0.25        Σζ = 1.5 + 1 = 2.5
+C = 1:   J = 0.25 + 1 · 2.5  = 2.75
+C = 10:  J = 0.25 + 10 · 2.5 = 25.25</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Slack is the distance past the point's own margin line</h4></div>
+        <p class="fig-lede">A wrong negative point is measured from L2, a wrong positive point from L1. ζ is in units of f, so the drawn length is ζ/‖w‖. Drag C: the hinge part C·Σζ takes over the cost as C grows.</p>
+        <div data-viz="slack"></div>
+        <div data-viz="c-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Margin term</span><span class="v pri">0.25</span><span class="sub">½‖w‖² = ½ · 0.5</span></div>
+          <div class="stat"><span class="label">Slack term</span><span class="v ter" data-role="c-hinge">2.5</span><span class="sub">C · Σζ = C × 2.5</span></div>
+          <div class="stat"><span class="label">Cost</span><span class="v ok" data-role="c-j">2.75</span><span class="sub">J = ½‖w‖² + C Σζ</span></div>
+        </div>
+        <div data-viz="cost"></div>
+        <p class="verdict" data-role="c-verdict"></p>
+      </figure>
+      <p>Result: <span class="result">ζ = 1.5 and 1; J = 2.75 for C = 1 and 25.25 for C = 10.</span> With a large C the violations dominate the cost, so training would push w and b to fix them, narrowing the margin.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Hard margin: yᵢ(w·xᵢ + b) ≥ 1, and the support vectors are the points with equality. Margin lines w·x + b = ±1, width d = 2/‖w‖, distance to the hyperplane |w·x + b|/‖w‖. Soft margin: ζ = max(0, 1 − y·f(x)) and J = ½‖w‖² + C Σζ; a large C penalizes violations strongly and gives a smaller margin.</p>
+    <p class="source">Source: L4.2 p.8-9 support vectors and margin · L4.2 p.24-25 hyperplane and decision rule · L4.2 p.26 margin lines ±1 · L4.2 p.28-30 combined constraint · L4.2 p.31-36 d = 2/‖w‖ · L4.2 p.40-42 soft-margin cost and ζ · Notes: L4.2 › Hyperplane, decision rule and margin lines · L4.2 › Hard margin: constraints and margin 2 over norm w · L4.2 › Soft margin: slack zeta, C and hinge loss · L4.2 › Exam focus</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w5" data-part="w" data-num="5" data-topic="PCA">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Problem · Lecture 6.2, Principal component analysis</p>
+    <h3 class="q-title">PCA: the lecture example</h3>
+  </div>
+  <div class="prompt">
+    <p>Find the first principal component of the dataset below (the slide 17 example).</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the means and the centred data.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the covariance matrix (divide by n − 1).</span></li>
+      <li><span class="tag">(c)</span><span>Compute the eigenvalues and the unit eigenvector of the largest eigenvalue.</span></li>
+      <li><span class="tag">(d)</span><span>Compute PC1 for every point and the share of variance it keeps.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">X̄₁ = (4 + 8 + 13 + 7) / 4  = 32 / 4 = 8
+X̄₂ = (11 + 4 + 5 + 14) / 4 = 34 / 4 = 8.5
+centred = X − X̄:  (−4, 2.5), (0, −4.5), (5, −3.5), (−1, 5.5)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Centring moves the mean to the origin</h4></div>
+        <p class="fig-lede">Left: the four points and their mean (8, 8.5). Right: the same points after subtracting the mean. The shape does not change; only the origin moves.</p>
+        <div data-viz="centre"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>data point</span>
+          <span><i class="sw-ok"></i>mean</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">Cov(X₁, X₁) = (16 + 0 + 25 + 1) / 3 = 42 / 3 = 14
+Cov(X₂, X₂) = (6.25 + 20.25 + 12.25 + 30.25) / 3 = 69 / 3 = 23
+Cov(X₁, X₂) = (−10 + 0 − 17.5 − 5.5) / 3 = −33 / 3 = −11</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Every product (x₁ − X̄₁)(x₂ − X̄₂) is negative or zero</h4></div>
+        <p class="fig-lede">Each centred point spans a rectangle with the origin. Its signed area is the product used in Cov(X₁, X₂). Points 1, 3 and 4 lie in the plum quadrants, where one coordinate is negative, so their products are negative. Point 2 lies on the axis and adds 0. The sum is −33, so the covariance is negative: X₂ tends to fall as X₁ rises.</p>
+        <div data-viz="cov"></div>
+        <div class="legend">
+          <span><i class="sw-sec-soft"></i>negative product</span>
+          <span><i class="sw-pri-soft"></i>positive product (none here)</span>
+        </div>
+      </figure>
+      <p>Result:</p>
+      <div class="given" data-viz="S"></div>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <pre class="calc">det(S − λI) = (14 − λ)(23 − λ) − (−11)² = λ² − 37λ + 201 = 0
+λ = (37 ± √(1369 − 804)) / 2 = (37 ± √565) / 2 = (37 ± 23.770) / 2
+λ₁ = 30.385      λ₂ = 6.615
+
+(S − λ₁I)u = 0:  (14 − 30.385)u₁ − 11u₂ = 0  →  u₂ = −1.4895 u₁
+length √(1 + 1.4895²) = 1.7941   →   u₁ = (1, −1.4895) / 1.7941 = (0.5574, −0.8303)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>λ₁ is the largest variance of the projections over all directions</h4></div>
+        <p class="fig-lede">Turn a unit vector u through the centred points. Each point projects onto the line (small dots). The variance of those projections is uᵀSu, plotted on the right. It peaks at λ₁ = 30.385 when u is the eigenvector u₁, and bottoms out at λ₂ = 6.615 at the perpendicular direction.</p>
+        <div data-viz="dir-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Unit direction</span><span class="v pri" data-role="dir-u">(0.558, −0.830)</span><span class="sub">u = (cos θ, sin θ)</span></div>
+          <div class="stat"><span class="label">Projection variance</span><span class="v ok" data-role="dir-v">30.385</span><span class="sub">uᵀ S u</span></div>
+        </div>
+        <div data-viz="dir"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>direction u and the projections</span>
+          <span><i class="sw-ok"></i>variance at the current θ</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Worked solution</h4>
+      <div data-viz="pc-table"></div>
+      <ul>
+        <li>These match the slide. The notebook prints the same numbers with the opposite sign, because its eigenvector is (−0.5574, 0.8303). Both are correct.</li>
+        <li>PC1 keeps 30.385/37 = <b>82.1%</b> of the variance; PC2 keeps 6.615/37 = 17.9%.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>PC1 turns each 2-D point into one number</h4></div>
+        <p class="fig-lede">Left: each centred point drops onto the PC1 axis (direction u₁). Right: the four PC1 values on one line, and the share of the total variance 37 that each component keeps.</p>
+        <div data-viz="proj"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>PC1 axis and the PC1 values</span>
+          <span><i class="sw-sec"></i>PC2 axis</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">PC1 = −4.3052, 3.7361, 5.6928, −5.1238; it keeps 82.1% of the variance.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>PCA: centre the data, take the covariance matrix with n − 1, solve det(S − λI) = 0, normalize the eigenvector of the largest eigenvalue, and project: PC1 = centred row · u₁. Each eigenvalue is the variance along its direction, so PC1 keeps λ₁ / Σλ = 30.385/37 = 82.1%.</p>
+    <p class="source">Source: L6.2 p.14 mean and covariance · L6.2 p.15 eigenvalues and eigenvectors · L6.2 p.16 projection · L6.2 p.17 worked example, answer −4.3052, 3.7361, 5.6928, −5.1238 · Notes: L6.2 › Step by step · L6.2 › Worked example</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w6" data-part="w" data-num="6" data-topic="Tree and forest">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Problem · Lecture 4.1, Decision tree and random forest</p>
+    <h3 class="q-title">Decision tree and random forest</h3>
+  </div>
+  <div class="prompt">
+    <p>Will a customer buy a computer?</p>
+    <div data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the entropy of the dataset.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the information gain of Age, Student and Credit, and choose the root.</span></li>
+      <li><span class="tag">(c)</span><span>Build the complete tree with ID3.</span></li>
+      <li><span class="tag">(d)</span><span>Classify x = {Age = Youth, Student = No, Credit = Fair} with your tree.</span></li>
+      <li><span class="tag">(e)</span><span>A random forest uses your tree as T1 and two more trees built on bootstrapped data:<br>T2: Student? Yes → Yes; No → Credit? (Fair → Yes, Excellent → No)<br>T3: Credit? Fair → Yes; Excellent → Age? (Youth → Yes, Middle → Yes, Senior → No)<br>What does the forest predict for x?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">9 Yes, 5 No
+E(S) = −(9/14) log₂(9/14) − (5/14) log₂(5/14) = 0.410 + 0.530 = 0.940</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Attribute</th><th class="l">Value: Yes/No (entropy)</th><th class="l">Weighted E</th><th>IG</th></tr></thead>
+          <tbody>
+            <tr class="on"><td class="l"><b>Age</b></td><td class="l">Youth 2/3 (0.971), Middle 4/0 (0), Senior 3/2 (0.971)</td><td class="l">10/14 · 0.971 = 0.694</td><td class="hl">0.247</td></tr>
+            <tr><td class="l">Student</td><td class="l">No 4/4 (1), Yes 5/1 (0.650)</td><td class="l">8/14 · 1 + 6/14 · 0.650 = 0.850</td><td>0.090</td></tr>
+            <tr><td class="l">Credit</td><td class="l">Fair 6/2 (0.811), Excellent 3/3 (1)</td><td class="l">8/14 · 0.811 + 6/14 · 1 = 0.892</td><td>0.048</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Age gives the purest children, so it has the highest gain</h4></div>
+        <p class="fig-lede">Each row splits the 14 customers on one attribute. Bar length is the number of rows in each child, blue for Yes and plum for No. IG is 0.940 minus the weighted entropy of the children. Age has one pure child (Middle) and wins.</p>
+        <div data-viz="root"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Yes</span>
+          <span><i class="sw-sec"></i>No</span>
+          <span><i class="sw-ok"></i>highest IG</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">Age is the root (IG 0.247).</span> Age = Middle is pure (4/0), so it is a Yes leaf.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <ul>
+        <li><b>Youth</b> (rows 1, 2, 8, 9, 11: 2 Yes / 3 No, E = 0.971): Student gives No 0/3 and Yes 2/0, IG = <b>0.971</b>; Credit gives Fair 1/2 and Excellent 1/1, IG = 0.020. Split on <b>Student</b>.</li>
+        <li><b>Senior</b> (rows 4, 5, 6, 10, 14: 3 Yes / 2 No, E = 0.971): Credit gives Fair 3/0 and Excellent 0/2, IG = <b>0.971</b>; Student gives No 2/1 and Yes 1/1, IG = 0.020. Split on <b>Credit</b>.</li>
+        <li>All leaves are now pure, so ID3 stops.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>ID3 grows the tree one branch at a time</h4></div>
+        <p class="fig-lede">Each node shows its Yes and No counts. Step through the build. The rows of the table below that reach the current node are highlighted.</p>
+        <div data-viz="build-steps"></div>
+        <p class="step-note" data-role="build-note" aria-live="polite"></p>
+        <div data-viz="build"></div>
+        <div data-viz="build-table"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) and (e) Worked solution</h4>
+      <ul>
+        <li>(d) x = {Youth, No, Fair}: Age = Youth, then Student = No, so T1 says <b>No</b>.</li>
+        <li>(e) T1: <b>No</b> (Youth, Student = No). T2: Student = No, then Credit = Fair, so <b>Yes</b>. T3: Credit = Fair, so <b>Yes</b>.</li>
+        <li>Majority vote 2 to 1: the forest predicts <b>Yes</b>.</li>
+        <li>The forest can disagree with any single tree. The vote of several different trees is what reduces overfitting.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The path of x through each tree, then the vote</h4></div>
+        <p class="fig-lede">The blue edges are the path x = {Youth, No, Fair} takes. Each tree ends in one leaf and casts one vote. T1, the tree from (c), says No, but T2 and T3 say Yes.</p>
+        <div data-viz="forest"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>path of x</span>
+          <span><i class="sw-ok"></i>forest decision</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">T1 says No, the forest says Yes (2 votes to 1).</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = 0.940 for 9 Yes / 5 No. IG(S, a) = E(S) − Σ (|Sᵥ|/|S|) E(Sᵥ); the highest IG becomes the node, and a pure node becomes a leaf. A random forest combines many trees built on bootstrapped data by majority vote.</p>
+    <p class="source">Source: L4.1 p.22 entropy · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example · L4.1 p.37-40 random forest · L4.1 p.46 testing: majority vote of the trees · Notes: L4.1 › Information gain · L4.1 › Worked example: PlayTennis tree built with ID3 · L4.1 › Random forest</p>
+  </div>
+</article>

@@ -1,0 +1,510 @@
+<article class="q" id="s1-w1" data-part="w" data-num="1" data-topic="Overfitting">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Open question · Lecture 2.2, Overfitting and regularization</p>
+    <h3 class="q-title">Overfitting and regularization</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Define underfitting and overfitting. Use the housing-price example with hypotheses of increasing polynomial degree, and name the bias/variance term for each case.</span></li>
+      <li><span class="tag">(b)</span><span>Give the two ways to address overfitting from the lecture.</span></li>
+      <li><span class="tag">(c)</span><span>Write the cost function of logistic regression with L2 regularization. What does λ control, and which parameter is not regularized?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><b>Underfitting</b> = poor performance on both training and test data. The model is too simple: θ₀ + θ₁x (a straight line) on curved housing data. This is <b>high bias</b>.</li>
+        <li><b>Good fit</b>: θ₀ + θ₁x + θ₂x² follows the trend and generalizes.</li>
+        <li><b>Overfitting</b> = performs well on training data but poorly on test data. With too many features (θ₀ + θ₁x + ... + θ₄x⁴) the hypothesis fits the training set very well, J(θ) ≈ 0, "but fails to generalize to new examples". This is <b>high variance</b>.</li>
+        <li>Logistic version (slide 42): g(θ₀ + θ₁x₁ + θ₂x₂) underfits; adding x₁², x₂², x₁x₂ fits well; many high-order terms give a contorted boundary that overfits.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Same five houses, three hypotheses</h4></div>
+        <p class="fig-lede">Five training houses (ochre) and three new houses (plum rings) that the model never saw. Dashed plum lines are the errors on the new houses. Errors are (1/2m) Σ (h − y)². The degree-4 curve passes through every training house, so its training error is 0, and it has the largest error on the new houses.</p>
+        <div data-viz="fits"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i><span>hypothesis h<sub>θ</sub>(x)</span></span>
+          <span><i class="sw-ter"></i>training example</span>
+          <span><i class="sw-sec"></i>new example and its error</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Two ways (slide 43)</h4>
+      <ul>
+        <li><b>1. Reduce the number of features</b>: select manually which features to keep, or use a model selection algorithm.</li>
+        <li><b>2. Regularization</b>: keep all the features but reduce the magnitude of the parameters θ<sub>j</sub>. It works well when there are many features and each contributes a bit to predicting y.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Regularized cost (slide 46)</h4>
+      <p class="formula">J(θ) = −(1/m) Σ<sub>i=1..m</sub> [ y<sup>(i)</sup> log h<sub>θ</sub>(x<sup>(i)</sup>) + (1 − y<sup>(i)</sup>) log(1 − h<sub>θ</sub>(x<sup>(i)</sup>)) ] + (λ/2m) Σ<sub>j=1..n</sub> θ<sub>j</sub>²</p>
+      <ul>
+        <li>λ is the regularization parameter (a hyperparameter). A larger λ pushes the θ<sub>j</sub> toward 0, which gives a simpler model. Too large a λ underfits; λ = 0 is plain logistic regression.</li>
+        <li>The penalty sum starts at j = 1, so <b>θ₀ is not regularized</b>. Its update is the plain one; for j ≥ 1 the gradient gets the extra term (λ/m)θ<sub>j</sub>.</li>
+        <li>L1 (Lasso) penalty: λ Σ|θ<sub>j</sub>|. L2 (Ridge) penalty: λ Σθ<sub>j</sub>².</li>
+      </ul>
+      <pre class="calc">θ₀ := θ₀ − α (1/m) Σ (h<sub>θ</sub>(x<sup>(i)</sup>) − y<sup>(i)</sup>) x₀<sup>(i)</sup>
+θ<sub>j</sub> := θ<sub>j</sub> − α [ (1/m) Σ (h<sub>θ</sub>(x<sup>(i)</sup>) − y<sup>(i)</sup>) x<sub>j</sub><sup>(i)</sup> + (λ/m) θ<sub>j</sub> ]     j = 1..n</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Turning λ up on the degree-4 model</h4></div>
+        <p class="fig-lede">The degree-4 housing model from Figure 1, now fitted with the same L2 penalty, (1/2m) Σ (h − y)² + (λ/2m) Σ<sub>j=1..4</sub> θ<sub>j</sub>², with x scaled to −1..1. Right: the parameters. The penalty shrinks θ₁ … θ₄ but never touches θ₀, so a huge λ leaves the flat line h = θ₀ at the mean price.</p>
+        <div data-viz="lam-steps"></div>
+        <p class="step-note" data-role="lam-note" aria-live="polite"></p>
+        <div class="stats">
+          <div class="stat"><span class="label">Train error</span><span class="v ter" data-role="tr"></span><span class="sub">five training houses</span></div>
+          <div class="stat"><span class="label">Test error</span><span class="v sec" data-role="te"></span><span class="sub">three new houses</span></div>
+          <div class="stat"><span class="label">θ₀</span><span class="v" data-role="t0"></span><span class="sub">not penalized</span></div>
+        </div>
+        <div data-viz="lam"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>θ₁ … θ₄, penalized</span>
+          <span><i class="sw-seg"></i>θ₀, not penalized</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Underfit = high bias, poor on training and test data. Overfit = high variance, it "performs well on training data but poorly on test data". Two fixes: reduce the number of features, or regularization. Regularized logistic regression adds (λ/2m) Σ<sub>j=1..n</sub> θ<sub>j</sub>²; the sum starts at j = 1, so θ₀ is not regularized.</p>
+    <p class="source">Source: L3.1 p.4 overfitting vs underfitting · L2.2 p.40-42 underfit / good fit / overfit · L2.2 p.43 two ways to address overfitting · L2.2 p.44 L1 and L2 · L2.2 p.46 regularized logistic regression · Notes: L2.2 › Overfitting · L2.2 › Regularisation, L1 and L2 · L3.1 › Overfitting, underfitting and data splits</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w2" data-part="w" data-num="2" data-topic="SVM margin">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Open question · Lecture 4.2, Support vector machine</p>
+    <h3 class="q-title">SVM: hard margin and soft margin</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Define the hyperplane, the support vectors and the margin of an SVM.</span></li>
+      <li><span class="tag">(b)</span><span>Write the hard-margin constraints and optimization problem, and show that the margin width is d = 2/‖w‖.</span></li>
+      <li><span class="tag">(c)</span><span>Why do we need a soft margin? Explain the slack variable ζ and the effect of a large and a small C.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><b>Hyperplane</b>: the decision boundary w·x + b = 0 (a line in 2D). Predict y = +1 if w·x + b ≥ 0, else −1.</li>
+        <li><b>Support vectors</b>: the points closest to the hyperplane. They alone define it.</li>
+        <li><b>Margin</b>: the distance between the hyperplane and the closest points (the support vectors). SVM picks the hyperplane with the <b>maximum margin</b>.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Hard margin</h4>
+      <ul>
+        <li>Margin lines: L1: w·x + b = 1 (positive side), L2: w·x + b = −1 (negative side).</li>
+        <li>Constraints: positive points w·x + b ≥ 1, negative points w·x + b ≤ −1. Multiplying by yᵢ (+1 or −1) gives one constraint: <b>yᵢ(w·xᵢ + b) ≥ 1</b>.</li>
+        <li>Margin: take support vectors x₁ (positive) and x₂ (negative) and project x₁ − x₂ on the unit normal w/‖w‖. From w·x₁ = 1 − b and w·x₂ = −1 − b:</li>
+      </ul>
+      <p class="formula">d = (w·x₁ − w·x₂)/‖w‖ = ((1 − b) − (−1 − b))/‖w‖ = 2/‖w‖</p>
+      <ul>
+        <li>Problem: maximize 2/‖w‖ subject to yᵢ(w·xᵢ + b) ≥ 1, which is the same as <b>minimize ½‖w‖²</b> subject to the same constraints.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Hard margin on 14 points, and where 2/‖w‖ comes from</h4></div>
+        <p class="fig-lede">The maximum-margin line for this data is w = (0.5, 0.5), b = −3, i.e. x₁ + x₂ = 6. No point lies between the two dashed margin lines. Pick a part to see it alone. The last step projects x₁ − x₂ onto the direction of w: only that part of the gap counts, and it equals 2/‖w‖.</p>
+        <div data-viz="hard-steps"></div>
+        <p class="step-note" data-role="hard-note" aria-live="polite"></p>
+        <div data-viz="hard"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>y = +1</span>
+          <span><i class="sw-sec"></i>y = −1</span>
+          <span><i class="sw-ok"></i>margin d, the projection on w</span>
+        </div>
+      </figure>
+      <pre class="calc">w = (0.5, 0.5),  b = −3,  ‖w‖ = √(0.5² + 0.5²) = 0.707
+x₁ = (5, 3), positive SV:   w·x₁ = 2.5 + 1.5 = 4 = 1 − b
+x₂ = (1, 3), negative SV:   w·x₂ = 0.5 + 1.5 = 2 = −1 − b
+d = (w·x₁ − w·x₂)/‖w‖ = (4 − 2)/0.707 = 2.83 = 2/‖w‖
+check: ‖x₁ − x₂‖ = 4, but only its part along w counts</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Soft margin</h4>
+      <ul>
+        <li>Real data is rarely perfectly separable, so the hard margin has no solution. The soft margin allows some violations.</li>
+        <li>Cost: J(w, b) = ½‖w‖² + C Σ ζᵢ with ζᵢ = max(0, 1 − yᵢ(wᵀxᵢ + b)) (the hinge loss).</li>
+        <li>ζ = 0 for a point on the correct side of its margin line; 0 &lt; ζ ≤ 1 for a correct point inside the margin; ζ &gt; 1 for a misclassified point.</li>
+        <li><b>Large C</b>: violations are penalised strongly, giving a smaller margin and fewer training errors, with a risk of <b>overfitting</b>.</li>
+        <li><b>Small C</b>: more violations are allowed, giving a wider margin and more training errors, with a risk of <b>underfitting</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>One odd point, four values of C</h4></div>
+        <p class="fig-lede">The data of Figure 1 plus one new positive point at (2.8, 3), close to the negatives. Each C gives the exact minimum of ½‖w‖² + C Σ ζᵢ. Ringed points pay a slack: ochre inside the margin, red on the wrong side. Below, the same points on the hinge loss ζ = max(0, 1 − y(w·x + b)).</p>
+        <div data-viz="soft-steps"></div>
+        <p class="step-note" data-role="soft-note" aria-live="polite"></p>
+        <div class="stats">
+          <div class="stat"><span class="label">Margin width</span><span class="v pri" data-role="width"></span><span class="sub">2/‖w‖</span></div>
+          <div class="stat"><span class="label">Total slack</span><span class="v ter" data-role="sumz"></span><span class="sub">Σ ζᵢ</span></div>
+          <div class="stat"><span class="label">Inside margin</span><span class="v" data-role="inside"></span><span class="sub">0 &lt; ζ ≤ 1</span></div>
+          <div class="stat"><span class="label">Misclassified</span><span class="v sec" data-role="wrong"></span><span class="sub">ζ &gt; 1</span></div>
+        </div>
+        <div data-viz="soft"></div>
+        <div data-viz="hinge"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>y = +1</span>
+          <span><i class="sw-sec"></i>y = −1</span>
+          <span><i class="sw-ter"></i>inside the margin, 0 &lt; ζ ≤ 1</span>
+          <span><i class="sw-bad"></i>misclassified, ζ &gt; 1</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Hyperplane w·x + b = 0, margin lines w·x + b = ±1, constraint yᵢ(w·xᵢ + b) ≥ 1, margin d = 2/‖w‖, so maximize 2/‖w‖, which is minimize ½‖w‖². Soft margin: J = ½‖w‖² + C Σ ζᵢ with ζᵢ = max(0, 1 − yᵢ(wᵀxᵢ + b)). Large C: smaller margin, overfitting risk. Small C: wider margin, underfitting risk.</p>
+    <p class="source">Source: L4.2 p.8-9 hyperplane, support vectors, margin · L4.2 p.24-26 w·x + b = 0 and margin lines ±1 · L4.2 p.28-30 constraints · L4.2 p.31-35 d = 2/‖w‖ · L4.2 p.36-37 hard margin · L4.2 p.38-42 soft margin, ζ and C · Notes: L4.2 › Important terms · L4.2 › Hard margin: constraints and margin 2 over norm w · L4.2 › Soft margin: slack zeta, C and hinge loss</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w3" data-part="w" data-num="3" data-topic="K-Means">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Open question · Lecture 6.1, K-Means clustering</p>
+    <h3 class="q-title">K-Means clustering</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>List the steps of the K-Means algorithm. Write its objective function J and the centroid formula.</span></li>
+      <li><span class="tag">(b)</span><span>Name three challenges of K-Means and the solution the lecture gives for each.</span></li>
+      <li><span class="tag">(c)</span><span>Explain how K-Means++ chooses the initial centroids and why it is used.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Steps</h4>
+      <ul>
+        <li><b>1. Initialization</b>: randomly select K points from the dataset as the initial centroids.</li>
+        <li><b>2. Assignment</b>: compute the distance from each point to each centroid, and assign the point to the closest centroid.</li>
+        <li><b>3. Update centroids</b>: each centroid becomes the mean of the points assigned to it.</li>
+        <li><b>4. Repeat</b> 2 and 3 until convergence: the centroids stop changing significantly, or a set number of iterations is reached.</li>
+        <li><b>5. Final result</b>: the final centroids and the cluster of every point.</li>
+      </ul>
+      <p class="formula">J = Σ<sub>k=1..K</sub> Σ<sub>xᵢ ∈ Cₖ</sub> ‖xᵢ − μₖ‖² &nbsp;&nbsp;&nbsp; μₖ = (1/|Cₖ|) Σ<sub>xᵢ ∈ Cₖ</sub> xᵢ</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The loop on 13 points, K = 3</h4></div>
+        <p class="fig-lede">Diamonds are centroids, dots are points coloured by their cluster. The random start puts two centroids in the left group. Assignment draws a line from each point to its nearest centroid; update moves each centroid to the mean of its points. Right: J after every step.</p>
+        <div data-viz="loop-steps"></div>
+        <p class="step-note" data-role="loop-note" aria-live="polite"></p>
+        <div data-viz="loop"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>cluster 1</span>
+          <span><i class="sw-sec"></i>cluster 2</span>
+          <span><i class="sw-ter"></i>cluster 3</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Challenges and solutions</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Challenge</th><th class="l">Solution</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Choosing K: too small under-clusters, too large over-clusters</td><td class="l">Elbow method: plot inertia (J) against K and pick the K where the drop levels off</td></tr>
+            <tr><td class="l">Clusters of different sizes or densities: dense groups are merged, loose groups are split</td><td class="l">Use a higher number of clusters (e.g. k = 10 instead of 3)</td></tr>
+            <tr><td class="l">Outliers drag the centroids (the mean is sensitive to extreme values)</td><td class="l">Find and handle outliers first: remove, transform, or use a robust variant</td></tr>
+            <tr><td class="l">Random initialization gives different clusters on every run</td><td class="l">K-Means++ initialization</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Three challenges, drawn</h4></div>
+        <p class="fig-lede">Choosing K: the elbow curve from the course notebook. Outliers: one far point moves the mean of a group. Random init: the 13 points of Figure 1 from two starts, both run to convergence.</p>
+        <div data-viz="ch-steps"></div>
+        <p class="step-note" data-role="ch-note" aria-live="polite"></p>
+        <div data-viz="ch"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) K-Means++</h4>
+      <ul>
+        <li><b>1.</b> Pick the first centroid uniformly at random from the data points.</li>
+        <li><b>2.</b> For each point x compute D(x), the distance to the nearest centroid already chosen.</li>
+        <li><b>3.</b> Pick the next centroid from the data points with probability proportional to D(x)².</li>
+        <li><b>4.</b> Repeat 2-3 until K centroids are chosen, then run normal K-Means.</li>
+        <li>Far-away points are likely to become centroids, so the starting centroids are spread out. This gives better clusters, and K-Means then often converges faster, even though the initialization itself costs more.</li>
+      </ul>
+      <p class="formula">P(x is the next centroid) = D(x)² / Σ D(x′)²</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>K-Means++ on the slide-22 points, K = 3</h4></div>
+        <p class="fig-lede">Points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8) with squared distances, as on slides 22-23. Each point is labelled with D(x)², its squared distance to the nearest chosen centroid. Right: the probability of becoming the next centroid.</p>
+        <div data-viz="pp-steps"></div>
+        <p class="step-note" data-role="pp-note" aria-live="polite"></p>
+        <div data-viz="pp"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Initialize, assign each point to the nearest centroid, update each centroid to the mean of its points, repeat until the centroids stop changing. J = Σₖ Σ<sub>xᵢ ∈ Cₖ</sub> ‖xᵢ − μₖ‖². Fixes: elbow method for K, more clusters for unequal sizes or densities, handle outliers first, K-Means++ for the start (next centroid with probability ∝ D(x)²).</p>
+    <p class="source">Source: L6.1 p.4-5 centroid-based, minimize the sum of distances · L6.1 p.7-9 the five steps, J and μₖ · L6.1 p.12-16 challenges · L6.1 p.17-19 solutions · L6.1 p.21 K-Means++ steps · L6.1 p.26 K-Means++ converges faster · Notes: L6.1 › The algorithm in five steps · L6.1 › Challenges · L6.1 › Solutions · L6.1 › K-Means++ initialization</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w4" data-part="w" data-num="4" data-topic="Gradient descent">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Problem · Lecture 2.2, Logistic regression</p>
+    <h3 class="q-title">Logistic regression: one gradient descent step</h3>
+  </div>
+  <div class="prompt">
+    <p>Training data (x0 = 1 is already added), learning rate α = 0.5, initial θ = [0, 0, 0]ᵀ:</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute hθ(x) for every example and the cost J(θ) at the initial θ.</span></li>
+      <li><span class="tag">(b)</span><span>Perform one gradient descent update, θ := θ − α(1/m)Xᵀ(h − y). Give the new θ.</span></li>
+      <li><span class="tag">(c)</span><span>Compute the new predictions and the new cost. Did the cost go down?</span></li>
+      <li><span class="tag">(d)</span><span>Write the decision boundary for the new θ, and classify x = (4, 4) and x = (0, 0).</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>With θ = 0: Z = Xθ = [0, 0, 0, 0, 0] and h = g(0) = <b>0.5 for every row</b>.</li>
+        <li>Every row costs −log(0.5) = 0.693, whatever its label, so <b>J = 0.693</b> (= ln 2).</li>
+      </ul>
+      <pre class="calc">J = −(1/m) Σ [ y log h + (1 − y) log(1 − h) ]
+  = −(1/5) × 5 × log 0.5 = 0.693</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>h − y = [0.5, 0.5, 0.5, −0.5, −0.5].</li>
+        <li>Each row of Xᵀ (one feature over all five examples) is multiplied with h − y and summed, then divided by m = 5.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Xᵀ(h − y), one feature row at a time</h4></div>
+        <p class="fig-lede">Top row: the error h − y of each example. Each cell below holds x<sub>j</sub> of one example (large) and its product with the error (small). Sum the products along the row, divide by m = 5, then step against the gradient with α = 0.5.</p>
+        <div data-viz="grad-steps"></div>
+        <p class="step-note" data-role="grad-note" aria-live="polite"></p>
+        <div data-viz="grad"></div>
+      </figure>
+      <pre class="calc">Xᵀ(h − y) = [0.5, −1.5, −0.5]     ÷ 5 → [0.1, −0.3, −0.1]
+θ = [0, 0, 0] − 0.5 × [0.1, −0.3, −0.1] = [−0.05, 0.15, 0.05]</pre>
+      <p>Result: <span class="result">θ = [−0.05, 0.15, 0.05]</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <ul>
+        <li>z = −0.05 + 0.15x₁ + 0.05x₂ for each row:</li>
+      </ul>
+      <div data-viz="pred-table"></div>
+      <ul>
+        <li><b>J = (0.7710 + 0.8544 + 0.7981 + 0.4555 + 0.4201)/5 = 0.6598</b>, down from 0.693. The step went in the right direction.</li>
+        <li>Rows 1-3 still have h &gt; 0.5, so they are still predicted 1 (wrong). More iterations are needed, as in the lecture example.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Why J went down although rows 1-3 got worse</h4></div>
+        <p class="fig-lede">Left: h for each row with the 0.5 threshold. Right: the row cost, −log h for y = 1 and −log(1 − h) for y = 0. The step raises h for all rows. Rows 4 and 5 gain more than rows 1-3 lose, so the mean cost J falls.</p>
+        <div data-viz="cost-steps"></div>
+        <p class="step-note" data-role="cost-note" aria-live="polite"></p>
+        <div data-viz="cost"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>row with y = 0</span>
+          <span><i class="sw-pri"></i>row with y = 1</span>
+          <span><i class="sw-ok"></i>J, the mean row cost</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Worked solution</h4>
+      <ul>
+        <li>Boundary: θᵀx = 0, i.e. <b>−0.05 + 0.15x₁ + 0.05x₂ = 0</b>, or 3x₁ + x₂ = 1.</li>
+        <li>x = (4, 4): z = −0.05 + 0.6 + 0.2 = 0.75, h = 0.679 ≥ 0.5, so <b>y = 1</b>.</li>
+        <li>x = (0, 0): z = −0.05, h = 0.4875 &lt; 0.5, so <b>y = 0</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The boundary after 1, 5, 30 and 200 steps</h4></div>
+        <p class="fig-lede">Blue side: θᵀx ≥ 0, predict 1. Plum side: predict 0. After the one step asked for, the line sits next to the origin and every training point is on the blue side. Further steps of the same rule (α = 0.5) move it between the classes.</p>
+        <div data-viz="bd-steps"></div>
+        <p class="step-note" data-role="bd-note" aria-live="polite"></p>
+        <div data-viz="bd"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>y = 1</span>
+          <span><i class="sw-sec"></i>y = 0</span>
+          <span><i class="sw-ter"></i>query point</span>
+          <span><i class="sw-bad"></i>wrong prediction</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">boundary 3x₁ + x₂ = 1; (4, 4) → y = 1, (0, 0) → y = 0.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>h = g(Xθ), J = −(1/m) Σ [y log h + (1 − y) log(1 − h)], θ := θ − α(1/m)Xᵀ(h − y). At θ = 0 every h = 0.5 and J = ln 2 = 0.693. Predict y = 1 when θᵀx ≥ 0; the decision boundary is θᵀx = 0.</p>
+    <p class="source">Source: L2.2 p.10 hθ(x) = g(Xθ) · L2.2 p.12 predict 1 when h ≥ 0.5 · L2.2 p.13 decision boundary · L2.2 p.16 cost J(θ) · L2.2 p.18-30 worked three-iteration example · L2.2 p.26 vectorized update · Notes: L2.2 › Cost function: log loss, and why not MSE · L2.2 › Gradient descent for logistic regression · L2.2 › Worked example: three iterations by hand</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w5" data-part="w" data-num="5" data-topic="K-Means by hand">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Problem · Lecture 6.1, K-Means clustering</p>
+    <h3 class="q-title">K-Means by hand</h3>
+  </div>
+  <div class="prompt">
+    <p>Seven points, K = 2, Euclidean distance. The initial centroids are B and D.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Iteration 1: compute the distance of every point to both centroids, assign the points and compute the new centroids.</span></li>
+      <li><span class="tag">(b)</span><span>Continue until convergence. Give the final clusters and centroids.</span></li>
+      <li><span class="tag">(c)</span><span>Compute the final value of the objective J (sum of squared distances to the own centroid).</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Iteration 1, μ<sub>1</sub> = B(1.5, 2), μ<sub>2</sub> = D(5, 7)</h4>
+      <pre class="calc">d(C, μ₁) = √((3 − 1.5)² + (4 − 2)²) = √6.25 = 2.500
+d(C, μ₂) = √((3 − 5)² + (4 − 7)²)   = √13   = 3.606   → C joins cluster 1</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Each point joins the nearer of B and D</h4></div>
+        <p class="fig-lede">The dashed line is the perpendicular bisector of B and D: every point on it is equally far from both, so it splits the plane into the two clusters. C and G lie close to it. Pick a point to see both of its distances.</p>
+        <div data-viz="d-steps"></div>
+        <p class="step-note" data-role="d-note" aria-live="polite"></p>
+        <div data-viz="dist"></div>
+        <div data-viz="d-table"></div>
+      </figure>
+      <ul>
+        <li>Clusters {A, B, C} and {D, E, F, G}.</li>
+        <li>New centroids: μ₁ = ((1 + 1.5 + 3)/3, (1 + 2 + 4)/3) = <b>(1.833, 2.333)</b>; μ₂ = ((5 + 3.5 + 4.5 + 3.5)/4, (7 + 5 + 5 + 4.5)/4) = <b>(4.125, 5.375)</b>.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Iterations 2 and 3</h4>
+      <div data-viz="it2-table"></div>
+      <ul>
+        <li>C is now closer to μ₂ (1.777 &lt; 2.034), so it switches cluster: {A, B} and {C, D, E, F, G}.</li>
+        <li>New centroids: μ₁ = <b>(1.25, 1.5)</b>; μ₂ = ((3 + 5 + 3.5 + 4.5 + 3.5)/5, (4 + 7 + 5 + 5 + 4.5)/5) = <b>(3.9, 5.1)</b>.</li>
+        <li><b>Iteration 3</b>: no point changes cluster (C: 3.052 vs 1.421), so the centroids stay the same and the algorithm has <b>converged</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Three iterations: the bisector moves past C</h4></div>
+        <p class="fig-lede">Each iteration assigns with the current centroids (filled diamonds) and their bisector, then moves each centroid to the mean of its points (arrow to the hollow diamond). In iteration 2 the bisector has moved down-left past C, so C changes cluster.</p>
+        <div data-viz="it-steps"></div>
+        <p class="step-note" data-role="it-note" aria-live="polite"></p>
+        <div data-viz="iter"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>cluster 1</span>
+          <span><i class="sw-sec"></i>cluster 2</span>
+          <span><i class="sw-ter"></i>point that changes cluster</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">final clusters {A, B} with centroid (1.25, 1.5), and {C, D, E, F, G} with centroid (3.9, 5.1).</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Final J</h4>
+      <pre class="calc">cluster 1:  A (0.0625 + 0.25) + B (0.0625 + 0.25)        = 0.625
+cluster 2:  C 2.02 + D 4.82 + E 0.17 + F 0.37 + G 0.52    = 7.9
+J = 0.625 + 7.9 = 8.525</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Squared distance of each point to its own centroid</h4></div>
+        <p class="fig-lede">Ochre: after iteration 1, clusters {A, B, C} and {D, E, F, G}, J = 12.208. Green: the final result, J = 8.525. C gains most from its switch. D gets worse, because its centroid moves toward C, but the total still falls, as it must.</p>
+        <div data-viz="jbars"></div>
+        <div class="legend">
+          <span><i class="sw-ter"></i>after iteration 1, J = 12.208</span>
+          <span><i class="sw-ok"></i>final, J = 8.525</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">J = 8.525</span> (after iteration 1 it was 12.208, so J went down).</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Assign each point to the nearest centroid, move each centroid to the mean of its points, repeat until no point changes cluster. J never goes up: 12.208 after iteration 1, 8.525 at convergence.</p>
+    <p class="source">Source: L6.1 p.7 assignment and J · L6.1 p.8 μₖ = mean of the cluster · L6.1 p.9 repeat until the centroids stop changing · L6.1 p.31-35 picture walkthrough · Notes: L6.1 › The algorithm in five steps · L6.1 › Objective J and the centroid formula · L6.1 › Exam focus</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w6" data-part="w" data-num="6" data-topic="ID3 tree">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Problem · Lecture 4.1, Decision tree</p>
+    <h3 class="q-title">Decision tree with ID3</h3>
+  </div>
+  <div class="prompt">
+    <p>Will a student pass the exam?</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the entropy of the whole dataset.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the information gain of each attribute and choose the root.</span></li>
+      <li><span class="tag">(c)</span><span>Build the complete tree with ID3 (show the information gains at the second level).</span></li>
+      <li><span class="tag">(d)</span><span>Predict Pass for {Study = Medium, Sleep = Little, Attendance = Good} and for {Study = Low, Sleep = Enough, Attendance = Good}.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <p class="formula">E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ &nbsp;&nbsp;&nbsp; IG(S, a) = E(S) − Σ<sub>v</sub> (|Sᵥ|/|S|) E(Sᵥ)</p>
+      <pre class="calc">7 Yes, 5 No:
+E(S) = −(7/12) log₂(7/12) − (5/12) log₂(5/12)
+     = 0.4536 + 0.5263 = 0.980</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Every node sits on the same entropy curve</h4></div>
+        <p class="fig-lede">Two-class entropy against the share of Yes in a node. A pure node (all Yes or all No) has E = 0, a 50/50 node has E = 1. The whole dataset is close to 50/50, so its entropy is high. Splitting on Study moves the High rows all the way down to 0.</p>
+        <div data-viz="ent"></div>
+      </figure>
+      <p>Result: <span class="result">E(S) = 0.980</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Root</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Attribute</th><th class="l">Value: Yes/No (entropy)</th><th>Weighted E</th><th>IG</th></tr></thead>
+          <tbody>
+            <tr class="on"><td class="l"><b>Study</b></td><td class="l">Low 1/3 (0.811), Medium 3/2 (0.971), High 3/0 (0)</td><td>4/12·0.811 + 5/12·0.971 = 0.675</td><td class="hl">0.305</td></tr>
+            <tr><td class="l">Sleep</td><td class="l">Enough 5/1 (0.650), Little 2/4 (0.918)</td><td>0.784</td><td>0.196</td></tr>
+            <tr><td class="l">Attendance</td><td class="l">Poor 3/4 (0.985), Good 4/1 (0.722)</td><td>0.876</td><td>0.104</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Try each attribute at the root</h4></div>
+        <p class="fig-lede">Each child box shows its rows as a Yes/No bar, its entropy and its share of the 12 rows. Weight each child entropy by its share, add, and subtract from 0.980. Right: the three information gains.</p>
+        <div data-viz="root-steps"></div>
+        <p class="step-note" data-role="root-note" aria-live="polite"></p>
+        <div data-viz="root"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Yes</span>
+          <span><i class="sw-sec"></i>No</span>
+        </div>
+      </figure>
+      <ul>
+        <li><b>Study</b> has the highest IG, so it is the root. Study = High is pure (3/0), so it becomes a <b>Yes leaf</b>.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Second level</h4>
+      <ul>
+        <li><b>Study = Low</b> (rows 1-4, 1 Yes / 3 No, E = 0.811): Attendance gives Poor 0/3 and Good 1/0, IG = <b>0.811</b> (perfect). Sleep gives Enough 1/1 and Little 0/2, IG = 0.311. Split on <b>Attendance</b>.</li>
+        <li><b>Study = Medium</b> (rows 5, 6, 7, 8, 12, 3 Yes / 2 No, E = 0.971): Sleep gives Enough 3/0 and Little 0/2, IG = <b>0.971</b> (perfect). Attendance gives Poor 2/1 and Good 1/1, IG = 0.020. Split on <b>Sleep</b>.</li>
+      </ul>
+      <pre class="calc">Low:     IG(Attendance) = 0.811 − (3/4 × 0 + 1/4 × 0)       = 0.811
+         IG(Sleep)      = 0.811 − (2/4 × 1 + 2/4 × 0)       = 0.311
+Medium:  IG(Sleep)      = 0.971 − (3/5 × 0 + 2/5 × 0)       = 0.971
+         IG(Attendance) = 0.971 − (3/5 × 0.918 + 2/5 × 1)   = 0.020</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The complete tree, and the two predictions</h4></div>
+        <p class="fig-lede">Each node shows its Yes and No counts. Pick a branch to see why its split was chosen, or a query to follow its path from the root to a leaf.</p>
+        <div data-viz="tree-steps"></div>
+        <p class="step-note" data-role="tree-note" aria-live="polite"></p>
+        <div data-viz="tree"></div>
+      </figure>
+      <ul>
+        <li>All leaves are pure, and the tree classifies all 12 rows correctly.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Predictions</h4>
+      <ul>
+        <li>{Medium, Little, Good}: Study = Medium, then Sleep = Little, so <b>No</b>. Attendance is not asked on this path.</li>
+        <li>{Low, Enough, Good}: Study = Low, then Attendance = Good, so <b>Yes</b>.</li>
+      </ul>
+      <p>Result: <span class="result">first student: No; second student: Yes.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ and IG(S, a) = E(S) − Σ (|Sᵥ|/|S|) E(Sᵥ). Split on the attribute with the highest IG, make every pure node a leaf, and repeat on each impure branch with its own rows.</p>
+    <p class="source">Source: L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example · Notes: L4.1 › Entropy · L4.1 › Information gain · L4.1 › Worked example: PlayTennis tree built with ID3</p>
+  </div>
+</article>

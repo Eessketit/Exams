@@ -14,7 +14,8 @@ d) Gradient descent does not need a learning rate
 
 > **Answer: c)** Slide 42: the normal equation needs no α and no iterations, but it "needs to calculate (XᵀX)⁻¹" and is "very slow if the number of features is very large". Gradient descent needs α and many iterations, and is "very good if the number of features is very large".  
 > **Source:** L2.1 p.42 gradient descent vs normal equation table  
-> **Notes:** [L2.1 › Gradient descent vs normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#8-gradient-descent-vs-normal-equation-slide-42)
+> **Notes:** [L2.1 › Gradient descent vs normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#8-gradient-descent-vs-normal-equation-slide-42)  
+> **Visual:** [Sample 2 › Part 1 Q1](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc1)
 
 **2.** For one training example with y = 1, logistic regression outputs hθ(x) = 0.1. What is the cost of this example (natural log)?  
 a) 0.105  
@@ -24,7 +25,8 @@ d) 0.9
 
 > **Answer: b)** For y = 1, Cost = −log(hθ(x)) = −ln 0.1 = 2.303. The model gave only 10% to the true class, a confident wrong answer, so the cost is large. 0.105 = −ln 0.9 is the cost when h = 0.9 (a good prediction); 0.693 is the cost at h = 0.5.  
 > **Source:** L2.2 p.15 Cost = −log(h) if y = 1 and −log(1 − h) if y = 0, with the two cost curves · L2.2 p.16 compact form  
-> **Notes:** [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16)
+> **Notes:** [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16)  
+> **Visual:** [Sample 2 › Part 1 Q2](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc2)
 
 **3.** A regression model has SS_res = Σ(y − ŷ)² = 20 and SS_tot = Σ(y − ȳ)² = 80 on the test set. What is R²?  
 a) 0.25  
@@ -34,7 +36,8 @@ d) 0.75
 
 > **Answer: d)** R² = 1 − SS_res/SS_tot = 1 − 20/80 = 0.75: the model explains 75% of the variance of the target. 0.25 is the ratio SS_res/SS_tot itself. R² = 1 is a perfect fit and R² = 0 is no better than always predicting the mean.  
 > **Source:** L3.1 p.13 R² formula, close to 1 = good fit · L3.1 p.26 code uses Σ(y − y_mean)² in the denominator  
-> **Notes:** [L3.1 › R-squared](../notes/05_Week3_EvaluatingLearningAlgorithms.md#5-r-squared-slide-13)
+> **Notes:** [L3.1 › R-squared](../notes/05_Week3_EvaluatingLearningAlgorithms.md#5-r-squared-slide-13)  
+> **Visual:** [Sample 2 › Part 1 Q3](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc3)
 
 **4.** The Minkowski distance with p = 1 between the points (1, 2) and (4, 6) is:  
 a) 7  
@@ -44,7 +47,8 @@ d) 25
 
 > **Answer: a)** Minkowski with p = 1 is the Manhattan distance: |1 − 4| + |2 − 6| = 3 + 4 = 7. p = 2 gives the Euclidean distance √(9 + 16) = 5; p = 3 gives (27 + 64)^(1/3) = 4.50; 25 is the squared Euclidean distance.  
 > **Source:** L3.2 p.35 Euclidean · L3.2 p.36 Manhattan · L3.2 p.37 Minkowski, p = 1 Manhattan, p = 2 Euclidean  
-> **Notes:** [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37)
+> **Notes:** [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37)  
+> **Visual:** [Sample 2 › Part 1 Q4](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc4)
 
 **5.** Bayes theorem, as used by the Naive Bayes classifier, states that P(A | B) =  
 a) P(A) · P(B)  
@@ -54,7 +58,8 @@ d) P(A | B) · P(B)
 
 > **Answer: c)** P(A | B) = P(B | A) P(A) / P(B). In the classifier A is the class (Buy / No Buy) and B is the features. a holds only for independent events, and b swaps the prior and the evidence.  
 > **Source:** L3.2 p.7 Bayes theorem · L3.2 p.16 A = class, B = features  
-> **Notes:** [L3.2 › Probability basics and Bayes theorem](../notes/06_Week3_NaiveBayes_KNN.md#2-probability-basics-and-bayes-theorem-slides-4-9)
+> **Notes:** [L3.2 › Probability basics and Bayes theorem](../notes/06_Week3_NaiveBayes_KNN.md#2-probability-basics-and-bayes-theorem-slides-4-9)  
+> **Visual:** [Sample 2 › Part 1 Q5](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc5)
 
 **6.** Which decision tree algorithm chooses splits by Gini impurity and can be used for both classification and regression?  
 a) ID3  
@@ -64,7 +69,8 @@ d) KNN
 
 > **Answer: b)** CART uses the Gini impurity and does both classification and regression. ID3 uses entropy (information gain). C4.5 is an improved ID3 that handles missing data and continuous attributes. KNN is not a tree.  
 > **Source:** L4.1 p.6-8 types of decision trees: ID3, C4.5, CART  
-> **Notes:** [L4.1 › Decision tree definition and types: ID3, C4.5, CART](../notes/07_Week4_DecisionTree.md#2-decision-tree-definition-and-types-id3-c45-cart-slides-5-8)
+> **Notes:** [L4.1 › Decision tree definition and types: ID3, C4.5, CART](../notes/07_Week4_DecisionTree.md#2-decision-tree-definition-and-types-id3-c45-cart-slides-5-8)  
+> **Visual:** [Sample 2 › Part 1 Q6](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc6)
 
 **7.** Using the polynomial kernel K(x, z) = (xᵀz + 1)^d with d = 2, x = (1, 2) and z = (3, −1), the kernel value is:  
 a) 1  
@@ -74,7 +80,8 @@ d) 4
 
 > **Answer: d)** xᵀz = 1·3 + 2·(−1) = 1, so K = (1 + 1)² = 4. 1 is the plain dot product (linear kernel), 2 forgets the square, and 9 squares the wrong sum.  
 > **Source:** L4.2 p.47 polynomial kernel (X1ᵀ·X2 + 1)^d  
-> **Notes:** [L4.2 › Kernels and the kernel trick](../notes/08_Week4_SVM.md#10-kernels-and-the-kernel-trick-slides-43-48)
+> **Notes:** [L4.2 › Kernels and the kernel trick](../notes/08_Week4_SVM.md#10-kernels-and-the-kernel-trick-slides-43-48)  
+> **Visual:** [Sample 2 › Part 1 Q7](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc7)
 
 **8.** A feature has min = 20 and max = 80 in the training set. Min-max scaling maps the value x = 35 to:  
 a) 0.25  
@@ -84,7 +91,8 @@ d) −0.25
 
 > **Answer: a)** x′ = (x − min)/(max − min) = (35 − 20)/(80 − 20) = 15/60 = 0.25. Min-max scaling maps the training range to [0, 1]. 0.44 would be 35/80, which skips subtracting the min.  
 > **Source:** L5.2 p.18-19 Min-Max scaling (x − min)/(max − min), output [0, 1]  
-> **Notes:** [L5.2 › Feature scaling](../notes/09_Week5_DataPreparation.md#7-feature-scaling-slides-18-20)
+> **Notes:** [L5.2 › Feature scaling](../notes/09_Week5_DataPreparation.md#7-feature-scaling-slides-18-20)  
+> **Visual:** [Sample 2 › Part 1 Q8](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc8)
 
 **9.** K-Means++ on the points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8). The first centroid is A. Squared distances to A are 0, 2, 20, 34, 100. What is the probability that E becomes the second centroid?  
 a) 0.2  
@@ -94,7 +102,8 @@ d) 0.218
 
 > **Answer: c)** The next centroid is chosen with probability proportional to D(x)²: P(E) = 100/(0 + 2 + 20 + 34 + 100) = 100/156 = 0.641. 0.218 = 34/156 is P(D). K-Means++ does not always take the farthest point (b); it only makes it the most likely choice.  
 > **Source:** L6.1 p.21 K-Means++ steps, probability proportional to D(x)² · L6.1 p.22 worked table with the probabilities  
-> **Notes:** [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26)
+> **Notes:** [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26)  
+> **Visual:** [Sample 2 › Part 1 Q9](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc9)
 
 **10.** In the step-by-step PCA, which step comes right after computing the covariance matrix S?  
 a) Projecting the centred data on u₁  
@@ -104,7 +113,8 @@ d) Computing the eigenvectors from (S − λI)U = 0
 
 > **Answer: b)** The order is: 1 mean, 2 covariance matrix, 3 eigenvalues from det(S − λI) = 0, 4 eigenvectors from (S − λI)U = 0, 5 projection of the centred data on the first eigenvector. The eigenvectors need λ first, so d is step 4.  
 > **Source:** L6.2 p.14 steps 1-2 · L6.2 p.15 steps 3-4 · L6.2 p.16 step 5  
-> **Notes:** [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16)
+> **Notes:** [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16)  
+> **Visual:** [Sample 2 › Part 1 Q10](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-mc10)
 
 ## Part II: Open questions and problem solving
 
@@ -119,7 +129,8 @@ d) Computing the eigenvectors from (S − λI)U = 0
 **Answer**
 
 **Source:** L3.1 p.14 confusion matrix layout · L3.1 p.20 accuracy · L3.1 p.21-22 precision, spam detection · L3.1 p.23-24 recall, cancer screening and airport security · L3.1 p.25 F1  
-**Notes:** [L3.1 › Confusion matrix and axis layout](../notes/05_Week3_EvaluatingLearningAlgorithms.md#7-confusion-matrix-and-axis-layout-slides-14-19) · [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)
+**Notes:** [L3.1 › Confusion matrix and axis layout](../notes/05_Week3_EvaluatingLearningAlgorithms.md#7-confusion-matrix-and-axis-layout-slides-14-19) · [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)  
+**Visual:** [Sample 2 › Part 2 Q1 Classification metrics](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w1)
 
 **(a) Draw** (slide 14 layout: columns = actual, rows = predicted):
 
@@ -156,7 +167,8 @@ d) Computing the eigenvectors from (S − λI)U = 0
 **Answer**
 
 **Source:** L4.1 p.37 definition · L4.1 p.39-40 algorithm · L4.1 p.42-46 three bootstrapped trees and the vote · L4.1 p.48 key features · L4.1 p.50 assumptions · L4.1 p.19 single trees overfit  
-**Notes:** [L4.1 › Random forest](../notes/07_Week4_DecisionTree.md#10-random-forest-slides-36-50) · [L4.1 › Stopping, overfitting and pruning](../notes/07_Week4_DecisionTree.md#9-stopping-overfitting-and-pruning-slides-12-16-19-20-25)
+**Notes:** [L4.1 › Random forest](../notes/07_Week4_DecisionTree.md#10-random-forest-slides-36-50) · [L4.1 › Stopping, overfitting and pruning](../notes/07_Week4_DecisionTree.md#9-stopping-overfitting-and-pruning-slides-12-16-19-20-25)  
+**Visual:** [Sample 2 › Part 2 Q2 Random forest](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w2)
 
 **(a)** A random forest is an **ensemble of many decision trees**. Each tree sees a random part of the data, and the predictions are combined: **majority voting** for classification, **averaging** for regression.
 
@@ -184,7 +196,8 @@ d) Computing the eigenvectors from (S − λI)U = 0
 **Answer**
 
 **Source:** L6.2 p.4-5 what PCA is · L6.2 p.6-7 principal components · L6.2 p.8 directions of maximal variance · L6.2 p.10-12 PC1 and PC2 · L6.2 p.14-16 the five steps  
-**Notes:** [L6.2 › What PCA is](../notes/11_Week6_PCA.md#1-what-pca-is-slides-4-5) · [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7) · [L6.2 › Geometric view: directions of maximum variance](../notes/11_Week6_PCA.md#3-geometric-view-directions-of-maximum-variance-slides-8-10-12) · [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16)
+**Notes:** [L6.2 › What PCA is](../notes/11_Week6_PCA.md#1-what-pca-is-slides-4-5) · [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7) · [L6.2 › Geometric view: directions of maximum variance](../notes/11_Week6_PCA.md#3-geometric-view-directions-of-maximum-variance-slides-8-10-12) · [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16)  
+**Visual:** [Sample 2 › Part 2 Q3 PCA concepts](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w3)
 
 **(a)**
 - PCA is a **dimensionality reduction** method: it transforms a large set of variables into a smaller one that still contains most of the information.
@@ -231,7 +244,8 @@ The lecture's shopping dataset has 15 records, 10 Buy = Yes and 5 Buy = No. Freq
 **Answer**
 
 **Source:** L3.2 p.14-15 dataset and frequency tables · L3.2 p.17, 21 likelihood tables · L3.2 p.18-20 one-feature example · L3.2 p.22-25 full query, divide and normalize · L3.2 p.28 zero-frequency problem and Laplace smoothing  
-**Notes:** [L3.2 › Likelihood tables](../notes/06_Week3_NaiveBayes_KNN.md#5-likelihood-tables-slides-17-21) · [L3.2 › Full query: Holiday, Discount Yes, Free Delivery Yes](../notes/06_Week3_NaiveBayes_KNN.md#7-full-query-holiday-discount-yes-free-delivery-yes-slides-22-25) · [L3.2 › Types of Naive Bayes and Laplace smoothing](../notes/06_Week3_NaiveBayes_KNN.md#9-types-of-naive-bayes-and-laplace-smoothing-textbook-context)
+**Notes:** [L3.2 › Likelihood tables](../notes/06_Week3_NaiveBayes_KNN.md#5-likelihood-tables-slides-17-21) · [L3.2 › Full query: Holiday, Discount Yes, Free Delivery Yes](../notes/06_Week3_NaiveBayes_KNN.md#7-full-query-holiday-discount-yes-free-delivery-yes-slides-22-25) · [L3.2 › Types of Naive Bayes and Laplace smoothing](../notes/06_Week3_NaiveBayes_KNN.md#9-types-of-naive-bayes-and-laplace-smoothing-textbook-context)  
+**Visual:** [Sample 2 › Part 2 Q4 Naive Bayes](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w4)
 
 **(a)** Divide each count by its class total (10 for Yes, 5 for No); P(value) = row total / 15.
 
@@ -283,7 +297,8 @@ Find the first principal component of the dataset below.
 **Answer**
 
 **Source:** L6.2 p.14 mean and covariance (n − 1) · L6.2 p.15 det(S − λI) = 0 and (S − λI)U = 0 · L6.2 p.16 transformed data = X_centered · u₁ · L6.2 p.17 worked example  
-**Notes:** [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16) · [L6.2 › Worked example](../notes/11_Week6_PCA.md#5-worked-example-slide-17) · [L6.2 › Exam focus](../notes/11_Week6_PCA.md#exam-focus)
+**Notes:** [L6.2 › Step by step](../notes/11_Week6_PCA.md#4-step-by-step-slides-14-16) · [L6.2 › Worked example](../notes/11_Week6_PCA.md#5-worked-example-slide-17) · [L6.2 › Exam focus](../notes/11_Week6_PCA.md#exam-focus)  
+**Visual:** [Sample 2 › Part 2 Q5 PCA by hand](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w5)
 
 **(a)** X̄₁ = (1 + 4 + 4 + 5)/4 = **3.5**, X̄₂ = (2 + 2 + 5 + 5)/4 = **3.5**.
 
@@ -345,7 +360,8 @@ Should the bank approve the loan?
 **Answer**
 
 **Source:** L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example  
-**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)
+**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)  
+**Visual:** [Sample 2 › Part 2 Q6 Decision tree](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s2-w6)
 
 **(a)** 8 Yes, 4 No: E(S) = −(8/12) log₂(8/12) − (4/12) log₂(4/12) = 0.390 + 0.528 = **0.918**.
 

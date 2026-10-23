@@ -14,7 +14,8 @@ d) 4 × 4
 
 > **Answer: c)** X has one row per example (m = 5) and one column per parameter: x0 plus the n = 3 features, so 5 × (n + 1) = 5 × 4. 4 × 4 is the shape of XᵀX, and 5 × 3 forgets the column of 1s.  
 > **Source:** L2.1 p.9 dummy feature x0 = 1 · L2.1 p.10-11 h(x) = Xθ, X is m × (n + 1) · L2.1 p.40 XᵀX is 4 × 4  
-> **Notes:** [L2.1 › Notation for multiple variables](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#2-notation-for-multiple-variables-slides-6-11) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43)
+> **Notes:** [L2.1 › Notation for multiple variables](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#2-notation-for-multiple-variables-slides-6-11) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43)  
+> **Visual:** [Sample 1 › Part 1 Q1](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc1)
 
 **2.** Logistic regression uses hθ(x) = g(z) with z = θᵀx and g(z) = 1 / (1 + e⁻ᶻ). When does it predict y = 1?  
 a) When z ≥ 0  
@@ -24,7 +25,8 @@ d) When z ≤ 0
 
 > **Answer: a)** g(z) ≥ 0.5 exactly when z ≥ 0, because g(0) = 0.5 and g increases. So "h ≥ 0.5" and "θᵀx ≥ 0" are the same rule. b mixes up the threshold on h with a threshold on z; c is always true, since h is between 0 and 1.  
 > **Source:** L2.2 p.10 sigmoid hypothesis · L2.2 p.12 g(z) ≥ 0.5 if z ≥ 0  
-> **Notes:** [L2.2 › Hypothesis: the sigmoid function](../notes/04_Week2_LogisticRegression.md#4-hypothesis-the-sigmoid-function-slides-10-12)
+> **Notes:** [L2.2 › Hypothesis: the sigmoid function](../notes/04_Week2_LogisticRegression.md#4-hypothesis-the-sigmoid-function-slides-10-12)  
+> **Visual:** [Sample 1 › Part 1 Q2](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc2)
 
 **3.** A spam filter must avoid moving real emails (for example a job offer) into the spam folder. Which metric should it prioritise?  
 a) Recall  
@@ -34,7 +36,8 @@ d) MAE
 
 > **Answer: b)** Moving a real email to spam is a False Positive. Precision = TP / (TP + FP) answers "of all the alarms the model raised, how many were real?", so it punishes FP. Recall is for when a False Negative is the costly error (cancer screening). MAE is a regression metric.  
 > **Source:** L3.1 p.21 precision formula · L3.1 p.22 precision use case: spam detection · L3.1 p.23-24 recall, cancer screening  
-> **Notes:** [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)
+> **Notes:** [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)  
+> **Visual:** [Sample 1 › Part 1 Q3](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc3)
 
 **4.** Why is the Naive Bayes classifier called "naive"?  
 a) It gives every class the same prior probability  
@@ -44,7 +47,8 @@ d) It assumes the features are independent of each other given the class
 
 > **Answer: d)** The naive assumption is conditional independence, so P(x1, ..., xn | class) = P(x1 | class) · ... · P(xn | class). The slides list it as the main disadvantage, because it is rarely true for real data. Priors come from the class counts (10/15 and 5/15 in the shopping example), NB uses all features, and it handles continuous and discrete data.  
 > **Source:** L3.2 p.23-24 product of the per-feature likelihoods · L3.2 p.27 handles continuous and discrete data · L3.2 p.28 independence assumption  
-> **Notes:** [L3.2 › Naive Bayes classifier: the naive assumption](../notes/06_Week3_NaiveBayes_KNN.md#3-naive-bayes-classifier-the-naive-assumption-slides-16-23-24-28)
+> **Notes:** [L3.2 › Naive Bayes classifier: the naive assumption](../notes/06_Week3_NaiveBayes_KNN.md#3-naive-bayes-classifier-the-naive-assumption-slides-16-23-24-28)  
+> **Visual:** [Sample 1 › Part 1 Q4](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc4)
 
 **5.** In KNN classification, what does the model predict if k is set equal to N, the number of training points?  
 a) The majority class of the whole training set, for every query  
@@ -54,7 +58,8 @@ d) The class whose mean is nearest to the query
 
 > **Answer: a)** With k = N every training point is a neighbour, so the vote is the same for every query: the most frequent class in the dataset (slide 46). k = 1 gives b, the label of the single closest point. Small k overfits, large k smooths, and k = N ignores the query completely.  
 > **Source:** L3.2 p.39 majority vote of the k nearest · L3.2 p.46 k ranges from 1 to N · L3.2 p.53 low k overfits, high k smooths  
-> **Notes:** [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49)
+> **Notes:** [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49)  
+> **Visual:** [Sample 1 › Part 1 Q5](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc5)
 
 **6.** A decision-tree node holds 7 "Yes" and 7 "No" examples. Its entropy (log base 2) is:  
 a) 0  
@@ -64,7 +69,8 @@ d) 0.940
 
 > **Answer: c)** E = −0.5 log₂ 0.5 − 0.5 log₂ 0.5 = 0.5 + 0.5 = 1, the maximum for two classes: a 50/50 node is the least pure. 0 is a pure node; 0.940 is the PlayTennis root with 9 Yes / 5 No.  
 > **Source:** L4.1 p.22 entropy formula · L4.1 p.24-28 entropy measures impurity, pure node = leaf  
-> **Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28)
+> **Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28)  
+> **Visual:** [Sample 1 › Part 1 Q6](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc6)
 
 **7.** Which training points determine the separating hyperplane of an SVM?  
 a) All training points, each with equal weight  
@@ -74,7 +80,8 @@ d) Only the support vectors, the points closest to the hyperplane
 
 > **Answer: d)** "The SVM is defined only by the support vectors". The other points can move (without crossing the margin) and the hyperplane does not change. Logistic regression, by contrast, is defined over all points (option a).  
 > **Source:** L4.2 p.8 support vectors are the points closest to the hyperplane · L4.2 p.11 SVM uses only the support vectors, logistic regression uses all points  
-> **Notes:** [L4.2 › Important terms](../notes/08_Week4_SVM.md#3-important-terms-slides-8-9-12) · [L4.2 › How SVM works](../notes/08_Week4_SVM.md#4-how-svm-works-slides-10-13)
+> **Notes:** [L4.2 › Important terms](../notes/08_Week4_SVM.md#3-important-terms-slides-8-9-12) · [L4.2 › How SVM works](../notes/08_Week4_SVM.md#4-how-svm-works-slides-10-13)  
+> **Visual:** [Sample 1 › Part 1 Q7](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc7)
 
 **8.** In a salary survey, high earners often leave the income question blank. This type of missing data is:  
 a) MCAR (Missing Completely At Random)  
@@ -84,7 +91,8 @@ d) A duplicate record
 
 > **Answer: b)** The value is missing because of the missing value itself (high income), which is MNAR, the hardest case. This is the slide example. MCAR is unrelated to any variable (a sensor briefly went offline). MAR depends on another observed variable (older respondents skip income questions).  
 > **Source:** L5.2 p.10 MCAR, MAR, MNAR with examples  
-> **Notes:** [L5.2 › Missing values](../notes/09_Week5_DataPreparation.md#3-missing-values-slides-10-11)
+> **Notes:** [L5.2 › Missing values](../notes/09_Week5_DataPreparation.md#3-missing-values-slides-10-11)  
+> **Visual:** [Sample 1 › Part 1 Q8](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc8)
 
 **9.** In the K-Means algorithm, what happens in the "update centroids" step?  
 a) Each point moves to the nearest centroid  
@@ -94,7 +102,8 @@ d) The centroid with the most points is split in two
 
 > **Answer: c)** Step 3 recalculates each centroid as μₖ = (1/|Cₖ|) Σ xᵢ over its cluster. Points do not move; a is the assignment step, where each point is assigned to the nearest centroid. Random picks happen only at initialization.  
 > **Source:** L6.1 p.7 initialization and assignment · L6.1 p.8 update centroids, μₖ formula · L6.1 p.9 repeat until convergence  
-> **Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8)
+> **Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8)  
+> **Visual:** [Sample 1 › Part 1 Q9](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc9)
 
 **10.** The first principal component of a dataset is the direction that:  
 a) maximizes the variance of the data projected onto it  
@@ -104,7 +113,8 @@ d) passes through the point farthest from the origin
 
 > **Answer: a)** PC1 is "the line in which the projection of the points is the most spread out", i.e. the line that maximizes the variance. Larger variance means more information. PC2 is perpendicular to PC1 and carries the next highest variance.  
 > **Source:** L6.2 p.8 PCs are the directions of maximal variance · L6.2 p.11 PC1 maximizes the variance of the projections · L6.2 p.12 PC2 is perpendicular to PC1  
-> **Notes:** [L6.2 › Geometric view: directions of maximum variance](../notes/11_Week6_PCA.md#3-geometric-view-directions-of-maximum-variance-slides-8-10-12)
+> **Notes:** [L6.2 › Geometric view: directions of maximum variance](../notes/11_Week6_PCA.md#3-geometric-view-directions-of-maximum-variance-slides-8-10-12)  
+> **Visual:** [Sample 1 › Part 1 Q10](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-mc10)
 
 ## Part II: Open questions and problem solving
 
@@ -119,7 +129,8 @@ d) passes through the point farthest from the origin
 **Answer**
 
 **Source:** L3.1 p.4 overfitting vs underfitting · L2.2 p.40-42 underfit / good fit / overfit · L2.2 p.43 two ways to address overfitting · L2.2 p.44 L1 and L2 · L2.2 p.46 regularized logistic regression  
-**Notes:** [L2.2 › Overfitting](../notes/04_Week2_LogisticRegression.md#11-overfitting-slides-40-43) · [L2.2 › Regularisation, L1 and L2](../notes/04_Week2_LogisticRegression.md#12-regularisation-l1-and-l2-slides-44-46) · [L3.1 › Overfitting, underfitting and data splits](../notes/05_Week3_EvaluatingLearningAlgorithms.md#2-overfitting-underfitting-and-data-splits-slides-4-15)
+**Notes:** [L2.2 › Overfitting](../notes/04_Week2_LogisticRegression.md#11-overfitting-slides-40-43) · [L2.2 › Regularisation, L1 and L2](../notes/04_Week2_LogisticRegression.md#12-regularisation-l1-and-l2-slides-44-46) · [L3.1 › Overfitting, underfitting and data splits](../notes/05_Week3_EvaluatingLearningAlgorithms.md#2-overfitting-underfitting-and-data-splits-slides-4-15)  
+**Visual:** [Sample 1 › Part 2 Q1 Overfitting](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w1)
 
 **(a) Write:**
 - **Underfitting** = poor performance on both training and test data. The model is too simple: θ₀ + θ₁x (a straight line) on curved housing data. This is **high bias**.
@@ -152,7 +163,8 @@ $$J(\theta)=-\frac{1}{m}\sum_{i=1}^{m}\Big[y^{(i)}\log h_\theta(x^{(i)})+(1-y^{(
 **Answer**
 
 **Source:** L4.2 p.8-9 hyperplane, support vectors, margin · L4.2 p.24-26 w·x + b = 0 and margin lines ±1 · L4.2 p.28-30 constraints · L4.2 p.31-35 d = 2/‖w‖ · L4.2 p.36-37 hard margin · L4.2 p.38-42 soft margin, ζ and C  
-**Notes:** [L4.2 › Important terms](../notes/08_Week4_SVM.md#3-important-terms-slides-8-9-12) · [L4.2 › Hard margin: constraints and margin 2 over norm w](../notes/08_Week4_SVM.md#8-hard-margin-constraints-and-margin-2-over-norm-w-slides-27-37) · [L4.2 › Soft margin: slack zeta, C and hinge loss](../notes/08_Week4_SVM.md#9-soft-margin-slack-zeta-c-and-hinge-loss-slides-38-42)
+**Notes:** [L4.2 › Important terms](../notes/08_Week4_SVM.md#3-important-terms-slides-8-9-12) · [L4.2 › Hard margin: constraints and margin 2 over norm w](../notes/08_Week4_SVM.md#8-hard-margin-constraints-and-margin-2-over-norm-w-slides-27-37) · [L4.2 › Soft margin: slack zeta, C and hinge loss](../notes/08_Week4_SVM.md#9-soft-margin-slack-zeta-c-and-hinge-loss-slides-38-42)  
+**Visual:** [Sample 1 › Part 2 Q2 SVM margin](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w2)
 
 **(a) Write:**
 - **Hyperplane**: the decision boundary w·x + b = 0 (a line in 2D). Predict y = +1 if w·x + b ≥ 0, else −1.
@@ -186,7 +198,8 @@ $$J(\theta)=-\frac{1}{m}\sum_{i=1}^{m}\Big[y^{(i)}\log h_\theta(x^{(i)})+(1-y^{(
 **Answer**
 
 **Source:** L6.1 p.4-5 centroid-based, minimize the sum of distances · L6.1 p.7-9 the five steps, J and μₖ · L6.1 p.12-16 challenges · L6.1 p.17-19 solutions · L6.1 p.21 K-Means++ steps · L6.1 p.26 K-Means++ converges faster  
-**Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Challenges](../notes/10_Week6_KMeans_Clustering.md#5-challenges-slides-12-16) · [L6.1 › Solutions](../notes/10_Week6_KMeans_Clustering.md#6-solutions-slides-17-19) · [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26)
+**Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Challenges](../notes/10_Week6_KMeans_Clustering.md#5-challenges-slides-12-16) · [L6.1 › Solutions](../notes/10_Week6_KMeans_Clustering.md#6-solutions-slides-17-19) · [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26)  
+**Visual:** [Sample 1 › Part 2 Q3 K-Means](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w3)
 
 **(a) Steps:**
 1. **Initialization**: randomly select K points from the dataset as the initial centroids.
@@ -238,7 +251,8 @@ Training data (x0 = 1 is already added), learning rate α = 0.5, initial θ = [0
 **Answer**
 
 **Source:** L2.2 p.10 hθ(x) = g(Xθ) · L2.2 p.12 predict 1 when h ≥ 0.5 · L2.2 p.13 decision boundary · L2.2 p.16 cost J(θ) · L2.2 p.18-30 worked three-iteration example · L2.2 p.26 vectorized update  
-**Notes:** [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16) · [L2.2 › Gradient descent for logistic regression](../notes/04_Week2_LogisticRegression.md#8-gradient-descent-for-logistic-regression-slides-17-25-26) · [L2.2 › Worked example: three iterations by hand](../notes/04_Week2_LogisticRegression.md#9-worked-example-three-iterations-by-hand-slides-18-31)
+**Notes:** [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16) · [L2.2 › Gradient descent for logistic regression](../notes/04_Week2_LogisticRegression.md#8-gradient-descent-for-logistic-regression-slides-17-25-26) · [L2.2 › Worked example: three iterations by hand](../notes/04_Week2_LogisticRegression.md#9-worked-example-three-iterations-by-hand-slides-18-31)  
+**Visual:** [Sample 1 › Part 2 Q4 Gradient descent](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w4)
 
 **(a)** With θ = 0: Z = Xθ = [0, 0, 0, 0, 0] and h = g(0) = **0.5 for every row**.
 - Every row costs −log(0.5) = 0.693, whatever its label, so **J = 0.693** (= ln 2).
@@ -289,7 +303,8 @@ Seven points, K = 2, Euclidean distance. The initial centroids are B and D.
 **Answer**
 
 **Source:** L6.1 p.7 assignment and J · L6.1 p.8 μₖ = mean of the cluster · L6.1 p.9 repeat until the centroids stop changing · L6.1 p.31-35 picture walkthrough  
-**Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8) · [L6.1 › Exam focus](../notes/10_Week6_KMeans_Clustering.md#exam-focus)
+**Notes:** [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8) · [L6.1 › Exam focus](../notes/10_Week6_KMeans_Clustering.md#exam-focus)  
+**Visual:** [Sample 1 › Part 2 Q5 K-Means by hand](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w5)
 
 **(a) Iteration 1**, μ₁ = B(1.5, 2), μ₂ = D(5, 7):
 
@@ -361,7 +376,8 @@ Will a student pass the exam?
 **Answer**
 
 **Source:** L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example  
-**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)
+**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)  
+**Visual:** [Sample 1 › Part 2 Q6 ID3 tree](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s1-w6)
 
 **Formulas:** E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ and IG(S, a) = E(S) − Σ (|Sᵥ|/|S|) E(Sᵥ).
 

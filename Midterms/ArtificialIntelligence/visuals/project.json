@@ -3,7 +3,7 @@
   "kicker": "Artificial Intelligence · Midterm prep",
   "lede": "All five sample midterms, every question: 10 multiple-choice questions, 3 open questions and 3 problem-solving questions each. Each question has the answer, the picture that makes it click, and the line to remember for the exam. Numbers come from the lecture slides and were checked in Python.",
   "foot": "Sources: the course slides (L2.2 p.12 = lecture 2.2, slide 12) and the study notes in Midterms/ArtificialIntelligence/notes.",
-  "artifact": "",
+  "artifact": "https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn",
   "out": "dist/ai-midterm-visuals.html",
   "tabLabel": "Sample",
   "sources": {

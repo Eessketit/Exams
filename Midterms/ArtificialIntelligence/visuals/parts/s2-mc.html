@@ -1,0 +1,675 @@
+<article class="q" id="s2-mc1" data-part="mc" data-num="1" data-topic="Normal equation">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2.1, Gradient descent vs normal equation</p>
+    <h3 class="q-title">Which statement about gradient descent and the normal equation is TRUE?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The normal equation needs a learning rate α</span>
+      <span class="why">No. Slide 42: the normal equation has "no need to choose α". Gradient descent is the method that needs α.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The normal equation needs many iterations to reach the optimum</span>
+      <span class="why">No. The normal equation has "no need for iterations". It computes θ in one step.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>The normal equation becomes very slow when the number of features is very large, because (XᵀX)⁻¹ must be computed</span>
+      <span class="why">Correct. Slide 42: (Xᵀ·X)⁻¹ needs to be calculated, so the method is "very slow if the number of features is very large".</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Gradient descent does not need a learning rate</span>
+      <span class="why">No. Gradient descent has to "choose learning rate α". Too small is slow, too large diverges.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The normal equation θ = (XᵀX)⁻¹Xᵀy solves for θ directly, so it needs no α and no iterations. The price is the inverse of XᵀX, an (n+1) × (n+1) matrix for n features. Inverting it takes about n³ operations, which becomes very slow when n is very large.</p>
+    <p>Gradient descent needs α and a lot of iterations, but one iteration costs only about m × n operations. That is why it stays very good when the number of features is very large.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Gradient descent walks downhill with step α, the normal equation solves in one step</h4>
+    </div>
+    <p class="fig-lede">Contours of a cost bowl J(θ₀, θ₁). Gradient descent starts at the open dot and repeats θ&nbsp;:=&nbsp;θ&nbsp;−&nbsp;α∇J until it reaches the minimum. The normal equation lands on the minimum in one solve, with no α. Drag α.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Learning rate</span><span class="v pri" data-role="alpha">0.05</span><span class="sub">α, chosen by hand</span></div>
+      <div class="stat"><span class="label">Gradient descent</span><span class="v" data-role="iters">38</span><span class="sub">iterations to J &lt; 0.01</span></div>
+      <div class="stat"><span class="label">Normal equation</span><span class="v ok">1 solve</span><span class="sub">no α, no iterations</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="bowl"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>gradient descent steps</span>
+      <span><i class="sw-ok"></i>normal equation, the minimum in one step</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The cost of (XᵀX)⁻¹ grows like n³</h4>
+    </div>
+    <p class="fig-lede">Rough operation counts for m = 10,000 training examples and 10,000 gradient descent iterations, both axes on a log scale. The normal equation builds XᵀX (about m(n+1)²) and inverts it (about (n+1)³). One gradient descent iteration costs about 2m(n+1). Drag n.</p>
+    <div data-viz="slider-n"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">XᵀX is N × N</span><span class="v" data-role="size">100,001</span><span class="sub">N = n + 1</span></div>
+      <div class="stat"><span class="label">Normal equation</span><span class="v sec" data-role="ne">1.6 × 10⁵</span><span class="sub">operations</span></div>
+      <div class="stat"><span class="label">Gradient descent</span><span class="v pri" data-role="gd">8 × 10⁸</span><span class="sub">operations, 10,000 iterations</span></div>
+    </div>
+    <p class="verdict" data-role="verdict-n"></p>
+    <div data-viz="growth"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>normal equation, m(n+1)² + (n+1)³</span>
+      <span><i class="sw-pri"></i>gradient descent, 10,000 × 2m(n+1)</span>
+    </div>
+  </figure>
+
+  <div class="q-head">
+    <h4>The slide 42 table, option by option</h4>
+    <div data-viz="table"></div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Gradient descent: need to choose α, a lot of iterations, very good if the number of features is very large. Normal equation: no α, no iterations, but (Xᵀ·X)⁻¹ needs to be calculated, so it is very slow if the number of features is very large.</p>
+    <p class="source">Source: L2.1 p.42 gradient descent vs normal equation table · Notes: Lecture 2.1 › 8. Gradient descent vs normal equation</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc2" data-part="mc" data-num="2" data-topic="Log loss">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2.2, Cost function: log loss</p>
+    <h3 class="q-title">For one training example with y = 1, logistic regression outputs hθ(x) = 0.1. What is the cost of this example (natural log)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.105</span>
+      <span class="why">No. 0.105 = −ln 0.9, the cost when h = 0.9, a good prediction.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>2.303</span>
+      <span class="why">Correct. For y = 1, Cost = −log(hθ(x)) = −ln 0.1 = 2.303.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>0.693</span>
+      <span class="why">No. 0.693 = −ln 0.5, the cost at h = 0.5.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.9</span>
+      <span class="why">No. 0.9 = 1 − h, the plain error y − h. Log loss takes the log of h.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> For y = 1 the cost is −log(hθ(x)), so −ln 0.1 = 2.303. The model gave only 10% to the true class. That is a confident wrong answer, and the y = 1 cost curve rises steeply as h goes to 0.</p>
+    <p>In the compact form Cost = −y log(h) − (1 − y) log(1 − h), y = 1 removes the second term.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>On the y = 1 curve, h = 0.1 costs 2.303</h4>
+    </div>
+    <p class="fig-lede">The two cost curves from slide 15. The blue curve is the cost when the true label is y = 1, the plum curve when y = 0. The four options are marked. Only b lies on the y = 1 curve at h = 0.1. Drag h.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Model output</span><span class="v" data-role="h">0.10</span><span class="sub">hθ(x)</span></div>
+      <div class="stat"><span class="label">Cost if y = 1</span><span class="v pri" data-role="c1">2.303</span><span class="sub">−ln h</span></div>
+      <div class="stat"><span class="label">Cost if y = 0</span><span class="v sec" data-role="c0">0.105</span><span class="sub">−ln(1 − h)</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="curves"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>y = 1: −log(h)</span>
+      <span><i class="sw-sec"></i>y = 0: −log(1 − h)</span>
+      <span><i class="sw-seg"></i>dashed: plain error 1 − h</span>
+    </div>
+    <p class="formula">Cost = −y·ln(h) − (1 − y)·ln(1 − h)<br>with y = 1, h = 0.1: −1·ln(0.1) − 0·ln(0.9) = 2.303</p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Cost = −log(hθ(x)) if y = 1 and −log(1 − hθ(x)) if y = 0. For y = 1 and h = 0.1 the cost is −ln 0.1 = 2.303. Confident wrong answers are punished hard.</p>
+    <p class="source">Source: L2.2 p.15 cost curves · L2.2 p.16 compact form · Notes: Lecture 2.2 › 7. Cost function: log loss, and why not MSE</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc3" data-part="mc" data-num="3" data-topic="R-squared">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3.1, R-squared</p>
+    <h3 class="q-title">A regression model has SS_res = Σ(y − ŷ)² = 20 and SS_tot = Σ(y − ȳ)² = 80 on the test set. What is R²?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.25</span>
+      <span class="why">No. 0.25 = SS_res/SS_tot, the share of variance the model leaves unexplained.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>4</span>
+      <span class="why">No. 4 = SS_tot/SS_res. R² can never be above 1.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>−3</span>
+      <span class="why">No. −3 = 1 − 80/20 puts the fraction upside down.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>0.75</span>
+      <span class="why">Correct. R² = 1 − SS_res/SS_tot = 1 − 20/80 = 0.75.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> R² = 1 − SS_res/SS_tot = 1 − 20/80 = 0.75. SS_tot is the squared error of always predicting the mean ȳ. SS_res is the squared error left over by the model. The model removes 60 of the 80, so it explains 75% of the variance of the target.</p>
+    <p>R² = 1 is a perfect fit and R² = 0 is no better than always predicting the mean.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Five test points with SS_tot = 80 and SS_res = 20</h4>
+    </div>
+    <p class="fig-lede">A small test set built to match the question. Plum gaps go from each point to the mean ȳ = 8, blue gaps go to the model line ŷ = 2 + 2x. The bars add up the squared gaps. Pick a sum to follow it.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div class="given"><div data-viz="scatter"></div><div data-viz="bars"></div></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>gap to the mean, y − ȳ</span>
+      <span><i class="sw-pri"></i>gap to the model, y − ŷ</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>R² is the share of SS_tot the model removes</h4>
+    </div>
+    <p class="fig-lede">Top: SS_tot = 80 split into what the model explains (60) and what it leaves (SS_res = 20). Bottom: the four options on the R² scale. R² cannot go above 1, and it goes below 0 only when the model is worse than the mean.</p>
+    <div data-viz="scale"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>R² = 1 − SS_res/SS_tot with SS_res = Σ(y − ŷ)² and SS_tot = Σ(y − ȳ)². Close to 1 = good fit. 1 − 20/80 = 0.75.</p>
+    <p class="source">Source: L3.1 p.13 R² formula · L3.1 p.26 code with Σ(y − y_mean)² · Notes: Lecture 3.1 › 5. R-squared</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc4" data-part="mc" data-num="4" data-topic="Minkowski distance">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 3.2, Distance measures</p>
+    <h3 class="q-title">The Minkowski distance with p = 1 between the points (1, 2) and (4, 6) is:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>7</span>
+      <span class="why">Correct. p = 1 is the Manhattan distance: |1 − 4| + |2 − 6| = 3 + 4 = 7.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>5</span>
+      <span class="why">No. 5 = √(9 + 16) is p = 2, the Euclidean distance.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>4.50</span>
+      <span class="why">No. 4.50 = (27 + 64)^(1/3) is p = 3.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>25</span>
+      <span class="why">No. 25 = 3² + 4² is the squared Euclidean distance, before the square root.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> The Minkowski distance is (Σ|xᵢ − yᵢ|ᵖ)^(1/p). With p = 1 the power and the root drop out, and it becomes the Manhattan distance Σ|xᵢ − yᵢ| = |1 − 4| + |2 − 6| = 3 + 4 = 7.</p>
+    <p>p = 1 gives Manhattan and p = 2 gives Euclidean. Each larger p gives a shorter distance for the same two points.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Manhattan walks the grid, Euclidean cuts across</h4>
+    </div>
+    <p class="fig-lede">The two points on a grid. The Manhattan distance moves only along grid lines, 3 across and 4 up. Every such staircase route is 7 long. The Euclidean distance is the straight line, 5 long.</p>
+    <div data-viz="grid"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Manhattan, p = 1: 3 + 4 = 7</span>
+      <span><i class="sw-sec"></i>Euclidean, p = 2: √(3² + 4²) = 5</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The Minkowski distance for every p</h4>
+    </div>
+    <p class="fig-lede">The same two points, d = (3ᵖ + 4ᵖ)^(1/p). Options a, b and c sit on the curve at p = 1, 2 and 3. Option d is off the chart. Drag p.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Order</span><span class="v pri" data-role="p">1</span><span class="sub">p</span></div>
+      <div class="stat"><span class="label">Sum of powers</span><span class="v" data-role="sum">7</span><span class="sub">3ᵖ + 4ᵖ</span></div>
+      <div class="stat"><span class="label">Distance</span><span class="v ok" data-role="d">7</span><span class="sub">(3ᵖ + 4ᵖ)^(1/p)</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="curve"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Minkowski (Σ|xᵢ − yᵢ|ᵖ)^(1/p): p = 1 gives Manhattan, p = 2 gives Euclidean. Between (1, 2) and (4, 6): Manhattan 3 + 4 = 7, Euclidean √25 = 5.</p>
+    <p class="source">Source: L3.2 p.35 Euclidean · L3.2 p.36 Manhattan · L3.2 p.37 Minkowski · Notes: Lecture 3.2 › 12. Distance measures</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc5" data-part="mc" data-num="5" data-topic="Bayes theorem">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 3.2, Bayes theorem</p>
+    <h3 class="q-title">Bayes theorem, as used by the Naive Bayes classifier, states that P(A | B) =</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>P(A) · P(B)</span>
+      <span class="why">No. That is P(A and B) only when A and B are independent. It ignores how B depends on A.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>P(B | A) · P(B) / P(A)</span>
+      <span class="why">No. It swaps the prior P(A) and the evidence P(B).</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>P(B | A) · P(A) / P(B)</span>
+      <span class="why">Correct. Slide 7: P(A | B) = P(B | A) P(A) / P(B).</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>P(A | B) · P(B)</span>
+      <span class="why">No. That is P(A and B), and it uses P(A | B), the value we are looking for.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> P(A | B) = P(B | A) P(A) / P(B). In the classifier A is the class (Buy / No Buy) and B is the features. P(A) is the prior, P(B | A) the likelihood read from the likelihood table, and P(B) the evidence.</p>
+    <p>The numerator P(B | A) P(A) is the share of all cases where A and B both happen. Dividing by P(B) keeps only the cases where B happened.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Counting the shopping data gives the same answer as the formula</h4>
+    </div>
+    <p class="fig-lede">The 15 visits from slide 14, sorted by Day and Purchase. Take A = Buy and B = Weekday. Each step picks the visits behind one term of the formula. A conditional probability only counts inside one row or one column.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div class="stats">
+      <div class="stat"><span class="label">Prior P(A)</span><span class="v" data-role="t1">10/15</span><span class="sub">P(Buy)</span></div>
+      <div class="stat"><span class="label">Likelihood P(B | A)</span><span class="v" data-role="t2">4/10</span><span class="sub">P(Weekday | Buy)</span></div>
+      <div class="stat"><span class="label">Evidence P(B)</span><span class="v" data-role="t3">5/15</span><span class="sub">P(Weekday)</span></div>
+      <div class="stat"><span class="label">Posterior P(A | B)</span><span class="v ok" data-role="t4">4/5 = 0.8</span><span class="sub">P(Buy | Weekday)</span></div>
+    </div>
+    <div data-viz="table"></div>
+    <p class="formula">P(A | B) = P(B | A) · P(A) / P(B)<br>= (4/10 · 10/15) / (5/15)<br>= (4/15) / (5/15) = 0.8</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The four options on the same data</h4>
+    </div>
+    <p class="fig-lede">Each option's formula with A = Buy and B = Weekday. The count says 4 of the 5 weekday visits bought, so P(Buy | Weekday) = 0.8. Only option c gives it.</p>
+    <div data-viz="options"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>P(A | B) = P(B | A) · P(A) / P(B). In Naive Bayes A is the class and B is the features. Posterior = likelihood × prior / evidence.</p>
+    <p class="source">Source: L3.2 p.7 Bayes theorem · L3.2 p.16 A = class, B = features · Notes: Lecture 3.2 › 2. Probability basics and Bayes theorem</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc6" data-part="mc" data-num="6" data-topic="CART">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 4.1, Types of decision trees</p>
+    <h3 class="q-title">Which decision tree algorithm chooses splits by Gini impurity and can be used for both classification and regression?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>ID3</span>
+      <span class="why">No. ID3 chooses splits by entropy (information gain).</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>CART</span>
+      <span class="why">Correct. CART uses the Gini impurity and does both classification and regression.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>C4.5</span>
+      <span class="why">No. C4.5 is an improved ID3 that handles missing data and continuous attributes.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>KNN</span>
+      <span class="why">No. KNN is not a tree. It classifies a point by its k nearest neighbours.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> CART (Classification And Regression Trees) chooses each split by the Gini impurity and builds both classification trees and regression trees. ID3 chooses splits by entropy (information gain), and C4.5 is an improved ID3 that handles missing data and continuous attributes. KNN is not a decision tree at all.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The three tree types on slides 6 to 8, and KNN</h4>
+    </div>
+    <p class="fig-lede">Each card names how the algorithm chooses a split. Only CART lists Gini and both tasks. Its two kinds of tree differ in the leaves: a class for classification, a number for regression.</p>
+    <div data-viz="family"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Gini impurity (CART) and entropy (ID3) measure the same thing</h4>
+    </div>
+    <p class="fig-lede">A node with 14 examples, some Yes and some No. Both measures are 0 for a pure node and largest at a 50/50 mix. CART splits where the weighted Gini of the children drops the most. Drag the number of Yes examples. The start, 9 Yes and 5 No, is the PlayTennis root.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Node</span><span class="v" data-role="node">9 Yes / 5 No</span><span class="sub">p(Yes) = <span data-role="p">0.643</span></span></div>
+      <div class="stat"><span class="label">Gini, CART</span><span class="v pri" data-role="gini">0.459</span><span class="sub">1 − Σ pᵢ²</span></div>
+      <div class="stat"><span class="label">Entropy, ID3</span><span class="v sec" data-role="ent">0.940</span><span class="sub">−Σ pᵢ log₂ pᵢ</span></div>
+    </div>
+    <div data-viz="curves"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Gini impurity, max 0.5</span>
+      <span><i class="sw-sec"></i>entropy, max 1 bit</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>ID3: entropy (information gain). C4.5: improved ID3, handles missing data and continuous attributes. CART: Gini impurity, classification and regression.</p>
+    <p class="source">Source: L4.1 p.6-8 types of decision trees: ID3, C4.5, CART · Notes: Lecture 4.1 › 2. Decision tree definition and types: ID3, C4.5, CART</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc7" data-part="mc" data-num="7" data-topic="Polynomial kernel">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 4.2, Kernels</p>
+    <h3 class="q-title">Using the polynomial kernel K(x, z) = (xᵀz + 1)^d with d = 2, x = (1, 2) and z = (3, −1), the kernel value is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>1</span>
+      <span class="why">No. 1 is the plain dot product xᵀz, the linear kernel.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>2</span>
+      <span class="why">No. 2 = xᵀz + 1 forgets the square.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>9</span>
+      <span class="why">No. 9 = 3² squares the wrong sum. The bracket holds xᵀz + 1 = 2.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>4</span>
+      <span class="why">Correct. xᵀz = 1·3 + 2·(−1) = 1, so K = (1 + 1)² = 4.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> First the dot product: xᵀz = 1·3 + 2·(−1) = 3 − 2 = 1. Then add 1 and raise to the degree d = 2: K = (1 + 1)² = 4.</p>
+    <p>The kernel value equals a dot product of the two points after a mapping into a higher-dimensional space, computed without building that mapping.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>From x and z to K = 4, and where each wrong option stops</h4>
+    </div>
+    <p class="fig-lede">The plane: x and z are almost perpendicular (81.9° apart), so their dot product is small, xᵀz = 1. The boxes: the kernel in three moves. Options a and b stop early. Option c squares a wrong number.</p>
+    <div class="given"><div data-viz="plane"></div><div data-viz="pipeline"></div></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The same 4 as a dot product in six dimensions</h4>
+    </div>
+    <p class="fig-lede">The degree-2 kernel equals φ(x)ᵀφ(z) for the map φ(v) = (1, √2v₁, √2v₂, v₁², v₂², √2v₁v₂). The six products add up to 4. The kernel gets the same 4 from the 2-D vectors without ever computing φ.</p>
+    <div data-viz="waterfall"></div>
+    <div data-viz="phi"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Polynomial kernel (X1ᵀ·X2 + 1)^d, degree d set manually. For x = (1, 2), z = (3, −1), d = 2: xᵀz = 1, K = (1 + 1)² = 4.</p>
+    <p class="source">Source: L4.2 p.47 polynomial kernel (X1ᵀ·X2 + 1)^d · Notes: Lecture 4.2 › 10. Kernels and the kernel trick</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc8" data-part="mc" data-num="8" data-topic="Min-max scaling">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 5.2, Feature scaling</p>
+    <h3 class="q-title">A feature has min = 20 and max = 80 in the training set. Min-max scaling maps the value x = 35 to:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>0.25</span>
+      <span class="why">Correct. (35 − 20)/(80 − 20) = 15/60 = 0.25.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0.35</span>
+      <span class="why">No. 0.35 = 35/100 divides by 100 and ignores the training range.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>0.44</span>
+      <span class="why">No. 0.44 = 35/80 skips subtracting the min.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>−0.25</span>
+      <span class="why">No. −0.25 = (20 − 35)/60 subtracts in the wrong order.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> x′ = (x − min)/(max − min) = (35 − 20)/(80 − 20) = 15/60 = 0.25. Subtracting the min moves the training minimum to 0. Dividing by the range max − min = 60 moves the maximum to 1.</p>
+    <p>So the training range [20, 80] becomes [0, 1], and 35 lies a quarter of the way along it.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Shift by the min, then divide by the range</h4>
+    </div>
+    <p class="fig-lede">Three rulers for the same values: the raw feature, after subtracting min = 20, and after dividing by max − min = 60. The training range is the thick band. The four options are marked on the last ruler. Drag x past 80 to see a test value land outside [0, 1].</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Raw value</span><span class="v" data-role="x">35</span><span class="sub">x</span></div>
+      <div class="stat"><span class="label">Shifted</span><span class="v" data-role="sh">15</span><span class="sub">x − 20</span></div>
+      <div class="stat"><span class="label">Scaled</span><span class="v ok" data-role="sc">0.25</span><span class="sub">(x − 20) / 60</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="rulers"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Min-Max scaling x′ = (x − min)/(max − min) maps the training range to [0, 1]. (35 − 20)/(80 − 20) = 0.25. Fit the scaler on the training data only.</p>
+    <p class="source">Source: L5.2 p.18-19 Min-Max scaling (x − min)/(max − min), output [0, 1] · Notes: Lecture 5.2 › 7. Feature scaling</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc9" data-part="mc" data-num="9" data-topic="K-Means++">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 6.1, K-Means++ initialization</p>
+    <h3 class="q-title">K-Means++ on the points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8). The first centroid is A. Squared distances to A are 0, 2, 20, 34, 100. What is the probability that E becomes the second centroid?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.2</span>
+      <span class="why">No. 0.2 = 1/5 treats every point as equally likely, which is plain random initialization.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>1.0</span>
+      <span class="why">No. K-Means++ does not always take the farthest point. It only makes it the most likely choice.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>0.641</span>
+      <span class="why">Correct. P(E) = 100/(0 + 2 + 20 + 34 + 100) = 100/156 = 0.641.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.218</span>
+      <span class="why">No. 0.218 = 34/156 is P(D).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> K-Means++ chooses the next centroid with probability proportional to D(x)², the squared distance to the nearest centroid already chosen. The squared distances add up to 0 + 2 + 20 + 34 + 100 = 156, so P(E) = 100/156 = 0.641.</p>
+    <p>Far points are likely picks, but the pick is still random. Slide 23 then takes C₂ = E.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Each point's chance is its D² over the sum</h4>
+    </div>
+    <p class="fig-lede">The plot: the five points, each joined to its nearest chosen centroid and labelled with D². The bars: the probabilities, D² / ΣD². The second step shows the pick after slide 23 takes C₂ = E. Each point then uses its distance to the nearer centroid.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div class="given"><div data-viz="plot"></div><div data-viz="bars"></div></div>
+    <div class="legend">
+      <span><i class="sw-ok"></i>chosen centroid</span>
+      <span><i class="sw-pri"></i>probability of being the next centroid</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>156 tickets, one draw</h4>
+    </div>
+    <p class="fig-lede">Give every point as many tickets as its D² and draw one ticket at random. E holds 100 of the 156 tickets, so it wins 64.1% of draws. D, C or B win the other 35.9%, so option b (always E) is wrong.</p>
+    <div data-viz="tickets"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>E, 100 tickets</span>
+      <span><i class="sw-sec"></i>D, 34</span>
+      <span><i class="sw-ter"></i>C, 20</span>
+      <span><i class="sw-seg"></i>B, 2</span>
+      <span>A, 0 (already a centroid)</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>K-Means++: first centroid at random, then choose the next centroid with probability proportional to D(x)², the squared distance to the nearest chosen centroid. P(E) = 100/156 = 0.641.</p>
+    <p class="source">Source: L6.1 p.21 K-Means++ steps · L6.1 p.22 worked table with the probabilities · Notes: Lecture 6.1 › 7. K-Means++ initialization</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc10" data-part="mc" data-num="10" data-topic="PCA steps">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 6.2, PCA step by step</p>
+    <h3 class="q-title">In the step-by-step PCA, which step comes right after computing the covariance matrix S?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Projecting the centred data on u₁</span>
+      <span class="why">No. Projection is step 5, the last step.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>Computing the eigenvalues from det(S − λI) = 0</span>
+      <span class="why">Correct. Step 3 follows the covariance matrix (step 2).</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Computing the mean of each variable</span>
+      <span class="why">No. The mean is step 1. S already needs it.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Computing the eigenvectors from (S − λI)U = 0</span>
+      <span class="why">No. The eigenvectors need λ first, so this is step 4.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> The order is: 1 mean of each variable, 2 covariance matrix S, 3 eigenvalues from det(S − λI) = 0, 4 eigenvectors from (S − λI)U = 0, 5 projection of the centred data on the first eigenvector u₁.</p>
+    <p>The eigenvector equation (S − λI)U = 0 contains λ, so the eigenvalues have to come first.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The five PCA steps, with each option on its step</h4>
+    </div>
+    <p class="fig-lede">Each step uses the result of the one before. The eigenvalues are the first thing computed from S, and each λ goes into the eigenvector equation of step 4.</p>
+    <div data-viz="flow"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The slide 17 example, step by step</h4>
+    </div>
+    <p class="fig-lede">X₁ = 4, 8, 13, 7 and X₂ = 11, 4, 5, 14. Each step adds its result to the plot. The axes use the same scale, so u₁ and u₂ meet at a right angle. Pick a step.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>u₁, first principal direction</span>
+      <span><i class="sw-sec"></i>u₂</span>
+      <span><i class="sw-ok"></i>mean and projections</span>
+    </div>
+    <pre class="calc" data-role="calc"></pre>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>PCA: 1 mean, 2 covariance matrix S, 3 eigenvalues from det(S − λI) = 0, 4 eigenvectors from (S − λI)U = 0, 5 project the centred data on u₁.</p>
+    <p class="source">Source: L6.2 p.14 steps 1-2 · L6.2 p.15 steps 3-4 · L6.2 p.16 step 5 · Notes: Lecture 6.2 › 4. Step by step</p>
+  </div>
+</article>

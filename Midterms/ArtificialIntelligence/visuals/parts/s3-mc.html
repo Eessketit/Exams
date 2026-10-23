@@ -1,0 +1,679 @@
+<article class="q" id="s3-mc1" data-part="mc" data-num="1" data-topic="Polynomial features">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2.1, Polynomial regression</p>
+    <h3 class="q-title"><code>PolynomialFeatures(degree=3)</code> is applied to a single input x = 2. Which feature vector does it produce?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>[2, 4, 6]</span>
+      <span class="why">No. These are 2·1, 2·2, 2·3, multiples of x. The features are powers of x.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>[1, 2, 3]</span>
+      <span class="why">No. 1, 2, 3 are the powers themselves. The features are x raised to them.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>[2, 4, 8]</span>
+      <span class="why">No. These are x, x², x³, but the bias column x⁰ = 1 is missing.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>[1, 2, 4, 8]</span>
+      <span class="why">Correct. [x⁰, x¹, x², x³] = [1, 2, 4, 8].</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> PolynomialFeatures builds the columns [1, x, x², x³] from the single input x. For x = 2 that is [1, 2, 4, 8]. The 1 is the bias column, x⁰.</p>
+    <p>A standard linear regression is then trained on these columns. The model h = b + w₁x + w₂x² + w₃x³ has one weight per column, so polynomial regression is still linear in the weights.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One input becomes degree + 1 columns, each with its own weight</h4>
+    </div>
+    <p class="fig-lede">x = 2 goes into PolynomialFeatures. Each output column is x raised to one power, from x⁰ = 1 up to the degree. LinearRegression multiplies every column by one weight and adds them up. Pick a degree.</p>
+    <div data-viz="deg-steps"></div>
+    <p class="step-note" data-role="deg-note" aria-live="polite"></p>
+    <div data-viz="pipe"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Each column is a power of x; at x = 2 they read 1, 2, 4, 8</h4>
+    </div>
+    <p class="fig-lede">The four columns as curves of x. The vertical line is the input, and where it crosses each curve is that column's value. Drag x. The x³ column grows fastest, which is why the features are usually scaled.</p>
+    <div data-viz="x-slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">x⁰</span><span class="v" data-role="p0">1</span><span class="sub">bias column</span></div>
+      <div class="stat"><span class="label">x¹</span><span class="v ter" data-role="p1">2</span><span class="sub">the input</span></div>
+      <div class="stat"><span class="label">x²</span><span class="v sec" data-role="p2">4</span><span class="sub">new feature</span></div>
+      <div class="stat"><span class="label">x³</span><span class="v pri" data-role="p3">8</span><span class="sub">new feature</span></div>
+    </div>
+    <p class="verdict" data-role="curves-verdict"></p>
+    <div data-viz="curves"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Polynomial regression constructs new features x², x³, ... from x and trains a standard linear regression on them. PolynomialFeatures turns x into [1, x, x², x³]. The model is still linear in the weights, and degree is the main hyperparameter.</p>
+    <p class="source">Source: L2.1 p.46 construct x², x³ from x · L2.1 p.47 PolynomialFeatures and make_pipeline · Notes: L2.1 › Polynomial regression</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc2" data-part="mc" data-num="2" data-topic="One-vs-all">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2.2, Multiclass classification</p>
+    <h3 class="q-title">A one-vs-all logistic regression is used for a problem with 4 classes. How does it work?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>It trains 4 binary classifiers, each class against all the others, and predicts the class with the largest hθ⁽ⁱ⁾(x)</span>
+      <span class="why">Correct. K classes need K classifiers, and the largest output wins.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It trains 1 classifier whose output is rounded to 1, 2, 3 or 4</span>
+      <span class="why">No. A logistic regression outputs one probability between 0 and 1 for one yes/no question.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>It trains 6 classifiers, one per pair of classes, and takes a vote</span>
+      <span class="why">No. That is one-vs-one, 4·3/2 = 6 pairs. It is not in the lecture.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It trains 3 classifiers and predicts the class with the smallest hθ⁽ⁱ⁾(x)</span>
+      <span class="why">No. 4 classes need 4 classifiers, and the smallest output is the class x looks least like.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> For each class i, one-vs-all treats class i as positive and all the other classes as negative. It trains hθ⁽ⁱ⁾(x) = P(y = i | x; θ), so 4 classes give 4 binary classifiers.</p>
+    <p>On a new input x it runs all four and picks the class i that maximizes hθ⁽ⁱ⁾(x).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Four binary classifiers, then the largest hθ⁽ⁱ⁾(x) wins</h4>
+    </div>
+    <p class="fig-lede">Email foldering from slide 33 with made-up points: Work, Friends, Family and Hobby, y = 1 to 4. Pick a classifier to see its class as positive, the other three as negative, and its boundary hθ⁽ⁱ⁾(x) = 0.5. The bars are the four outputs for the new email x.</p>
+    <div data-viz="ova-steps"></div>
+    <p class="step-note" data-role="ova-note" aria-live="polite"></p>
+    <div data-viz="ova"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option b</span>
+        <h5>One classifier answers one question</h5>
+        <p>hθ(x) is a probability for y = 1 against y = 0. There is no output to round to 3 or 4, and rounding would also invent an order between the folders.</p>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>One per pair is one-vs-one</h5>
+        <p>4 classes have 4·3/2 = 6 pairs. One-vs-all needs only 4 classifiers.</p>
+        <div class="chips"><span>1-2</span><span>1-3</span><span>1-4</span><span>2-3</span><span>2-4</span><span>3-4</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>3 classifiers, smallest output</h5>
+        <p>One class would have no classifier. The smallest hθ⁽ⁱ⁾(x) points at the class x is least likely to be.</p>
+        <div class="chips"><span>h⁽³⁾ = 0.004</span><span class="arrow">smallest</span><span>Family</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>One-vs-all: for each class i, treat class i as positive and all others as negative, and train hθ⁽ⁱ⁾(x) = P(y = i | x; θ). K classes give K classifiers. On a new input x, pick the class i that maximizes hθ⁽ⁱ⁾(x).</p>
+    <p class="source">Source: L2.2 p.33-34 multiclass examples · L2.2 p.35 one-vs-all · L2.2 p.36 pick the class with max hθ⁽ⁱ⁾(x) · Notes: L2.2 › Multiclass classification: one vs all</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc3" data-part="mc" data-num="3" data-topic="MSE">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3.1, Regression metrics</p>
+    <h3 class="q-title">A regression model makes errors of 1, 1, 1, 1 and 6 on five test examples. What is the MSE?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>2</span>
+      <span class="why">No. 2 is the MAE, (1 + 1 + 1 + 1 + 6)/5.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>8</span>
+      <span class="why">Correct. (1 + 1 + 1 + 1 + 36)/5 = 40/5 = 8.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>2.83</span>
+      <span class="why">No. 2.83 = √8 is the RMSE.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>40</span>
+      <span class="why">No. 40 is the sum of the squared errors before dividing by m = 5.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> MSE = (1/m) • Σ (hθ(x)⁽ⁱ⁾ − y⁽ⁱ⁾)². Square each error, add the squares and divide by m = 5: (1 + 1 + 1 + 1 + 36)/5 = 40/5 = 8.</p>
+    <p>The single error of 6 contributes 36 of the 40. That is why the slide calls MSE sensitive to large errors. MAE = 2 is less sensitive, and RMSE = √8 = 2.83 is in the units of the target.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Squaring turns the error of 6 into 36 of the 40</h4>
+    </div>
+    <p class="fig-lede">Each error is drawn twice. On the left as a length |e|, which is what MAE adds up. On the right as a square of side e, whose area e² is what MSE adds up. Drag the fifth error and watch its square take over.</p>
+    <div data-viz="e-slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">MAE · option a</span><span class="v" data-role="mae">2</span><span class="sub">Σ|e| / 5</span></div>
+      <div class="stat"><span class="label">RMSE · option c</span><span class="v" data-role="rmse">2.83</span><span class="sub">√MSE</span></div>
+      <div class="stat"><span class="label">MSE · option b</span><span class="v ok" data-role="mse">8</span><span class="sub">Σe² / 5</span></div>
+      <div class="stat"><span class="label">Σe² · option d</span><span class="v" data-role="sum">40</span><span class="sub">not yet divided by m</span></div>
+    </div>
+    <p class="verdict" data-role="e-verdict"></p>
+    <div data-viz="squares"></div>
+    <div data-viz="share"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>errors 1, 1, 1, 1</span>
+      <span><i class="sw-sec"></i>the fifth error</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MSE = (1/m) • Σ(hθ(x)⁽ⁱ⁾ − y⁽ⁱ⁾)², sensitive to large errors. RMSE = √MSE, in the units of the target. MAE = (1/m) • Σ|hθ(x)⁽ⁱ⁾ − y⁽ⁱ⁾|, less sensitive to large errors. Errors 1, 1, 1, 1, 6 give MSE 8, RMSE 2.83, MAE 2.</p>
+    <p class="source">Source: L3.1 p.10 MSE, sensitive to large errors · L3.1 p.11 RMSE · L3.1 p.12 MAE, less sensitive to large errors · Notes: L3.1 › Regression metrics: MSE, RMSE, MAE</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc4" data-part="mc" data-num="4" data-topic="Lazy learner">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 3.2, KNN</p>
+    <h3 class="q-title">Why is KNN called a "lazy" learner?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>It needs only a few training examples</span>
+      <span class="why">No. It keeps every example it gets, and more examples make each prediction slower.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It always uses k = 1</span>
+      <span class="why">No. k is chosen by the user, for example at the elbow of the error rate.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>It stores the whole training set and does no modelling; all the distance computation happens at prediction time</span>
+      <span class="why">Correct. fit only stores X_train and y_train.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It learns its weights slowly with a small learning rate</span>
+      <span class="why">No. KNN learns no weights at all. It is non-parametric.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> KNN has no training phase. fit only stores X_train and y_train. Each prediction computes the distance from the new point to every training point, ranks them and lets the k nearest vote.</p>
+    <p>KNN is also non-parametric, which means it learns no parameters and memorizes the training set. Because all the work waits for prediction time, it is difficult to scale to big data.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>fit stores the points, predict does all the work</h4>
+    </div>
+    <p class="fig-lede">Twelve made-up training points of classes A and B, and a new point Q with k = 3. Step through fit and predict. The table is what KNN keeps: the stored rows, and at prediction time the distances to Q.</p>
+    <div data-viz="knn-steps"></div>
+    <p class="step-note" data-role="knn-note" aria-live="polite"></p>
+    <div data-viz="knn"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>class A</span>
+      <span><i class="sw-sec"></i>class B</span>
+    </div>
+    <div data-viz="knn-table"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Where the work happens, lazy against eager</h4>
+    </div>
+    <p class="fig-lede">Logistic regression from lecture 2.2 is eager. It works hard in fit, running gradient descent, and then keeps only θ. KNN is lazy. It keeps the whole training set and does its work in predict, once for every new point. Box width shows roughly where the work goes.</p>
+    <div data-viz="lanes"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>KNN is a lazy learner. It stores the whole dataset and does no modelling, and all the distance computation happens at prediction time. It is non-parametric: it learns no parameters and memorizes the training set. That makes it difficult to scale.</p>
+    <p class="source">Source: L3.2 p.33 non-parametric, memorizes the training set · L3.2 p.41 lazy learner · L3.2 p.52 difficult to scale · L3.2 p.55 fit only stores the data · Notes: L3.2 › KNN: idea and properties</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc5" data-part="mc" data-num="5" data-topic="Information gain">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 4.1, Information gain</p>
+    <h3 class="q-title">A node with 6 Yes and 4 No (entropy 0.971) is split into two children: 4 Yes / 0 No and 2 Yes / 4 No (entropy 0.918). What is the information gain of this split?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>0.420</span>
+      <span class="why">Correct. 0.971 − (4/10 · 0 + 6/10 · 0.918) = 0.971 − 0.551 = 0.420.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0.551</span>
+      <span class="why">No. 0.551 is the weighted child entropy E(Y | X). IG subtracts it from the parent's entropy.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>0.971</span>
+      <span class="why">No. IG = 0.971 would need both children pure. The 2 Yes / 4 No child is still mixed.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.053</span>
+      <span class="why">No. 0.971 − 0.918 forgets the weights and ignores the pure child.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> IG = E(Y) − E(Y | X), and each child's entropy is weighted by its share of the rows. The pure child holds 4 of the 10 rows with entropy 0. The mixed child holds 6 of the 10 with entropy 0.918.</p>
+    <p>E(Y | X) = (4/10)·0 + (6/10)·0.918 = 0.551, so IG = 0.971 − 0.551 = 0.420.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The split row by row, and how much of the parent's entropy is removed</h4>
+    </div>
+    <p class="fig-lede">Each square is one row. A child's weight is its share of the 10 rows. The bars start from the parent's 0.971 and take away the weighted child entropy. What is left is the information gain.</p>
+    <div data-viz="split"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Yes</span>
+      <span><i class="sw-sec"></i>No</span>
+      <span><i class="sw-seg"></i>entropy</span>
+      <span><i class="sw-ok"></i>information gain</span>
+      <span><i class="sw-bad"></i>the unweighted mistake</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>On the entropy curve, IG is the gap between the parent and the chord</h4>
+    </div>
+    <p class="fig-lede">Entropy of a node against its share of Yes. The parent sits on the curve at 6/10. The children sit at 4/4 = 1 and 2/6 = 1/3. Their weighted average lies on the straight chord between them, at the parent's share 0.6 (0.4 × 1 + 0.6 × 1/3 = 0.6). The gap up to the curve is the IG.</p>
+    <div data-viz="curve"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>IG(S, a) = Entropy(S) − Σ |Sᵥ|/|S| · Entropy(Sᵥ). Weight each child by its share of the rows: 0.971 − (6/10) × 0.918 = 0.420. The attribute with the highest IG becomes the node.</p>
+    <p class="source">Source: L4.1 p.22 entropy · L4.1 p.29 IG = E(Y) − E(Y | X) · L4.1 p.31 weighted sum Σ |Sᵥ|/|S| · Entropy(Sᵥ) · Notes: L4.1 › Information gain</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc6" data-part="mc" data-num="6" data-topic="SVM margin">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 4.2, Hard margin SVM</p>
+    <h3 class="q-title">A linear SVM has the weight vector w = (3, 4). What is the width d of its margin (the distance between the lines w·x + b = 1 and w·x + b = −1)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.2</span>
+      <span class="why">No. 0.2 = 1/‖w‖ is the distance from the hyperplane to one margin line.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>0.4</span>
+      <span class="why">Correct. d = 2/‖w‖ = 2/5 = 0.4.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>2.5</span>
+      <span class="why">No. 2.5 = ‖w‖/2 turns the fraction upside down.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>5</span>
+      <span class="why">No. 5 is ‖w‖ itself, the length of w.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> From one margin line to the other, w·x + b changes by 2. Along the direction of w it changes by ‖w‖ per unit of distance. So the lines are d = 2/‖w‖ apart.</p>
+    <p>Here ‖w‖ = √(3² + 4²) = √25 = 5, so d = 2/5 = 0.4. A smaller ‖w‖ gives a wider margin, which is why SVM minimizes ½‖w‖².</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The margin narrows as ‖w‖ grows</h4>
+    </div>
+    <p class="fig-lede">w keeps the direction of (3, 4) and b = −1.6‖w‖ keeps the hyperplane w·x + b = 0 in place (b = −8 at ‖w‖ = 5). Drag ‖w‖. The margin lines w·x + b = ±1 move closer as ‖w‖ grows. x₊ and x₋ are support vectors on the two lines, and the green segment between them is d.</p>
+    <div data-viz="w-slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">w</span><span class="v" data-role="w">(3, 4)</span><span class="sub" data-role="b">b = −8</span></div>
+      <div class="stat"><span class="label">‖w‖</span><span class="v pri" data-role="norm">5</span><span class="sub">√(w₁² + w₂²)</span></div>
+      <div class="stat"><span class="label">Margin d</span><span class="v ok" data-role="d">0.4</span><span class="sub">2/‖w‖</span></div>
+      <div class="stat"><span class="label">Half margin</span><span class="v" data-role="half">0.2</span><span class="sub">1/‖w‖, hyperplane to one line</span></div>
+    </div>
+    <p class="verdict" data-role="w-verdict"></p>
+    <div data-viz="margin"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>‖w‖ = 5 from the 3-4-5 triangle, and what each option computes</h4>
+    </div>
+    <p class="fig-lede">w = (3, 4) drawn from the origin. Its legs are 3 and 4, so its length is √(9 + 16) = 5. The bars on the right are the four options, drawn to scale.</p>
+    <div data-viz="tri"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Margin lines w·x + b = ±1 are d = 2/‖w‖ apart. SVM maximizes 2/‖w‖, which is the same as minimizing ½‖w‖². For w = (3, 4), ‖w‖ = 5 and d = 0.4.</p>
+    <p class="source">Source: L4.2 p.26 margin lines w·x + b = ±1 · L4.2 p.31-35 derivation of d = 2/‖w‖ · L4.2 p.36 maximize 2/‖w‖ · Notes: L4.2 › Hard margin: constraints and margin 2 over norm w</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc7" data-part="mc" data-num="7" data-topic="One-hot encoding">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 5.2, Categorical encoding</p>
+    <h3 class="q-title">A dataset has a nominal feature City ∈ {Tashkent, Samarkand, Bukhara} with no natural order. Which encoding should be used for a linear model?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Label encoding (0, 1, 2)</span>
+      <span class="why">No. Label encoding is for ordinal categories. Here it invents an order and distances between the cities.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Drop the column</span>
+      <span class="why">No. The city carries information about the target, and dropping it throws that away.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Min-max scaling of the city names</span>
+      <span class="why">No. Scaling works on numbers. City names are text and must be encoded first.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>One-hot encoding (one 0/1 column per city)</span>
+      <span class="why">Correct. Best for nominal categories with a manageable number of values.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> One-hot encoding gives each city its own 0/1 column, so a linear model learns one weight per city and no order is implied. With three cities that is only three columns.</p>
+    <p>Label encoding is for ordinal categories such as small &lt; medium &lt; large. On nominal data it "invents a false numeric relationship" (Bukhara = 2 &gt; Tashkent = 0). A linear model then has a single weight for the code, so the prediction must move in equal steps along that made-up order.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>On label codes a linear model can only draw one straight line</h4>
+    </div>
+    <p class="fig-lede">The slide-22 average salaries: Tashkent $85k, Samarkand $62k, Bukhara $71k. With label codes the model is h = b + w·code, a straight line over 0, 1, 2. The best such line (least squares, one row per city) still misses every city. With one-hot columns each city gets its own weight and all three are hit exactly.</p>
+    <div data-viz="fit"></div>
+    <p class="formula">label: h = 79.67 − 7·code &nbsp;&nbsp; one-hot: h = 85·Tsh + 62·Smk + 71·Bkh</p>
+    <div class="legend">
+      <span><i class="sw-ter"></i>city average salary</span>
+      <span><i class="sw-sec"></i>label encoding fit</span>
+      <span><i class="sw-pri"></i>one-hot fit</span>
+      <span><i class="sw-bad"></i>miss</span>
+    </div>
+    <div data-viz="codes"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Label codes invent distances; one-hot keeps every pair equally far apart</h4>
+    </div>
+    <p class="fig-lede">Label codes put the cities on a line, so Tashkent is twice as far from Bukhara as from Samarkand. The one-hot vectors (1, 0, 0), (0, 1, 0) and (0, 0, 1) are the corners of a triangle with every side √2.</p>
+    <div data-viz="dist"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Nominal categories with a manageable number of values: one-hot encoding. Ordinal categories (small &lt; medium &lt; large): label encoding. Label-encoding unordered categories invents a false numeric relationship and is a common mistake.</p>
+    <p class="source">Source: L5.2 p.21 label vs one-hot encoding · L5.2 p.22 target encoding and embeddings · L5.2 p.36 label-encoding unordered categories is a common mistake · Notes: L5.2 › Categorical encoding</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc8" data-part="mc" data-num="8" data-topic="Data leakage">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 5.2, Feature scaling and data leakage</p>
+    <h3 class="q-title">How should a StandardScaler be used with a train/test split?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Fit it on the whole dataset, then split</span>
+      <span class="why">No. μ and σ then include the test rows, so test information leaks into training.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Fit it separately on the training set and on the test set</span>
+      <span class="why">No. The test set gets its own μ and σ, so the same raw value is scaled differently in train and test.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>Fit it on the training set only, then transform both the training and the test set with the training mean and std</span>
+      <span class="why">Correct. "Fit the scaler only on training data."</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Fit it on the test set only, so that the test values are exactly standardized</span>
+      <span class="why">No. Fitting a scaler on test data is one of the common mistakes on slide 36.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Split first. Fit the scaler on the training set only, so μ and σ come from training data. Then transform the training set and the test set with that same μ and σ. On the test set call transform() only, never fit() again.</p>
+    <p>Any fit that sees test rows lets test information leak into training (data leakage). The metrics look great, but the model fails in production.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Which rows feed scaler.fit</h4>
+    </div>
+    <p class="fig-lede">Training rows on top, test rows below. Gray arrows carry the data through transform. Pick an option. The arrows into the fit box show which rows set μ and σ, and a red arrow means test rows were used.</p>
+    <div data-viz="flow-steps"></div>
+    <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+    <div data-viz="flow"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The same raw value, 60, under each option</h4>
+    </div>
+    <p class="fig-lede">Made-up training rows 40, 45, 50, 55, 60 and test rows 55, 60, 65. Each lower row shows the scaled values z = (x − μ)/σ for one option, training dots above the line and test dots below. The rings mark the raw value 60, which appears in both sets.</p>
+    <div data-viz="rows"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>training rows</span>
+      <span><i class="sw-sec"></i>test rows</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Fit the scaler only on training data. On the test set call transform() only, never fit() again. Fitting on test data, or on the whole dataset before the split, is data leakage: the metrics look great and the model fails in production.</p>
+    <p class="source">Source: L5.2 p.18-19 fit only on training data · L5.2 p.34 split, fit on train, transform test · L5.2 p.36 fitting a scaler on test data is a common mistake · Notes: L5.2 › Feature scaling · L5.2 › Splitting and data leakage</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc9" data-part="mc" data-num="9" data-topic="Elbow method">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 6.1, Choosing K</p>
+    <h3 class="q-title">K-Means is run for K = 1 to 6, giving inertia (SSE) values 1000, 400, 150, 120, 100, 90. Using the elbow method, which K should be chosen?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>3</span>
+      <span class="why">Correct. The drop shrinks from 250 to 30 after K = 3, so the curve bends there.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>1</span>
+      <span class="why">No. One cluster has the highest inertia, and the second cluster still saves 600.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>6</span>
+      <span class="why">No. K = 6 has the lowest inertia, but inertia always falls as K grows.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>2</span>
+      <span class="why">No. Going to K = 3 still saves 250, so the curve has not flattened yet.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Plot K on the x-axis against the inertia on the y-axis and look for the bend. The drops are 600, 250, 30, 20 and 10. Up to K = 3 each extra cluster removes a lot of inertia. After K = 3 adding clusters barely lowers it, so the elbow is at K = 3.</p>
+    <p>The lowest inertia is not the goal. Inertia always falls as K grows and reaches 0 when every point is its own cluster.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The inertia curve bends at K = 3</h4>
+    </div>
+    <p class="fig-lede">The six inertia values from the question. Pick a K. The stats show what the K-th cluster saved and what one more cluster would save.</p>
+    <div data-viz="k-steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Inertia at K</span><span class="v pri" data-role="inertia">150</span><span class="sub">SSE</span></div>
+      <div class="stat"><span class="label">Saved by this cluster</span><span class="v" data-role="gain">250</span><span class="sub">from K − 1 to K</span></div>
+      <div class="stat"><span class="label">One more would save</span><span class="v" data-role="next">30</span><span class="sub">from K to K + 1</span></div>
+    </div>
+    <p class="verdict" data-role="k-verdict"></p>
+    <div data-viz="elbow"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>What each extra cluster saves</h4>
+    </div>
+    <p class="fig-lede">The drop in inertia for each step of K. The savings fall from 250 for the step 2 → 3 to only 30 for the step 3 → 4. That fall marks the elbow at K = 3.</p>
+    <div data-viz="drops"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Elbow method: plot K on the x-axis against the inertia on the y-axis and pick the K where the curve bends. After the elbow, extra clusters buy very little reduction in inertia. Inertia always falls as K grows, so the lowest inertia is not the goal.</p>
+    <p class="source">Source: L6.1 p.17 elbow method · L6.1 p.28 elbow curve: K on the x-axis, metric on the y-axis · L6.1 p.29-30 inertia curve, elbow circled · Notes: L6.1 › Choosing the right K: the elbow curve</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc10" data-part="mc" data-num="10" data-topic="Principal components">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 6.2, Principal components</p>
+    <h3 class="q-title">A dataset has 10 variables. How many principal components does PCA produce, and how is the information distributed among them?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>2, and they share the information equally</span>
+      <span class="why">No. 2 is a common number of components to keep. PCA produces one per variable, with unequal shares.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>5, one for every pair of variables</span>
+      <span class="why">No. Components are not built from pairs. Each one is a linear combination of all 10 variables.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>10, and they share the information equally</span>
+      <span class="why">No. The count is right, but PCA squeezes most of the information into the first components.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>10, with the maximum possible information in the first component, then the maximum remaining in the second, and so on</span>
+      <span class="why">Correct. This is the slide wording.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Principal components are new variables built as linear combinations of the initial variables, and p variables give p components. "10-dimensional data gives you 10 principal components, but PCA tries to put maximum possible information in the first component, then maximum remaining information in the second and so on."</p>
+    <p>Reducing the dimension means keeping only the first few components and discarding the low-information ones.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>10 variables give 10 components, sorted by information</h4>
+    </div>
+    <p class="fig-lede">Explained variance per component, shaped like the slide-7 plot (about 40%, 18%, 12%, 8% and so on; the exact values are made up). The dashed line is an equal share of 10%, the claim in option c. Drag k to keep the first k components.</p>
+    <div data-viz="k-slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Components kept</span><span class="v pri" data-role="kept">3 of 10</span><span class="sub">PC1 to PCk</span></div>
+      <div class="stat"><span class="label">Information kept</span><span class="v ok" data-role="cum">70%</span><span class="sub">explained variance</span></div>
+      <div class="stat"><span class="label">Equal shares would keep</span><span class="v" data-role="eq">30%</span><span class="sub">k × 10%, option c</span></div>
+    </div>
+    <div data-viz="scree"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>In 2 dimensions, PC1 is the direction of maximum variance</h4>
+    </div>
+    <p class="fig-lede">18 made-up points with 2 variables give 2 components. Turn the direction θ. The blue dots on the line are the points projected onto it, and their variance changes with θ. At θ = 0 the direction is the variable x₁ itself and holds 63% of the variance. The maximum, at about 36°, is PC1. PC2 is perpendicular and holds what remains.</p>
+    <div data-viz="theta-slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Variance along θ</span><span class="v pri" data-role="v1">7.28</span><span class="sub" data-role="s1">92.6% of the total</span></div>
+      <div class="stat"><span class="label">Along θ + 90°</span><span class="v sec" data-role="v2">0.58</span><span class="sub" data-role="s2">7.4% of the total</span></div>
+      <div class="stat"><span class="label">Total variance</span><span class="v" data-role="tot">7.86</span><span class="sub">the same for every θ</span></div>
+    </div>
+    <p class="verdict" data-role="theta-verdict"></p>
+    <div data-viz="rot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>direction θ and the projected points</span>
+      <span><i class="sw-sec"></i>perpendicular direction θ + 90°</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>10-dimensional data gives 10 principal components. PCA puts the maximum possible information in the first component, then the maximum remaining information in the second, and so on. Keep the first few to reduce the dimension.</p>
+    <p class="source">Source: L6.2 p.6 10 dimensions give 10 components · L6.2 p.7 explained-variance plot · L6.2 p.12 p components for p variables · Notes: L6.2 › Principal components</p>
+  </div>
+</article>

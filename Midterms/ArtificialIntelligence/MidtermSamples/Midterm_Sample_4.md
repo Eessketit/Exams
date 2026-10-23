@@ -14,7 +14,8 @@ d) 4.667
 
 > **Answer: a)** With θ = 0 every prediction is 0, so the errors are −2, −4, −6 and their squares add up to 4 + 16 + 36 = 56. J = 56/(2 × 3) = 9.333. 18.667 = 56/3 is the MSE with 1/m; the loss in this lecture has the extra ½.  
 > **Source:** L2.1 p.7 loss J(θ) = (1/2m)Σ(h − y)² · L2.1 p.19 loss computed at θ = 0  
-> **Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22)
+> **Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22)  
+> **Visual:** [Sample 4 › Part 1 Q1](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc1)
 
 **2.** In regularized logistic regression, the penalty is (λ/2m) Σⱼ θⱼ². Which parameter is NOT regularized?  
 a) θ₁  
@@ -24,7 +25,8 @@ d) θ₀, the bias
 
 > **Answer: d)** The penalty sum runs from j = 1 to n, so θ₀ keeps the plain update θ₀ := θ₀ − α(1/m)Σ(h − y)x₀. For j ≥ 1 the gradient gets the extra term (λ/m)θⱼ. θ₀ only shifts the boundary; it does not make the model more complex.  
 > **Source:** L2.2 p.44 L1 and L2 penalties · L2.2 p.45-46 regularized cost and gradient descent, θ₀ updated separately  
-> **Notes:** [L2.2 › Regularisation, L1 and L2](../notes/04_Week2_LogisticRegression.md#12-regularisation-l1-and-l2-slides-44-46)
+> **Notes:** [L2.2 › Regularisation, L1 and L2](../notes/04_Week2_LogisticRegression.md#12-regularisation-l1-and-l2-slides-44-46)  
+> **Visual:** [Sample 4 › Part 1 Q2](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc2)
 
 **3.** A classifier has TP = 30, FP = 10, FN = 20, TN = 40. What is its recall?  
 a) 0.75  
@@ -34,7 +36,8 @@ d) 0.667
 
 > **Answer: c)** Recall = TP/(TP + FN) = 30/(30 + 20) = 0.60. Precision = 30/40 = 0.75 (a), accuracy = 70/100 = 0.70 (b) and F1 = 0.667 (d). Recall looks only at the actual positives.  
 > **Source:** L3.1 p.20 accuracy · L3.1 p.21 precision · L3.1 p.23 recall · L3.1 p.25 F1  
-> **Notes:** [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)
+> **Notes:** [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25)  
+> **Visual:** [Sample 4 › Part 1 Q3](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc3)
 
 **4.** In Naive Bayes, a feature value never appears together with one class in the training data, so the whole product for that class becomes 0. What fixes this zero-frequency problem?  
 a) Feature scaling  
@@ -44,7 +47,8 @@ d) Using a larger k
 
 > **Answer: b)** Laplace smoothing adds a small count (α = 1) to every value, so no likelihood is exactly 0: P(v | c) = (count + 1)/(N_c + K). Scaling and k belong to distance-based methods such as KNN.  
 > **Source:** L3.2 p.28 zero-frequency problem, fix: Laplace smoothing  
-> **Notes:** [L3.2 › Advantages and disadvantages of Naive Bayes](../notes/06_Week3_NaiveBayes_KNN.md#8-advantages-and-disadvantages-of-naive-bayes-slides-27-28) · [L3.2 › Types of Naive Bayes and Laplace smoothing](../notes/06_Week3_NaiveBayes_KNN.md#9-types-of-naive-bayes-and-laplace-smoothing-textbook-context)
+> **Notes:** [L3.2 › Advantages and disadvantages of Naive Bayes](../notes/06_Week3_NaiveBayes_KNN.md#8-advantages-and-disadvantages-of-naive-bayes-slides-27-28) · [L3.2 › Types of Naive Bayes and Laplace smoothing](../notes/06_Week3_NaiveBayes_KNN.md#9-types-of-naive-bayes-and-laplace-smoothing-textbook-context)  
+> **Visual:** [Sample 4 › Part 1 Q4](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc4)
 
 **5.** How does a random forest make each of its trees different?  
 a) Each tree is trained on a bootstrapped sample of the rows (with replacement) and considers only a random subset of the features; the trees then vote  
@@ -54,7 +58,8 @@ d) Each tree is trained on the errors of the previous tree
 
 > **Answer: a)** Random rows (bootstrap = sampling with replacement) plus a few random features at the splits keep the trees different; the final answer is the majority vote (or the average for regression). d describes boosting, which is not the random forest.  
 > **Source:** L4.1 p.37 definition · L4.1 p.39-40 algorithm · L4.1 p.42-45 three bootstrapped datasets  
-> **Notes:** [L4.1 › Random forest](../notes/07_Week4_DecisionTree.md#10-random-forest-slides-36-50)
+> **Notes:** [L4.1 › Random forest](../notes/07_Week4_DecisionTree.md#10-random-forest-slides-36-50)  
+> **Visual:** [Sample 4 › Part 1 Q5](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc5)
 
 **6.** What happens when the hyperparameter C of a soft-margin SVM is made very large?  
 a) The margin gets wider and more training errors are allowed  
@@ -64,7 +69,8 @@ d) Margin violations are penalised strongly: the margin gets smaller, there are 
 
 > **Answer: d)** In J = ½‖w‖² + C Σζᵢ a large C makes every violation expensive, so the SVM narrows the margin to classify the training points correctly, with a risk of overfitting. a describes a small C, which risks underfitting.  
 > **Source:** L4.2 p.40 soft-margin cost with C · L4.2 p.41 large C vs small C  
-> **Notes:** [L4.2 › Soft margin: slack zeta, C and hinge loss](../notes/08_Week4_SVM.md#9-soft-margin-slack-zeta-c-and-hinge-loss-slides-38-42)
+> **Notes:** [L4.2 › Soft margin: slack zeta, C and hinge loss](../notes/08_Week4_SVM.md#9-soft-margin-slack-zeta-c-and-hinge-loss-slides-38-42)  
+> **Visual:** [Sample 4 › Part 1 Q6](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc6)
 
 **7.** For the data 2, 4, 4, 5, 6, 7, 8, 8, 30 we have Q1 = 4 and Q3 = 8. Which value is an outlier by the IQR rule?  
 a) 2  
@@ -74,7 +80,8 @@ d) None of them
 
 > **Answer: b)** IQR = 8 − 4 = 4. The bounds are Q1 − 1.5·IQR = −2 and Q3 + 1.5·IQR = 14. Only 30 lies outside [−2, 14].  
 > **Source:** L5.2 p.13 IQR rule, bounds Q1 − 1.5·IQR and Q3 + 1.5·IQR  
-> **Notes:** [L5.2 › Outliers: IQR, Z score, ML detectors](../notes/09_Week5_DataPreparation.md#5-outliers-iqr-z-score-ml-detectors-slides-13-15)
+> **Notes:** [L5.2 › Outliers: IQR, Z score, ML detectors](../notes/09_Week5_DataPreparation.md#5-outliers-iqr-z-score-ml-detectors-slides-13-15)  
+> **Visual:** [Sample 4 › Part 1 Q7](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc7)
 
 **8.** A fraud dataset is heavily imbalanced, and SMOTE is used to create synthetic fraud examples. Where should SMOTE be applied?  
 a) On the whole dataset before splitting  
@@ -84,7 +91,8 @@ d) On both the training and the test set
 
 > **Answer: c)** "SMOTE only on TRAINING data. Never resample the test set." The test set must keep the real class balance, or the scores are inflated by synthetic points (data leakage). SMOTE creates a point by interpolating between a minority point and one of its k nearest minority neighbours.  
 > **Source:** L5.2 p.24 class imbalance, accuracy paradox · L5.2 p.25 SMOTE steps, training data only · L5.2 p.36 applying SMOTE to the test set is a common mistake  
-> **Notes:** [L5.2 › Big data and class imbalance](../notes/09_Week5_DataPreparation.md#9-big-data-and-class-imbalance-slides-23-25)
+> **Notes:** [L5.2 › Big data and class imbalance](../notes/09_Week5_DataPreparation.md#9-big-data-and-class-imbalance-slides-23-25)  
+> **Visual:** [Sample 4 › Part 1 Q8](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc8)
 
 **9.** What does the K-Means algorithm minimize?  
 a) The sum of squared distances between each point and the centroid of its cluster  
@@ -94,7 +102,8 @@ d) The number of points in the largest cluster
 
 > **Answer: a)** J = Σₖ Σ_{xᵢ ∈ Cₖ} ‖xᵢ − μₖ‖². Points within a cluster should be similar, so the distance from each point to its own centroid is made small. K is chosen beforehand, not minimized.  
 > **Source:** L6.1 p.5 main objective · L6.1 p.7 J formula · L6.1 p.10 objective of K-Means  
-> **Notes:** [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8)
+> **Notes:** [L6.1 › Objective J and the centroid formula](../notes/10_Week6_KMeans_Clustering.md#3-objective-j-and-the-centroid-formula-slides-7-8)  
+> **Visual:** [Sample 4 › Part 1 Q9](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc9)
 
 **10.** Which statement about principal components is correct?  
 a) They are a subset of the original variables  
@@ -104,7 +113,8 @@ d) They are new uncorrelated variables built as linear combinations of the origi
 
 > **Answer: d)** PCs are linear combinations (mixtures) of the initial variables, constructed to be uncorrelated, with most information in the first ones. Because they mix variables they are less interpretable. Choosing a subset of the original variables (a) is feature selection.  
 > **Source:** L6.2 p.6 PCs are uncorrelated linear combinations · L6.2 p.7 less interpretable, no real meaning  
-> **Notes:** [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7)
+> **Notes:** [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7)  
+> **Visual:** [Sample 4 › Part 1 Q10](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-mc10)
 
 ## Part II: Open questions and problem solving
 
@@ -119,7 +129,8 @@ d) They are new uncorrelated variables built as linear combinations of the origi
 **Answer**
 
 **Source:** L2.2 p.6-8 linear regression with threshold 0.5 and the extreme tumour · L2.2 p.9 h can be > 1 or < 0 · L2.2 p.10 sigmoid · L2.2 p.11 probability · L2.2 p.12-13 threshold and decision boundary · L2.2 p.14-16 cost  
-**Notes:** [L2.2 › Why linear regression fails for classification](../notes/04_Week2_LogisticRegression.md#3-why-linear-regression-fails-for-classification-slides-6-9) · [L2.2 › Hypothesis: the sigmoid function](../notes/04_Week2_LogisticRegression.md#4-hypothesis-the-sigmoid-function-slides-10-12) · [L2.2 › Decision boundary, linear and non linear](../notes/04_Week2_LogisticRegression.md#6-decision-boundary-linear-and-non-linear-slides-13-42) · [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16)
+**Notes:** [L2.2 › Why linear regression fails for classification](../notes/04_Week2_LogisticRegression.md#3-why-linear-regression-fails-for-classification-slides-6-9) · [L2.2 › Hypothesis: the sigmoid function](../notes/04_Week2_LogisticRegression.md#4-hypothesis-the-sigmoid-function-slides-10-12) · [L2.2 › Decision boundary, linear and non linear](../notes/04_Week2_LogisticRegression.md#6-decision-boundary-linear-and-non-linear-slides-13-42) · [L2.2 › Cost function: log loss, and why not MSE](../notes/04_Week2_LogisticRegression.md#7-cost-function-log-loss-and-why-not-mse-slides-14-16)  
+**Visual:** [Sample 4 › Part 2 Q1 Logistic regression](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w1)
 
 **(a)**
 - Fit a straight line hθ(x) = Xθ to tumour size vs malignant (0/1) and predict y = 1 when h ≥ 0.5.
@@ -150,7 +161,8 @@ d) They are new uncorrelated variables built as linear combinations of the origi
 **Answer**
 
 **Source:** L3.2 p.33 similarity, non-parametric · L3.2 p.35-37 distance measures · L3.2 p.39 classification and regression · L3.2 p.41 lazy · L3.2 p.46-49 choosing k · L3.2 p.51-53 pros and cons  
-**Notes:** [L3.2 › KNN: idea and properties](../notes/06_Week3_NaiveBayes_KNN.md#11-knn-idea-and-properties-slides-33-39-41) · [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37) · [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49) · [L3.2 › KNN pros and cons](../notes/06_Week3_NaiveBayes_KNN.md#16-knn-pros-and-cons-slides-51-53)
+**Notes:** [L3.2 › KNN: idea and properties](../notes/06_Week3_NaiveBayes_KNN.md#11-knn-idea-and-properties-slides-33-39-41) · [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37) · [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49) · [L3.2 › KNN pros and cons](../notes/06_Week3_NaiveBayes_KNN.md#16-knn-pros-and-cons-slides-51-53)  
+**Visual:** [Sample 4 › Part 2 Q2 KNN](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w2)
 
 **(a)**
 1. Choose k and a distance function.
@@ -187,7 +199,8 @@ d) They are new uncorrelated variables built as linear combinations of the origi
 **Answer**
 
 **Source:** L4.2 p.6-7 linear vs non-linear SVM · L4.2 p.44 data no line can split · L4.2 p.45-46 map to a higher dimension · L4.2 p.47 polynomial kernel · L4.2 p.48 sigmoid kernel · L4.2 p.49 advantages, disadvantages, C and gamma  
-**Notes:** [L4.2 › Types: linear vs non-linear SVM](../notes/08_Week4_SVM.md#2-types-linear-vs-non-linear-svm-slides-6-7) · [L4.2 › Kernels and the kernel trick](../notes/08_Week4_SVM.md#10-kernels-and-the-kernel-trick-slides-43-48) · [L4.2 › Advantages and disadvantages](../notes/08_Week4_SVM.md#11-advantages-and-disadvantages-slide-49)
+**Notes:** [L4.2 › Types: linear vs non-linear SVM](../notes/08_Week4_SVM.md#2-types-linear-vs-non-linear-svm-slides-6-7) · [L4.2 › Kernels and the kernel trick](../notes/08_Week4_SVM.md#10-kernels-and-the-kernel-trick-slides-43-48) · [L4.2 › Advantages and disadvantages](../notes/08_Week4_SVM.md#11-advantages-and-disadvantages-slide-49)  
+**Visual:** [Sample 4 › Part 2 Q3 SVM kernels](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w3)
 
 **(a)**
 - **Linear SVM**: the data is linearly separable, one straight line (hyperplane) splits the two classes.
@@ -234,7 +247,8 @@ Build the confusion matrix and compute accuracy, precision, recall and F1.
 **Answer**
 
 **Source:** L3.1 p.14 confusion matrix · L3.1 p.20-25 accuracy, precision, recall, F1 · L3.1 p.10-12 MSE, RMSE, MAE · L3.1 p.13 R² · L3.1 p.26-27 implementation  
-**Notes:** [L3.1 › Confusion matrix and axis layout](../notes/05_Week3_EvaluatingLearningAlgorithms.md#7-confusion-matrix-and-axis-layout-slides-14-19) · [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25) · [L3.1 › Regression metrics: MSE, RMSE, MAE](../notes/05_Week3_EvaluatingLearningAlgorithms.md#4-regression-metrics-mse-rmse-mae-slides-10-12) · [L3.1 › R-squared](../notes/05_Week3_EvaluatingLearningAlgorithms.md#5-r-squared-slide-13)
+**Notes:** [L3.1 › Confusion matrix and axis layout](../notes/05_Week3_EvaluatingLearningAlgorithms.md#7-confusion-matrix-and-axis-layout-slides-14-19) · [L3.1 › Accuracy, precision, recall, F1](../notes/05_Week3_EvaluatingLearningAlgorithms.md#8-accuracy-precision-recall-f1-slides-20-25) · [L3.1 › Regression metrics: MSE, RMSE, MAE](../notes/05_Week3_EvaluatingLearningAlgorithms.md#4-regression-metrics-mse-rmse-mae-slides-10-12) · [L3.1 › R-squared](../notes/05_Week3_EvaluatingLearningAlgorithms.md#5-r-squared-slide-13)  
+**Visual:** [Sample 4 › Part 2 Q4 Evaluation metrics](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w4)
 
 **(a)** Label each example:
 
@@ -288,7 +302,8 @@ Points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8). Use squared Euclidean distan
 **Answer**
 
 **Source:** L6.1 p.7-9 K-Means steps and J · L6.1 p.19 random initialization problem · L6.1 p.21 K-Means++ steps · L6.1 p.22-23 worked table on the same five points · L6.1 p.28-30 elbow curve  
-**Notes:** [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26) · [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Choosing the right K: the elbow curve](../notes/10_Week6_KMeans_Clustering.md#8-choosing-the-right-k-the-elbow-curve-slides-28-30)
+**Notes:** [L6.1 › K-Means++ initialization](../notes/10_Week6_KMeans_Clustering.md#7-k-means-initialization-slides-21-26) · [L6.1 › The algorithm in five steps](../notes/10_Week6_KMeans_Clustering.md#2-the-algorithm-in-five-steps-slides-7-9) · [L6.1 › Choosing the right K: the elbow curve](../notes/10_Week6_KMeans_Clustering.md#8-choosing-the-right-k-the-elbow-curve-slides-28-30)  
+**Visual:** [Sample 4 › Part 2 Q5 K-Means++](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w5)
 
 **(a)**
 
@@ -349,7 +364,8 @@ Is an email spam?
 **Answer**
 
 **Source:** L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example  
-**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)
+**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)  
+**Visual:** [Sample 4 › Part 2 Q6 Decision tree](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s4-w6)
 
 **(a)** 5 Yes, 7 No: E(S) = −(5/12) log₂(5/12) − (7/12) log₂(7/12) = **0.980**.
 

@@ -32,6 +32,7 @@ Existing projects:
 | Course | PROJECT | Artifact |
 |---|---|---|
 | Multimedia Computing, midterm (5 samples × 10 MC + 8 written) | `Midterms/MultimediaComputing/visuals` | https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf |
+| Artificial Intelligence, midterm (5 samples × 10 MC + 6 written, weeks 2–6) | `Midterms/ArtificialIntelligence/visuals` | https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn |
 
 About the user: keep messages short; they read the page in the claude.ai viewer, light or dark. They like being given
 `#` links to the exact question.
@@ -87,6 +88,16 @@ look at screenshots of a few questions across sections and both themes yourself 
 - Update in a later session: `Artifact` `read` the URL first (a publish without a read is refused), then publish
   `PROJECT/<out>` with `url` set. Never publish a partial build over the full page (`build.py` refuses `--only`
   without `--out`).
+
+## 4b. Link back from the sample files
+
+Once the artifact URL is known, every question in `sources.questions` gets a deep link next to its Source/Notes lines,
+so the md and the page point at each other:
+
+- multiple choice, last line of the answer blockquote: `> **Visual:** [Sample 1 › Part 1 Q5](<artifact url>#s1-mc5)`
+- written, after the `**Source:**` / `**Notes:**` lines: `**Visual:** [Sample 1 › Part 2 Q3 <topic>](<artifact url>#s1-w3)`
+
+The line before it needs two trailing spaces (markdown line break). New questions added later get their line too.
 
 ## 5. Report
 

@@ -14,7 +14,8 @@ d) [1, 2, 4, 8]
 
 > **Answer: d)** PolynomialFeatures builds [1, x, x², x³] = [1, 2, 4, 8]. The 1 is the bias column. A standard linear regression is then trained on these columns, which is why polynomial regression is still linear in the weights.  
 > **Source:** L2.1 p.46 construct x², x³ from x · L2.1 p.47 PolynomialFeatures and make_pipeline  
-> **Notes:** [L2.1 › Polynomial regression](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#9-polynomial-regression-slides-45-47)
+> **Notes:** [L2.1 › Polynomial regression](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#9-polynomial-regression-slides-45-47)  
+> **Visual:** [Sample 3 › Part 1 Q1](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc1)
 
 **2.** A one-vs-all logistic regression is used for a problem with 4 classes. How does it work?  
 a) It trains 4 binary classifiers, each class against all the others, and predicts the class with the largest hθ⁽ⁱ⁾(x)  
@@ -24,7 +25,8 @@ d) It trains 3 classifiers and predicts the class with the smallest hθ⁽ⁱ⁾
 
 > **Answer: a)** For each class i, treat class i as positive and all the others as negative and train hθ⁽ⁱ⁾(x) = P(y = i | x; θ). On a new input, "pick the class i that maximizes" hθ⁽ⁱ⁾(x). K classes need K classifiers. c describes one-vs-one, which is not in the lecture.  
 > **Source:** L2.2 p.33-34 multiclass examples · L2.2 p.35 one-vs-all · L2.2 p.36 pick the class with max hθ⁽ⁱ⁾(x)  
-> **Notes:** [L2.2 › Multiclass classification: one vs all](../notes/04_Week2_LogisticRegression.md#10-multiclass-classification-one-vs-all-slides-33-38)
+> **Notes:** [L2.2 › Multiclass classification: one vs all](../notes/04_Week2_LogisticRegression.md#10-multiclass-classification-one-vs-all-slides-33-38)  
+> **Visual:** [Sample 3 › Part 1 Q2](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc2)
 
 **3.** A regression model makes errors of 1, 1, 1, 1 and 6 on five test examples. What is the MSE?  
 a) 2  
@@ -34,7 +36,8 @@ d) 40
 
 > **Answer: b)** MSE = (1 + 1 + 1 + 1 + 36)/5 = 40/5 = 8. MAE = (1 + 1 + 1 + 1 + 6)/5 = 2 and RMSE = √8 = 2.83. The single large error contributes 36 of the 40, which shows that MSE is sensitive to large errors while MAE is less so.  
 > **Source:** L3.1 p.10 MSE, sensitive to large errors · L3.1 p.11 RMSE · L3.1 p.12 MAE, less sensitive to large errors  
-> **Notes:** [L3.1 › Regression metrics: MSE, RMSE, MAE](../notes/05_Week3_EvaluatingLearningAlgorithms.md#4-regression-metrics-mse-rmse-mae-slides-10-12)
+> **Notes:** [L3.1 › Regression metrics: MSE, RMSE, MAE](../notes/05_Week3_EvaluatingLearningAlgorithms.md#4-regression-metrics-mse-rmse-mae-slides-10-12)  
+> **Visual:** [Sample 3 › Part 1 Q3](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc3)
 
 **4.** Why is KNN called a "lazy" learner?  
 a) It needs only a few training examples  
@@ -44,7 +47,8 @@ d) It learns its weights slowly with a small learning rate
 
 > **Answer: c)** KNN has no training phase: `fit` only stores X_train and y_train. Every prediction computes the distance to all training points. It is also non-parametric: it learns no parameters. That is why it is hard to scale to big data.  
 > **Source:** L3.2 p.33 non-parametric, memorizes the training set · L3.2 p.41 lazy learner · L3.2 p.52 difficult to scale · L3.2 p.55 fit only stores the data  
-> **Notes:** [L3.2 › KNN: idea and properties](../notes/06_Week3_NaiveBayes_KNN.md#11-knn-idea-and-properties-slides-33-39-41)
+> **Notes:** [L3.2 › KNN: idea and properties](../notes/06_Week3_NaiveBayes_KNN.md#11-knn-idea-and-properties-slides-33-39-41)  
+> **Visual:** [Sample 3 › Part 1 Q4](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc4)
 
 **5.** A node with 6 Yes and 4 No (entropy 0.971) is split into two children: 4 Yes / 0 No and 2 Yes / 4 No (entropy 0.918). What is the information gain of this split?  
 a) 0.420  
@@ -54,7 +58,8 @@ d) 0.053
 
 > **Answer: a)** Weight each child by its share of the rows: E_children = (4/10)·0 + (6/10)·0.918 = 0.551. IG = 0.971 − 0.551 = 0.420. 0.551 is the weighted child entropy, and 0.053 = 0.971 − 0.918 forgets the weights.  
 > **Source:** L4.1 p.22 entropy · L4.1 p.29 IG = E(Y) − E(Y | X) · L4.1 p.31 weighted sum Σ |Sᵥ|/|S| · Entropy(Sᵥ)  
-> **Notes:** [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31)
+> **Notes:** [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31)  
+> **Visual:** [Sample 3 › Part 1 Q5](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc5)
 
 **6.** A linear SVM has the weight vector w = (3, 4). What is the width d of its margin (the distance between the lines w·x + b = 1 and w·x + b = −1)?  
 a) 0.2  
@@ -64,7 +69,8 @@ d) 5
 
 > **Answer: b)** d = 2/‖w‖ and ‖w‖ = √(9 + 16) = 5, so d = 2/5 = 0.4. 0.2 = 1/‖w‖ is the distance from the hyperplane to one margin line. A smaller ‖w‖ means a wider margin, which is why SVM minimizes ½‖w‖².  
 > **Source:** L4.2 p.26 margin lines w·x + b = ±1 · L4.2 p.31-35 derivation of d = 2/‖w‖ · L4.2 p.36 maximize 2/‖w‖  
-> **Notes:** [L4.2 › Hard margin: constraints and margin 2 over norm w](../notes/08_Week4_SVM.md#8-hard-margin-constraints-and-margin-2-over-norm-w-slides-27-37)
+> **Notes:** [L4.2 › Hard margin: constraints and margin 2 over norm w](../notes/08_Week4_SVM.md#8-hard-margin-constraints-and-margin-2-over-norm-w-slides-27-37)  
+> **Visual:** [Sample 3 › Part 1 Q6](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc6)
 
 **7.** A dataset has a nominal feature City ∈ {Tashkent, Samarkand, Bukhara} with no natural order. Which encoding should be used for a linear model?  
 a) Label encoding (0, 1, 2)  
@@ -74,7 +80,8 @@ d) One-hot encoding (one 0/1 column per city)
 
 > **Answer: d)** One-hot encoding is best for nominal categories with a manageable number of values. Label encoding is for ordinal categories (small < medium < large); on nominal data it "invents a false numeric relationship" (Bukhara = 2 > Tashkent = 0).  
 > **Source:** L5.2 p.21 label vs one-hot encoding · L5.2 p.22 target encoding and embeddings · L5.2 p.36 label-encoding unordered categories is a common mistake  
-> **Notes:** [L5.2 › Categorical encoding](../notes/09_Week5_DataPreparation.md#8-categorical-encoding-slides-21-22)
+> **Notes:** [L5.2 › Categorical encoding](../notes/09_Week5_DataPreparation.md#8-categorical-encoding-slides-21-22)  
+> **Visual:** [Sample 3 › Part 1 Q7](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc7)
 
 **8.** How should a StandardScaler be used with a train/test split?  
 a) Fit it on the whole dataset, then split  
@@ -84,7 +91,8 @@ d) Fit it on the test set only, so that the test values are exactly standardized
 
 > **Answer: c)** "Fit the scaler only on training data"; the test set is only transformed. Fitting on the whole data or on the test set lets test information leak into training (data leakage): the metrics look great, but the model fails in production.  
 > **Source:** L5.2 p.18-19 fit only on training data · L5.2 p.34 split, fit on train, transform test · L5.2 p.36 fitting a scaler on test data is a common mistake  
-> **Notes:** [L5.2 › Feature scaling](../notes/09_Week5_DataPreparation.md#7-feature-scaling-slides-18-20) · [L5.2 › Splitting and data leakage](../notes/09_Week5_DataPreparation.md#13-splitting-and-data-leakage-slides-34-36)
+> **Notes:** [L5.2 › Feature scaling](../notes/09_Week5_DataPreparation.md#7-feature-scaling-slides-18-20) · [L5.2 › Splitting and data leakage](../notes/09_Week5_DataPreparation.md#13-splitting-and-data-leakage-slides-34-36)  
+> **Visual:** [Sample 3 › Part 1 Q8](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc8)
 
 **9.** K-Means is run for K = 1 to 6, giving inertia (SSE) values 1000, 400, 150, 120, 100, 90. Using the elbow method, which K should be chosen?  
 a) 3  
@@ -94,7 +102,8 @@ d) 2
 
 > **Answer: a)** The drops are 600, 250, 30, 20, 10. After K = 3 adding clusters barely lowers the inertia, so the curve bends at K = 3. K = 6 has the lowest inertia, but inertia always falls as K grows, so the lowest value is not the goal.  
 > **Source:** L6.1 p.17 elbow method · L6.1 p.28 elbow curve: K on the x-axis, metric on the y-axis · L6.1 p.29-30 inertia curve, elbow circled  
-> **Notes:** [L6.1 › Choosing the right K: the elbow curve](../notes/10_Week6_KMeans_Clustering.md#8-choosing-the-right-k-the-elbow-curve-slides-28-30)
+> **Notes:** [L6.1 › Choosing the right K: the elbow curve](../notes/10_Week6_KMeans_Clustering.md#8-choosing-the-right-k-the-elbow-curve-slides-28-30)  
+> **Visual:** [Sample 3 › Part 1 Q9](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc9)
 
 **10.** A dataset has 10 variables. How many principal components does PCA produce, and how is the information distributed among them?  
 a) 2, and they share the information equally  
@@ -104,7 +113,8 @@ d) 10, with the maximum possible information in the first component, then the ma
 
 > **Answer: d)** "10-dimensional data gives you 10 principal components, but PCA tries to put maximum possible information in the first component, then maximum remaining information in the second and so on." Reducing the dimension means keeping only the first few.  
 > **Source:** L6.2 p.6 10 dimensions give 10 components · L6.2 p.7 explained-variance plot · L6.2 p.12 p components for p variables  
-> **Notes:** [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7)
+> **Notes:** [L6.2 › Principal components](../notes/11_Week6_PCA.md#2-principal-components-slides-6-7)  
+> **Visual:** [Sample 3 › Part 1 Q10](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-mc10)
 
 ## Part II: Open questions and problem solving
 
@@ -119,7 +129,8 @@ d) 10, with the maximum possible information in the first component, then the ma
 **Answer**
 
 **Source:** L2.1 p.3 two approaches · L2.1 p.7 loss J(θ) · L2.1 p.20 vectorized update · L2.1 p.33-41 normal equation · L2.1 p.42 comparison table · L2.1 p.45-47 polynomial regression  
-**Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43) · [L2.1 › Gradient descent vs normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#8-gradient-descent-vs-normal-equation-slide-42) · [L2.1 › Polynomial regression](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#9-polynomial-regression-slides-45-47)
+**Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43) · [L2.1 › Gradient descent vs normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#8-gradient-descent-vs-normal-equation-slide-42) · [L2.1 › Polynomial regression](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#9-polynomial-regression-slides-45-47)  
+**Visual:** [Sample 3 › Part 2 Q1 Polynomial regression](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w1)
 
 **(a)**
 - Loss: J(θ) = (1/2m) Σ (hθ(x⁽ⁱ⁾) − y⁽ⁱ⁾)², with h = Xθ and x₀ = 1 for every example.
@@ -155,7 +166,8 @@ d) 10, with the maximum possible information in the first component, then the ma
 **Answer**
 
 **Source:** L3.2 p.7 Bayes theorem · L3.2 p.9 definition · L3.2 p.16 A = class, B = features · L3.2 p.23-25 posterior and normalization · L3.2 p.27 advantages · L3.2 p.28 disadvantages  
-**Notes:** [L3.2 › Probability basics and Bayes theorem](../notes/06_Week3_NaiveBayes_KNN.md#2-probability-basics-and-bayes-theorem-slides-4-9) · [L3.2 › Naive Bayes classifier: the naive assumption](../notes/06_Week3_NaiveBayes_KNN.md#3-naive-bayes-classifier-the-naive-assumption-slides-16-23-24-28) · [L3.2 › Advantages and disadvantages of Naive Bayes](../notes/06_Week3_NaiveBayes_KNN.md#8-advantages-and-disadvantages-of-naive-bayes-slides-27-28)
+**Notes:** [L3.2 › Probability basics and Bayes theorem](../notes/06_Week3_NaiveBayes_KNN.md#2-probability-basics-and-bayes-theorem-slides-4-9) · [L3.2 › Naive Bayes classifier: the naive assumption](../notes/06_Week3_NaiveBayes_KNN.md#3-naive-bayes-classifier-the-naive-assumption-slides-16-23-24-28) · [L3.2 › Advantages and disadvantages of Naive Bayes](../notes/06_Week3_NaiveBayes_KNN.md#8-advantages-and-disadvantages-of-naive-bayes-slides-27-28)  
+**Visual:** [Sample 3 › Part 2 Q2 Naive Bayes](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w2)
 
 **(a)**
 
@@ -193,7 +205,8 @@ $$P(A\mid B)=\frac{P(B\mid A)\,P(A)}{P(B)}$$
 **Answer**
 
 **Source:** L5.2 p.9 six problems of raw data · L5.2 p.10 MCAR, MAR, MNAR · L5.2 p.11 handling methods · L5.2 p.13 IQR rule · L5.2 p.14 Z-score rule · L5.2 p.15 ML-based detectors · L5.2 p.36 dropping every row with a NaN is a mistake  
-**Notes:** [L5.2 › Missing values](../notes/09_Week5_DataPreparation.md#3-missing-values-slides-10-11) · [L5.2 › Outliers: IQR, Z score, ML detectors](../notes/09_Week5_DataPreparation.md#5-outliers-iqr-z-score-ml-detectors-slides-13-15)
+**Notes:** [L5.2 › Missing values](../notes/09_Week5_DataPreparation.md#3-missing-values-slides-10-11) · [L5.2 › Outliers: IQR, Z score, ML detectors](../notes/09_Week5_DataPreparation.md#5-outliers-iqr-z-score-ml-detectors-slides-13-15)  
+**Visual:** [Sample 3 › Part 2 Q3 Missing values, outliers](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w3)
 
 **(a)**
 
@@ -239,7 +252,8 @@ Data: x = [1, 2, 4], y = [3, 5, 9]. Model hθ(x) = θ₀ + θ₁x. Start at θ =
 **Answer**
 
 **Source:** L2.1 p.7 loss with 1/2m · L2.1 p.10-11 X with the column of 1s · L2.1 p.19-23 worked first update · L2.1 p.33-41 normal equation · L2.1 p.43 code  
-**Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22) · [L2.1 › Worked example: first update from zero theta](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#4-worked-example-first-update-from-zero-theta-slides-12-23) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43)
+**Notes:** [L2.1 › Loss and the vectorised gradient descent update](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#3-loss-and-the-vectorised-gradient-descent-update-slides-7-20-22) · [L2.1 › Worked example: first update from zero theta](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#4-worked-example-first-update-from-zero-theta-slides-12-23) · [L2.1 › Normal equation](../notes/03_Week2_MultivariateRegression_NormalEquation_Polynomial.md#7-normal-equation-slides-33-41-43)  
+**Visual:** [Sample 3 › Part 2 Q4 Linear regression](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w4)
 
 **(a)** X = [[1, 1], [1, 2], [1, 4]], y = [3, 5, 9]ᵀ. With θ = 0, h = [0, 0, 0] and h − y = [−3, −5, −9].
 - J = (9 + 25 + 81)/(2 × 3) = 115/6 = **19.167**.
@@ -287,7 +301,8 @@ Eight training points of classes A and B. Query point Q = (3, 3).
 **Answer**
 
 **Source:** L3.2 p.35 Euclidean · L3.2 p.36 Manhattan · L3.2 p.39 KNN steps · L3.2 p.42-44 Iris worked example (distance, rank, nearest neighbours) · L3.2 p.47 the answer depends on k · L3.2 p.48-49 choose k at the elbow of the error rate  
-**Notes:** [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37) · [L3.2 › KNN worked example: Iris](../notes/06_Week3_NaiveBayes_KNN.md#13-knn-worked-example-iris-slides-42-44) · [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49)
+**Notes:** [L3.2 › Distance measures](../notes/06_Week3_NaiveBayes_KNN.md#12-distance-measures-slides-35-37) · [L3.2 › KNN worked example: Iris](../notes/06_Week3_NaiveBayes_KNN.md#13-knn-worked-example-iris-slides-42-44) · [L3.2 › Choosing k](../notes/06_Week3_NaiveBayes_KNN.md#14-choosing-k-slides-46-49)  
+**Visual:** [Sample 3 › Part 2 Q5 KNN](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w5)
 
 **(a)** d = √((x1 − 3)² + (x2 − 3)²):
 
@@ -344,7 +359,8 @@ Will a customer wait for a table at a restaurant?
 **Answer**
 
 **Source:** L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example  
-**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)
+**Notes:** [L4.1 › Entropy](../notes/07_Week4_DecisionTree.md#5-entropy-slides-22-24-28) · [L4.1 › Information gain](../notes/07_Week4_DecisionTree.md#6-information-gain-slides-29-31) · [L4.1 › Worked example: PlayTennis tree built with ID3](../notes/07_Week4_DecisionTree.md#7-worked-example-playtennis-tree-built-with-id3-slides-32-34)  
+**Visual:** [Sample 3 › Part 2 Q6 ID3](https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn#s3-w6)
 
 **(a)** 7 Yes, 5 No: E(S) = −(7/12) log₂(7/12) − (5/12) log₂(5/12) = **0.980**.
 
