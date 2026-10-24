@@ -1,0 +1,649 @@
+<article class="q" id="s5-mc1" data-sample="5" data-part="mc" data-num="1" data-topic="Wavelength">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2, Wavelength and period</p>
+    <h3 class="q-title">A 170 Hz tone travels through air at 340 m/s. What is its wavelength?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.5 m</span>
+      <span class="why">No. 170 / 340 = 0.5 is f/v, the upside-down formula.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>2 m</span>
+      <span class="why">Correct. λ = v/f = 340/170 = 2 m.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>57,800 m</span>
+      <span class="why">No. 340 × 170 = 57,800 is v × f.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>5.88 ms</span>
+      <span class="why">No. 1/170 s = 5.88 ms is the period T. It is a time, and a wavelength is a length.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Wavelength is the distance one cycle occupies in space. In one period T the wave moves v × T, so the slide formula is λ = vT. With T = 1/f this gives λ = v/f = 340 / 170 = 2 m.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One cycle lasts T in time and spans λ in space</h4>
+    </div>
+    <p class="fig-lede">The top plot is the air pressure at one fixed point as time passes. The bottom plot is the pressure along the air at one instant. The same cycle takes T = 5.88 ms at the point and covers λ = 2 m along the air. Drag f and both marks change together.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Frequency f</span><span class="v ter" data-role="f">170</span><span class="sub">Hz, cycles per second</span></div>
+      <div class="stat"><span class="label">Period T = 1/f</span><span class="v sec" data-role="T">5.88</span><span class="sub">ms, a time</span></div>
+      <div class="stat"><span class="label">Wavelength λ = v/f</span><span class="v pri" data-role="lam">2</span><span class="sub">m, a length</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="wave"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>0.5 is f/v</h5>
+        <p>Dividing the wrong way round gives cycles per metre, the inverse of λ.</p>
+        <div class="chain">
+          <span>170 / 340 = <b>0.5</b></span>
+          <span>unit: (1/s) / (m/s) = 1/m</span>
+        </div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>57,800 is v × f</h5>
+        <p>Multiplying gives the wrong unit, so it cannot be a distance.</p>
+        <div class="chain">
+          <span>340 × 170 = <b>57,800</b></span>
+          <span>unit: (m/s) × (1/s) = m/s²</span>
+        </div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>5.88 ms is the period</h5>
+        <p>The answer is in seconds. The question asks for a length in metres.</p>
+        <div class="chain">
+          <span>T = 1/170 s = <b>5.88 ms</b></span>
+          <span>λ = v × T = 340 × 0.00588 = <b>2 m</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Wavelength is the distance occupied by one cycle, the distance a signal travels in one period: λ = vT = v/f, in meters. Period T = 1/f is a time.</p>
+    <p class="source">Source: L2 p.25 wavelength and period · L2 p.26 λ = vT · Notes: Lecture 2 › 4. Sine wave parameters</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc2" data-sample="5" data-part="mc" data-num="2" data-topic="MIDI status byte">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 3, MIDI bytes</p>
+    <h3 class="q-title">In MIDI, the value of a status byte lies in the range:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0 to 127</span>
+      <span class="why">No. That is the range of a data byte, whose MSB is 0.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0 to 15</span>
+      <span class="why">No. That is the range of the channel nibble, the four low bits of a status byte.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>128 to 255</span>
+      <span class="why">Correct. A status byte has its MSB set to 1, so it is at least 1000 0000 = 128.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0 to 255</span>
+      <span class="why">No. That is every possible 8-bit value, data bytes included.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The slide says "The data in a MIDI status byte is between 128 and 255; each of the data bytes is between 0 and 127." The reason is the most significant bit. A status byte has MSB = 1, which alone is worth 128, and a data byte has MSB = 0, which caps it at 127.</p>
+    <p>Inside a status byte, the three bits after the MSB hold the message type and the four low bits hold the channel, one of 16 (0 to 15).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The MSB splits the 256 byte values into data and status</h4>
+    </div>
+    <p class="fig-lede">Drag the byte value. Bit 7 decides the half of the number line. Above 127 it is 1, and the byte is a status byte with a type field and a channel field.</p>
+    <div data-viz="slider"></div>
+    <p class="verdict" data-role="note"></p>
+    <div data-viz="byte"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Status byte, MSB = 1</span>
+      <span><i class="sw-pri-soft"></i>Message type bits</span>
+      <span><i class="sw-ter-soft"></i>Channel bits, 0 to 15</span>
+      <span><i class="sw-sec"></i>Data byte, MSB = 0</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>A Note On message is {status, data, data}</h4>
+    </div>
+    <p class="fig-lede">Table 6.3: Note on is &amp;H9n, followed by a key number and a velocity. Only the first byte has bit 7 set, so a receiver can always tell where a message starts.</p>
+    <div data-viz="msg"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>"The data in a MIDI status byte is between 128 and 255; each of the data bytes is between 0 and 127." Status byte: MSB = 1, three bits of message, four low bits = channel.</p>
+    <p class="source">Source: L3 p.25 status bytes 128-255, data bytes 0-127 · L3 p.35 status byte MSB = 1, channel in the four low bits · Notes: Lecture 3 › 8. MIDI bytes · Lecture 3 › 10. Structure of MIDI messages</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc3" data-sample="5" data-part="mc" data-num="3" data-topic="Shannon-Fano vs Huffman">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 4, Shannon-Fano and Huffman coding</p>
+    <h3 class="q-title">Which statement about Shannon-Fano and Huffman coding is correct?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>Shannon-Fano is top-down (sort, then recursively split into two parts with about equal counts); Huffman is bottom-up (repeatedly merge the two least probable nodes)</span>
+      <span class="why">Correct. These are the slide titles: "a top-down approach" and "a bottom-up approach".</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Shannon-Fano is bottom-up (merge the two least probable nodes); Huffman is top-down (recursively split the sorted list)</span>
+      <span class="why">No. It swaps the two algorithms.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Both are top-down; they differ only in which branch gets 0 and which gets 1</span>
+      <span class="why">No. Huffman starts at the leaves and builds upward to the root.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Both build a dictionary of variable-length strings and send fixed-length codes</span>
+      <span class="why">No. That describes LZW. Both of these send variable-length codes for single symbols.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Shannon-Fano starts with the whole sorted list at the root and splits it into two parts with about the same count, again and again, until each part holds one symbol. Huffman starts with the symbols as leaves and merges the two least probable nodes into a parent, again and again, until one root is left.</p>
+    <p>For HELLO both happen to give the same codes (L 0, H 10, E 110, O 111, 10 bits in total). The trees are built in opposite directions.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>HELLO: Shannon-Fano grows down from the root, Huffman grows up from the leaves</h4>
+    </div>
+    <p class="fig-lede">Counts L 2, H 1, E 1, O 1 (slides 20 and 28). Step through and compare which node each algorithm creates first. Shannon-Fano's first step makes the root's two children. Huffman's first step makes the deepest parent.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="trees"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>"Shannon-Fano Algorithm, a top-down approach": sort, then recursively divide into two parts with about the same counts. "Huffman Coding Algorithm, a bottom-up approach": repeatedly merge the two lowest counts into a parent.</p>
+    <p class="source">Source: L4 p.19 Shannon-Fano, top-down · L4 p.27 Algorithm 7.1 Huffman, bottom-up · Notes: Lecture 4 › 7. Shannon Fano algorithm · Lecture 4 › 8. Huffman coding</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc4" data-sample="5" data-part="mc" data-num="4" data-topic="MPEG-1 layers">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 5, MPEG-1 audio layers</p>
+    <h3 class="q-title">On the MPEG-1 Audio encoding characteristics slide, which bit-rate range and target belong to Layer 3 (MP3)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>32-448 kbps, target 192 kbps</span>
+      <span class="why">No. That is Layer 1.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>32-384 kbps, target 128 kbps</span>
+      <span class="why">No. That is Layer 2 (MP2).</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>32-320 kbps, target 64 kbps</span>
+      <span class="why">Correct. "Layer 3: 32-320 kbps, target 64 kbps".</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>32-320 kbps, target 320 kbps</span>
+      <span class="why">No. The range is right, but 320 kbps is the top of the range. The target is 64 kbps.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Slide 23 lists the three layers. Each higher layer is more complex and removes more redundancy, so it needs fewer bits for the same quality. The target falls from 192 to 128 to 64 kbps, and the top of the range falls from 448 to 384 to 320 kbps.</p>
+    <p>Slide 25 gives MP3 a goal of 128 kbps. That figure is for stereo, 64 kbps per channel.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Each layer's bit-rate range and target, drawn to scale</h4>
+    </div>
+    <p class="fig-lede">Every range starts at 32 kbps. Each layer ends lower and has a lower target than the one before it. Option d puts the target at the end of the MP3 bar.</p>
+    <div data-viz="bars"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Target bit rate, Layer 3</span>
+      <span><i class="sw-seg"></i>Bit-rate range</span>
+      <span><i class="sw-bad"></i>Option d's target</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MPEG-1 Audio: Layer 1 32-448 kbps, target 192. Layer 2 32-384 kbps, target 128. Layer 3 32-320 kbps, target 64. Layer 3 is the most complex and "further reduces redundancy and relevance".</p>
+    <p class="source">Source: L5 p.23 MPEG-1 layers, bit rates and targets · Notes: Lecture 5 › 9. MPEG audio history and MPEG1 layers</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc5" data-sample="5" data-part="mc" data-num="5" data-topic="Interpolation">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 6, Image resampling and interpolation</p>
+    <h3 class="q-title">Which image interpolation method gives the sharpest images and preserves fine details, but is slow?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Nearest neighbor</span>
+      <span class="why">No. Nearest neighbor is "fast and simple" with "loss of sharpness" and checkerboard artifacts.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Bilinear</span>
+      <span class="why">No. Bilinear averages only the 2×2 nearest pixels, which softens edges and flattens peaks.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>All three methods give the same sharpness; they differ only in speed</span>
+      <span class="why">No. Figure 1 shows three visibly different results from the same input.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>Bicubic</span>
+      <span class="why">Correct. Slide 36: "Images are sharpest; fine details are preserved; slow".</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Bicubic interpolation fits a cubic curve through the 4×4 = 16 nearest pixels, so it follows the shape of the signal between samples. It costs 16 reads per output pixel against 4 for bilinear and 1 for nearest neighbor, which is why it is slow.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>A 6×6 image enlarged 4× by each method</h4>
+    </div>
+    <p class="fig-lede">The input has a thin bright diagonal line. Nearest neighbor copies each pixel into a 4×4 block, so the line turns into a staircase. Bilinear makes it smooth but dim. Along its centre the line averages 173, against 230 in the input. Bicubic is just as smooth and keeps the line brighter at 197, so it looks sharper.</p>
+    <div data-viz="images"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Nearest neighbor</span><span class="v ter">1</span><span class="sub">pixel read per output pixel, 576 for 24×24</span></div>
+      <div class="stat"><span class="label">Bilinear</span><span class="v sec">4</span><span class="sub">pixels (2×2), 2,304 for 24×24</span></div>
+      <div class="stat"><span class="label">Bicubic</span><span class="v pri">16</span><span class="sub">pixels (4×4), 9,216 for 24×24</span></div>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>One row: rebuilding the curve between the samples</h4>
+    </div>
+    <p class="fig-lede">Ten samples (dots) taken from a smooth curve (dashed) with a narrow peak. Each method fills in the values between them. At x = 3.7 the ringed dots are the samples that method reads. Bicubic here uses the cubic convolution kernel with a = −0.5.</p>
+    <div data-viz="steps"></div>
+    <div data-viz="row"></div>
+    <div class="legend">
+      <span><i class="sw-ter"></i>Nearest neighbor</span>
+      <span><i class="sw-sec"></i>Bilinear</span>
+      <span><i class="sw-pri"></i>Bicubic</span>
+      <span><i class="sw-seg"></i>Dashed: the true curve</span>
+    </div>
+    <div data-viz="table"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Bicubic: "Images are sharpest; fine details are preserved; slow". Nearest neighbor: "Fast and simple; loss of sharpness; artifacts (checkerboard)". Resample when rescaling, after a geometric transformation, or when output coordinates are not discrete.</p>
+    <p class="source">Source: L6 p.36 nearest neighbor, bilinear and bicubic trade-offs · Notes: Lecture 6 › 12. Image resampling and interpolation</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc6" data-sample="5" data-part="mc" data-num="6" data-topic="N4 neighbors">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 7, Neighbors of a pixel</p>
+    <h3 class="q-title">How many pixels are in N4(p) for p = (3, 5), and which are they?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>4: (2,5), (4,5), (3,4), (3,6)</span>
+      <span class="why">Correct. (x±1, y) and (x, y±1): up, down, left and right of p.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>4: (2,4), (2,6), (4,4), (4,6)</span>
+      <span class="why">No. These are the diagonal neighbors N<sub>D</sub>(p).</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>8: every pixel with D8 = 1 from p</span>
+      <span class="why">No. That is N<sub>8</sub>(p) = N<sub>4</sub>(p) ∪ N<sub>D</sub>(p).</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>4: (1,5), (5,5), (3,3), (3,7)</span>
+      <span class="why">No. These are two steps away from p (D<sub>4</sub> = 2).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> N<sub>4</sub>(p) for p = (x, y) is (x+1, y), (x−1, y), (x, y+1), (x, y−1). With x = 3 and y = 5 that gives (4,5), (2,5), (3,6), (3,4), four pixels. Here x is the row and y is the column.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The pixels each option names, around p = (3, 5)</h4>
+    </div>
+    <p class="fig-lede">Rows are x (down), columns are y (right), as in Lecture 7. Pick an option to light its pixels. N<sub>4</sub> is the cross, N<sub>D</sub> the corners, N<sub>8</sub> both, and option d sits one ring further out.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="grid"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>N<sub>4</sub>(p) = (x+1,y), (x−1,y), (x,y+1), (x,y−1). N<sub>D</sub>(p) = the four diagonal pixels. N<sub>8</sub>(p) = N<sub>4</sub>(p) ∪ N<sub>D</sub>(p).</p>
+    <p class="source">Source: L7 p.21 N4, ND and N8 · Notes: Lecture 7 › 4. Neighbors of a pixel</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc7" data-sample="5" data-part="mc" data-num="7" data-topic="XOR">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 9, Logic operations</p>
+    <h3 class="q-title">Which statement about the XOR operation on images is correct?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>XOR sets bits that are the same in both operands to 1 and bits that differ to 0</span>
+      <span class="why">No. It is the reverse: equal bits give 0, different bits give 1.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>p XOR v = 0 exactly when p = v, so XOR with v turns every pixel of value v black; it is used to find all pixels of a certain value</span>
+      <span class="why">Correct. "XOR operation sets the pixels that are specified to black, others to nonblack."</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>XOR with 255 gives the same result as adding 255 with clamping</span>
+      <span class="why">No. p XOR 255 flips every bit, which is NOT: 255 − p. Adding 255 and clamping gives 255 for every p.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>XOR is used to adjust the contrast of an image, like multiplication</span>
+      <span class="why">No. Contrast is changed by multiplication, an arithmetic operation.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> XOR works bit by bit: equal bits give 0 and different bits give 1. The result is 0 only when all eight bit pairs are equal, that is when p = v. So XOR with v makes exactly the pixels of value v black, and every other pixel stays nonblack.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>p XOR 250, bit by bit</h4>
+    </div>
+    <p class="fig-lede">v = 250 as on slide 57. Each column compares one bit of p with the same bit of v. Drag p and watch the result reach 0 only at p = 250.</p>
+    <div data-viz="slider"></div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="bits"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>XOR with 250 finds the pixels of value 250</h4>
+    </div>
+    <p class="fig-lede">The pixels equal to 250 become exactly 0. Nearby values such as 255 and 251 become 5 and 1, dark but nonblack, so the last panel tests for 0 to list the found pixels.</p>
+    <div data-viz="image"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>XOR sets equal bits to 0 and different bits to 1. "In image processing, XOR operation sets the pixels that are specified to black, others to nonblack." Uses: find all pixels of a certain value, draw the mouse cursor, special effects.</p>
+    <p class="source">Source: L9 p.56 XOR operation and its use · Notes: Lecture 9 › 11. Logic operations</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc8" data-sample="5" data-part="mc" data-num="8" data-topic="Hit-or-miss">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 10, Hit-or-miss transform</p>
+    <h3 class="q-title">The hit-or-miss transform A ⊛ B = (A ⊖ X) ∩ [A^c ⊖ (W − X)] gives:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>the boundary of A, that is A − (A ⊖ B)</span>
+      <span class="why">No. That is boundary extraction.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>A with all its holes filled</span>
+      <span class="why">No. That is region filling, an iteration of dilations limited by Aᶜ.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>the erosion of A followed by a dilation</span>
+      <span class="why">No. That is opening.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>the points where the shape X fits in A and, at the same time, its local background W − X fits in A^c</span>
+      <span class="why">Correct. B₁ = X must hit A and B₂ = W − X must hit Aᶜ at the same point.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The first erosion A ⊖ X marks every point where X fits inside the foreground, which includes points inside larger shapes. The second erosion Aᶜ ⊖ (W − X) marks every point where the ring of background around X fits in the background. Only the location of an exact copy of X passes both tests.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Finding the 3×3 square X in A = X ∪ Y ∪ Z</h4>
+    </div>
+    <p class="fig-lede">As in Fig. 9.12, A holds the 3×3 square X, a 4×4 square Y and a 3×5 bar Z. X fits inside all three, so the first erosion alone cannot tell them apart. The background ring W − X fits only around X. Pixels outside the grid count as background.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="grid"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>A (1)</span>
+      <span><i class="sw-seg"></i>Aᶜ (0)</span>
+      <span><i class="sw-ter"></i>A ⊖ X</span>
+      <span><i class="sw-sec"></i>Aᶜ ⊖ (W − X)</span>
+      <span><i class="sw-ok"></i>A ⊛ B</span>
+    </div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>Boundary extraction</h5>
+        <p>Erode A by B and subtract the result from A. One erosion, one set difference, no second structuring element.</p>
+        <div class="chips"><span>β(A) = A − (A ⊖ B)</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option b</span>
+        <h5>Region filling</h5>
+        <p>Start from a point inside a hole and dilate, keeping only pixels of Aᶜ, until nothing changes.</p>
+        <div class="chips"><span>X<sub>k</sub> = (X<sub>k−1</sub> ⊕ B) ∩ Aᶜ</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Opening</h5>
+        <p>Erosion followed by dilation with the same B. It removes thin parts and small objects.</p>
+        <div class="chips"><span>A ∘ B = (A ⊖ B) ⊕ B</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>A ⊛ B = (A ⊖ X) ∩ [Aᶜ ⊖ (W − X)] with B = (X, W − X). It is "the set of points at which, simultaneously, B₁ found a match ('hit') in A and B₂ found a match in Aᶜ".</p>
+    <p class="source">Source: L10 p.36-37 hit-or-miss transform · Notes: Lecture 10 › 6. Hit or miss transform</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc9" data-sample="5" data-part="mc" data-num="9" data-topic="Laplacian">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 11, Second order operators</p>
+    <h3 class="q-title">Which is a disadvantage of the Laplacian edge detector?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>It is sensitive to noise, produces double edges and cannot detect edge direction</span>
+      <span class="why">Correct. These are the three disadvantages on slide 45.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It needs eight masks, one for each orientation</span>
+      <span class="why">No. That describes the compass gradient operators. The Laplacian is one mask.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>It has no zero crossing, so edges cannot be localized</span>
+      <span class="why">No. The Laplacian changes sign at an edge, and this zero crossing gives better edge localization.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It is a first order operator, so it gives one thick spike per edge</span>
+      <span class="why">No. The Laplacian is second order. One spike per edge is what a first derivative gives.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Slide 45 lists the Laplacian's disadvantages: "Typically unacceptably sensitive to noise", "Produce double edges", "Unable to detect edge direction". A second derivative takes differences of differences, so it boosts noise more than a first derivative. It answers one edge with a positive and a negative lobe, and it returns one number per pixel with no direction.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One edge, its first derivative and its second derivative</h4>
+    </div>
+    <p class="fig-lede">A ramp edge from 40 to 200 with added noise. f′ uses f(x+1) − f(x) and f″ uses f(x+1) − 2f(x) + f(x−1), the 1-D Laplacian. Dashed lines are the noise-free curves. Raise the noise and count the zero crossings of f″.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Zero crossings in f″</span><span class="v bad" data-role="zc">1</span><span class="sub">one real edge</span></div>
+      <div class="stat"><span class="label">f′ peak / noise</span><span class="v pri" data-role="snr1">∞</span><span class="sub">noise gain √2 = 1.41</span></div>
+      <div class="stat"><span class="label">f″ lobe / noise</span><span class="v sec" data-role="snr2">∞</span><span class="sub">noise gain √6 = 2.45</span></div>
+    </div>
+    <div data-viz="profile"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Double edges and no direction</h4>
+    </div>
+    <p class="fig-lede">The Laplacian mask [0 −1 0; −1 4 −1; 0 −1 0] on a vertical and a horizontal edge. Each edge gives a −80 and a +80 column or row, a double edge. At the centre pixel both edges give the same −80. The Sobel masks M<sub>x</sub> and M<sub>y</sub> give a pair of numbers, and the pair gives the angle θ.</p>
+    <div data-viz="edges"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Laplacian: "better edge localization", a sign change at image edges, the zero crossing. Disadvantages: "sensitive to noise", "produce double edges", "unable to detect edge direction".</p>
+    <p class="source">Source: L11 p.45 Laplacian: zero crossing and disadvantages · Notes: Lecture 11 › 10. Second order operators</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc10" data-sample="5" data-part="mc" data-num="10" data-topic="Nearest neighbor">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 12, Nearest neighbor classification</p>
+    <h3 class="q-title">How does a nearest neighbor classifier assign a class to a feature vector?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>It computes the mean of each class and chooses the closest mean, rejecting the vector if it is too far</span>
+      <span class="why">No. That is the nearest class mean classifier (slide 38).</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It groups the unlabeled samples into natural clusters</span>
+      <span class="why">No. That is unsupervised learning (clustering). NN needs labelled training samples.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>It keeps all training samples, finds the training sample closest to the feature vector and assigns that sample's class; it can be extended to k nearest neighbors</span>
+      <span class="why">Correct. This is slide 41 almost word for word.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It converts the pattern into a grammar and parses it</span>
+      <span class="why">No. That is structural pattern recognition.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Slide 41: "Keep all the training samples in some efficient look-up structure. Find the nearest neighbor of the feature vector to be classified and assign the class of the neighbor. Can be extended to K nearest neighbors." With k neighbors the majority class wins.</p>
+    <p>Nearest class mean keeps one vector per class. It fails when a class has two modes, because its mean then lies between them (slide 39).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>k-NN looks at samples, nearest mean looks at class means</h4>
+    </div>
+    <p class="fig-lede">Class B has two modes, so its mean (the plum cross) falls in empty space near class A. Query 1 sits next to class A samples, yet the B mean is closer. Query 2 sits next to one stray A sample inside B, so 1-NN and 3-NN disagree.</p>
+    <div data-viz="query"></div>
+    <div data-viz="method"></div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Class A samples</span>
+      <span><i class="sw-sec"></i>Class B samples</span>
+      <span><i class="sw-ok"></i>Neighbors used</span>
+    </div>
+    <div data-viz="table"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Nearest neighbor: "Keep all the training samples ... find the nearest neighbor of the feature vector ... assign the class of the neighbor. Can be extended to K nearest neighbors." Nearest class mean keeps only one mean per class.</p>
+    <p class="source">Source: L12 p.41 nearest neighbor classification · Notes: Lecture 12 › 11. Nearest neighbor and k nearest neighbors</p>
+  </div>
+</article>

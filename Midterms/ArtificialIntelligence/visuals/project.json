@@ -1,0 +1,60 @@
+{
+  "title": "AI Midterm Visuals",
+  "kicker": "Artificial Intelligence · Midterm prep",
+  "lede": "All five sample midterms, every question: 10 multiple-choice questions, 3 open questions and 3 problem-solving questions each. Each question has the answer, the picture that makes it click, and the line to remember for the exam. Numbers come from the lecture slides and were checked in Python.",
+  "foot": "Sources: the course slides (L2.2 p.12 = lecture 2.2, slide 12) and the study notes in Midterms/ArtificialIntelligence/notes.",
+  "artifact": "https://claude.ai/artifact/NEzuNxcuxexbHSV5zDe7cn",
+  "out": "dist/ai-midterm-visuals.html",
+  "tabLabel": "Sample",
+  "sources": {
+    "questions": "../MidtermSamples/Midterm_Sample_<N>.md",
+    "notes": "../notes/",
+    "slides": "../slides/"
+  },
+  "parts": [
+    {
+      "key": "mc",
+      "title": "Part I · Multiple choice",
+      "index": "Part I",
+      "chip": "num"
+    },
+    {
+      "key": "w",
+      "title": "Part II · Open questions and problem solving",
+      "index": "Part II",
+      "chip": "topic"
+    }
+  ],
+  "sections": [
+    {
+      "id": "s1",
+      "tab": "1",
+      "title": "Sample 1",
+      "meta": "Weeks 2–6, lectures 2.1–6.2 (not W1, W7) · Part I: 10 multiple choice × 0.5 pts · Part II: 3 open questions + 3 problem-solving questions (Q6 is a decision tree)"
+    },
+    {
+      "id": "s2",
+      "tab": "2",
+      "title": "Sample 2",
+      "meta": "Weeks 2–6, lectures 2.1–6.2 (not W1, W7) · Part I: 10 multiple choice × 0.5 pts · Part II: 3 open questions + 3 problem-solving questions (Q6 is a decision tree)"
+    },
+    {
+      "id": "s3",
+      "tab": "3",
+      "title": "Sample 3",
+      "meta": "Weeks 2–6, lectures 2.1–6.2 (not W1, W7) · Part I: 10 multiple choice × 0.5 pts · Part II: 3 open questions + 3 problem-solving questions (Q6 is a decision tree)"
+    },
+    {
+      "id": "s4",
+      "tab": "4",
+      "title": "Sample 4",
+      "meta": "Weeks 2–6, lectures 2.1–6.2 (not W1, W7) · Part I: 10 multiple choice × 0.5 pts · Part II: 3 open questions + 3 problem-solving questions (Q6 is a decision tree)"
+    },
+    {
+      "id": "s5",
+      "tab": "5",
+      "title": "Sample 5",
+      "meta": "Weeks 2–6, lectures 2.1–6.2 (not W1, W7) · Part I: 10 multiple choice × 0.5 pts · Part II: 3 open questions + 3 problem-solving questions (Q6 is a decision tree)"
+    }
+  ]
+}

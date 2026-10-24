@@ -1,0 +1,616 @@
+<article class="q" id="s5-w1" data-sample="5" data-part="w" data-num="1" data-topic="Morphology">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · 10 pts · Lecture 10, Morphology</p>
+    <h3 class="q-title">Morphology: dilation, erosion and boundary extraction</h3>
+  </div>
+  <div class="prompt">
+    <p>Binary image A (6 x 6, 1 = foreground, pixels outside the image count as 0) and the structuring elements B1 (1 x 3) and B2 (3 x 3). The outlined cell is the origin.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What are dilation and erosion? Give the set definition of each and what it does to the foreground. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute A ⊕ B1 and A ⊖ B1. Then extract the boundary β(A) = A − (A ⊖ B2). <span class="pts">(6 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Morphology is a collection of non-linear operations related to the shape of features in an image. The structuring element B is a small binary matrix with an origin.</li>
+        <li><strong>Dilation:</strong> A ⊕ B = { z | (B̂)<sub>z</sub> ∩ A ≠ ∅ }, the set of all displacements z such that the reflected B and A overlap by at least one element. Each pixel takes the maximum over the neighbourhood. It enlarges bright regions, shrinks dark regions, expands the boundary and joins broken segments.</li>
+        <li><strong>Erosion:</strong> A ⊖ B = { z | (B)<sub>z</sub> ⊆ A }, the set of all points z such that B translated by z is contained in A. Each pixel takes the minimum. Foreground areas shrink, holes become larger, and objects smaller than B disappear.</li>
+        <li>Duality: (A ⊖ B)ᶜ = Aᶜ ⊕ B̂.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>B1 is symmetric, so B̂1 = B1. Pixels outside the image count as 0. Coordinates are (row, col), 0-based, with (0,0) at the top left.</li>
+        <li>A ⊕ B1: the output is 1 if the pixel or its left or right neighbour is 1. Each horizontal run grows by 1 pixel at each end.</li>
+        <li>A ⊖ B1: the output is 1 only if the pixel and both horizontal neighbours are 1. Each run loses its two end pixels.</li>
+        <li>A ⊖ B2: the output is 1 only if the whole 3x3 neighbourhood is 1.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>B1 takes the row maximum for dilation and the row minimum for erosion</h4></div>
+        <p class="fig-lede">Pick a pixel to place the origin of B1 on it. The outlined 1 x 3 window in A is all the output pixel sees. The dashed columns are the zeros outside the image.</p>
+        <div data-viz="b1-steps"></div>
+        <p class="step-note" data-role="b1-note" aria-live="polite"></p>
+        <div data-viz="b1"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1 in A and in the result</span>
+          <span><i class="sw-ok"></i>new 1 from dilation</span>
+          <span><i class="sw-ter-soft"></i>1 in A, removed by erosion</span>
+          <span><i class="sw-seg"></i>0</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Only two pixels have a full 3 x 3 neighbourhood of 1s</h4></div>
+        <p class="fig-lede">B2 tests the six inner candidates of A. Any 0 under the window (outlined in red) fails the pixel. The two survivors form A ⊖ B2, and β(A) is A with them removed.</p>
+        <div data-viz="b2-steps"></div>
+        <p class="step-note" data-role="b2-note" aria-live="polite"></p>
+        <div data-viz="b2"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1</span>
+          <span><i class="sw-ter-soft"></i>interior pixel removed from A</span>
+          <span><i class="sw-bad"></i>red outline: a 0 under B2</span>
+        </div>
+      </figure>
+      <div data-viz="table"></div>
+      <ul>
+        <li>Dilation fills the gap at (2,4), so the isolated pixel (2,5) joins the block. Rows 0 and 5 stay 0 because B1 is horizontal only.</li>
+        <li>Erosion deletes the isolated pixel (2,5). It also deletes (3,0), because its left neighbour is outside the image (= 0).</li>
+        <li>A ⊖ B2: (2,1) fails because (1,0) = 0, (2,3) fails because (1,4) = 0, (3,1) fails because (2,0) = 0, and (3,3) fails because (2,4) = 0. Only (2,2) and (3,2) survive.</li>
+      </ul>
+      <p>Result: <span class="result">A ⊕ B1 = 22 pixels, A ⊖ B1 = {(1,2), (2,2), (3,1), (3,2), (4,2), (4,3)}, and β(A) = A without (2,2) and (3,2), which is 13 pixels.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Dilation A ⊕ B = { z | (B̂)<sub>z</sub> ∩ A ≠ ∅ } is a local maximum and grows the foreground. Erosion A ⊖ B = { z | (B)<sub>z</sub> ⊆ A } is a local minimum and shrinks it. Boundary extraction: β(A) = A − (A ⊖ B).</p>
+    <p class="source">Source: L10 p.20 dilation definition · L10 p.12-13 dilation = local maximum, bright regions grow · L10 p.23 erosion definition · L10 p.15, p.18 erosion = local minimum, foreground shrinks · L10 p.22 broken segments joined · L10 p.38 boundary extraction · Notes: Lecture 10 › Dilation · Lecture 10 › Erosion · Lecture 10 › Boundary extraction</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w2" data-sample="5" data-part="w" data-num="2" data-topic="Filtering">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · 10 pts · Lecture 11, Spatial filtering</p>
+    <h3 class="q-title">Filtering: high boost and median vs average</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Write the high-boost (unsharp masking) formula and the 3x3 high-boost mask for α = 1.5. What is the result when α = 1, and what happens when α &gt; 1? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><div class="prompt"><span>One image row with a step edge and one impulse (salt) pixel, positions p0 to p9:</span><div class="given" data-viz="given"></div><span>Apply a 3-point average filter and a 3-point median filter to p1 to p8 (p0 and p9 are kept unchanged). <span class="pts">(4 pts)</span></span></div></li>
+      <li><span class="tag">(c)</span><span>Which filter removes the impulse and keeps the edge sharp? Explain in one line. Would a min filter or a max filter remove this impulse? <span class="pts">(2 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Unsharp masking: "subtract a lowpass filtered image from its original" (another method of highpass filtering).</li>
+        <li><strong>High boost = α · Original − Lowpass.</strong> The mask has centre ω/9 and all 8 neighbours −1/9, with ω = 9α − 1.</li>
+        <li>For α = 1.5, ω = 9(1.5) − 1 = 12.5. The centre is 12.5/9 = 1.389, and the mask sums to (ω − 8)/9 = α − 1 = 0.5.</li>
+      </ul>
+      <pre class="calc">         -1    -1    -1
+1/9  x   -1   12.5   -1
+         -1    -1    -1</pre>
+      <ul>
+        <li>α = 1: ω = 8, so the result is the <strong>high pass filter</strong> (1/9)[−1 −1 −1; −1 8 −1; −1 −1 −1]. It sums to 0, so flat areas become 0 and only the detail remains.</li>
+        <li>α &gt; 1: it restores the low frequency component and retains more of the original background. As α increases, the image gets lighter and looks more like the original, with edge enhancement.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>α sets how much of the background comes back</h4></div>
+        <p class="fig-lede">The same rule on one image row with a step from 40 to 160: high boost = α × original − 3-point average. A flat area of level v becomes (α − 1) × v, because the mask sums to α − 1. The edge overshoot stays at every α.</p>
+        <div data-viz="slider"></div>
+        <div class="given">
+          <div data-viz="mask"></div>
+          <div class="stats" style="flex: 1 1 260px">
+            <div class="stat"><span class="label">Centre ω = 9α − 1</span><span class="v pri" data-role="omega"></span><span class="sub">weight of the centre pixel, × 1/9</span></div>
+            <div class="stat"><span class="label">Mask sum</span><span class="v" data-role="sum"></span><span class="sub">(ω − 8)/9 = α − 1</span></div>
+          </div>
+        </div>
+        <p class="verdict" data-role="verdict"></p>
+        <div data-viz="boost"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>original row (dashed)</span>
+          <span><i class="sw-ter"></i>lowpass, 3-point average</span>
+          <span><i class="sw-pri"></i>high boost</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <p>Border rule: p0 and p9 have no full window, so they are kept as they are (start at the first position where the window fits).</p>
+      <div data-viz="b-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The 3-point window slides over the row</h4></div>
+        <p class="fig-lede">Pick a pixel to see its window. The average adds the three values and divides by 3. The median sorts them and keeps the middle one. Cell shade is the gray level.</p>
+        <div data-viz="win-steps"></div>
+        <p class="step-note" data-role="win-note" aria-live="polite"></p>
+        <div data-viz="win"></div>
+      </figure>
+      <pre class="calc">Average: 30 30 100 100 100 50 70 90 90 90
+Median:  30 30  30  30  30 30 90 90 90 90</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li><strong>The median filter wins.</strong> The single 240 is never the middle value of 3, so it disappears, and the step 30 → 90 stays sharp between p5 and p6. The average smears the impulse into three pixels (100) and blurs the edge into a ramp 30, 50, 70, 90. The median is "superior to lowpass filter when dealing with edges". The lowpass filter suits Gaussian noise, not impulse noise.</li>
+        <li><strong>The min filter</strong> "removes white spikes". Its output is 30 30 30 30 30 30 30 90 90 90, so the 240 is gone, but the edge moves one pixel right (p6 = 30) and intensity drops. <strong>The max filter</strong> removes dark spikes. Here it spreads the salt to 30 30 240 240 240 90 90 90 90 90. So the min filter removes this impulse and the max filter does not.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Four filters on the same row</h4></div>
+        <p class="fig-lede">The dashed line is the input row. Compare where the spike goes and whether the step between p5 and p6 stays one pixel wide.</p>
+        <div data-viz="prof-steps"></div>
+        <p class="step-note" data-role="prof-note" aria-live="polite"></p>
+        <div data-viz="prof"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>High boost = α · Original − Lowpass. α = 1 gives the high pass filter, α &gt; 1 restores the low frequency component. The median filter removes impulse noise and is superior to the lowpass filter at edges. The min filter removes white spikes, the max filter removes dark spikes.</p>
+    <p class="source">Source: L11 p.21 unsharp masking and high-boost formula · L11 p.24-26 effect of α · L11 p.16 average (blurring) mask · L11 p.15 border handling · L11 p.53-55 median filtering · L11 p.60 min/max filtering · Notes: Lecture 11 › Sharpening and high boost · Lecture 11 › Blurring · Lecture 11 › Median filtering · Lecture 11 › Min and max filtering</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w3" data-sample="5" data-part="w" data-num="3" data-topic="Histogram equalization">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · 10 pts · Lecture 9, Histogram equalization</p>
+    <h3 class="q-title">Histogram equalization and lookup table</h3>
+  </div>
+  <div class="prompt">
+    <p>A 4 x 4 image with 8 gray levels (3 bits, levels 0 to 7):</p>
+    <div class="given" data-viz="given-img"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Calculate the histogram, the normalized sum and the equalized level s<sub>k</sub> for all 8 gray levels. Show the full table. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Write the equalized image and its histogram. Is the output histogram flat? Why? <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>A 3-bit lookup table is given below. Apply it to the pixel row <code>2 7 4 0 5 3 6 1</code>, and say what kind of point transformation this LUT performs. <span class="pts">(3 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given-lut"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <p>The steps are: 1) compute the histogram, 2) calculate the normalized sum of the histogram, 3) transform the input image to the output image. The convention follows the slide: L = 8 and N² = 16, so the normalized sum is the running sum × (L−1)/N² = × 7/16, rounded to the nearest integer.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The running sum builds the mapping level by level</h4></div>
+        <p class="fig-lede">Left: the histogram. Right: the mapping s = round(running sum × 7/16). Hollow dots are the exact values, filled dots the rounded levels. Step through the levels that hold pixels.</p>
+        <div data-viz="cdf-steps"></div>
+        <p class="step-note" data-role="cdf-note" aria-live="polite"></p>
+        <div data-viz="cdf"></div>
+        <div data-viz="cdf-table"></div>
+      </figure>
+      <p>Mapping (LUT): <span class="result">0 0 0 0 0 3 6 7, that is 4 → 0, 5 → 3, 6 → 6, 7 → 7.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Equalized image</h4>
+      <pre class="calc">3 3 6 6
+0 3 6 7
+3 6 6 7
+3 3 6 6</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Levels move apart but never split</h4></div>
+        <p class="fig-lede">Each input level moves as one block to its new level. The bars keep their heights 1, 6, 7 and 2, so the output histogram cannot become flat. The gaps between levels grow where the histogram is high.</p>
+        <div data-viz="map"></div>
+      </figure>
+      <ul>
+        <li><strong>Output histogram: n0 = 1, n3 = 6, n6 = 7, n7 = 2 (all other levels 0). It is not flat.</strong></li>
+        <li>Why: the discrete approximation. All pixels with the same level map together, so equalization cannot split a level. It only moves levels apart. The narrow bright range 4-7 (a washed-out image) is spread over 0-7. Contrast is stretched near the histogram maxima: levels 5 and 6 were 1 apart and are now 3 apart.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Lookup table</h4>
+      <p>Use each pixel value as the array index, and the new value is the element at that index.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The LUT is an S-curve around 4</h4></div>
+        <p class="fig-lede">The dashed diagonal is "no change". Below 4 the curve runs under it (darker), above 4 over it (brighter). Pick a pixel to look it up.</p>
+        <div data-viz="lut-steps"></div>
+        <p class="step-note" data-role="lut-note" aria-live="polite"></p>
+        <div data-viz="lut"></div>
+      </figure>
+      <p>Output row: <span class="result">1 7 4 0 6 2 7 1.</span> The LUT is an <strong>S-shaped contrast stretching</strong> around m = 4. Levels below 4 get darker (2 → 1, 3 → 2) and levels above 4 get brighter (5 → 6, 6 → 7), so contrast is increased.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Equalization: compute the histogram, calculate the normalized sum (running sum × (L−1)/N²), round, and transform the image. The output histogram is not flat because the levels are discrete. A LUT uses the pixel value as the array index.</p>
+    <p class="source">Source: L9 p.14 histogram · L9 p.20 equalization steps · L9 p.21, p.27-28 mapping T(r) with factor (L−1)/N² · L9 p.29-31 worked example (round to nearest) · L9 p.26 output histogram not flat · L9 p.9-11 lookup tables · L9 p.13 contrast stretching curve · Notes: Lecture 9 › Histogram equalization, theory · Lecture 9 › Histogram equalization, worked example · Lecture 9 › Lookup tables</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w4" data-sample="5" data-part="w" data-num="4" data-topic="Pattern recognition">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · 10 pts · Lecture 12, Pattern recognition</p>
+    <h3 class="q-title">Pattern recognition</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the flow chart of a pattern recognition system from input to decision, including the side inputs. State the job of each stage in a few words. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Fish example (sorting salmon and sea bass on a conveyor). Why is length alone a poor feature? What do lightness and width add? What is a decision boundary, and why would we move it because of cost? <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><div class="prompt"><span>Training samples with feature vector x = [lightness, width]:</span><div class="given" data-viz="given"></div><span>Classify the new fish x = [5, 18] with the nearest neighbor rule (k = 1) and with k-NN, k = 3, using the Euclidean distance. <span class="pts">(3 pts)</span></span></div></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Flow chart</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Five stages from input to decision, with three side inputs</h4></div>
+        <p class="fig-lede">Read it bottom to top. Solid arrows carry the data up. Dotted arrows go back down to the stage below. Costs and context enter at post-processing, context and missing features at classification.</p>
+        <div data-viz="flow-steps"></div>
+        <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+        <div data-viz="flow"></div>
+      </figure>
+      <ul>
+        <li><strong>Sensing:</strong> "use of a transducer (camera or microphone)". The system depends on the bandwidth, resolution, sensitivity and distortion of the transducer.</li>
+        <li><strong>Segmentation and grouping:</strong> "patterns should be well separated and should not overlap" (isolate each fish from the others and from the background).</li>
+        <li><strong>Feature extraction:</strong> "discriminative features"; "invariant features with respect to translation, rotation and scale". It reduces the data by measuring certain features.</li>
+        <li><strong>Classification:</strong> "use a feature vector provided by a feature extractor to assign the object to a category".</li>
+        <li><strong>Post-processing:</strong> "exploit context input dependent information other than from the target pattern itself to improve performance". Costs and context come in here.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <ul>
+        <li><strong>Length:</strong> the salmon and sea bass length histograms overlap heavily, so any threshold l* misclassifies many fish. "The length is a poor feature alone!"</li>
+        <li><strong>Lightness</strong> separates the classes much better (threshold x*). <strong>Width</strong> adds a second feature: xᵀ = [x₁, x₂] = [lightness, width]. In this 2D feature space a straight line separates the classes better than any single feature.</li>
+        <li><strong>Decision boundary:</strong> the border in feature space that splits it into class regions (a threshold for 1 feature, a line or curve for 2).</li>
+        <li><strong>Cost:</strong> the two errors do not cost the same, so we "move our decision boundary toward smaller values of lightness in order to minimize the cost (reduce the number of sea bass that are classified salmon!)". This is the task of decision theory. A boundary that is perfect on the training data can still fail on novel input (the issue of generalization).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Overlap decides how good a feature is, cost decides where the threshold goes</h4></div>
+        <p class="fig-lede">Schematic class histograms in the shape of the slides. Length overlaps almost everywhere. Lightness overlaps only in the middle. Drag x* and watch the two shaded error areas trade against each other.</p>
+        <div data-viz="feat-slider"></div>
+        <p class="verdict" data-role="feat-verdict"></p>
+        <div data-viz="feat"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>salmon</span>
+          <span><i class="sw-pri"></i>sea bass</span>
+          <span><i class="sw-pri-soft"></i>sea bass classified salmon (the costly error)</span>
+          <span><i class="sw-sec-soft"></i>salmon classified sea bass</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <p>The query is x = [5, 18], and d = √((Δlightness)² + (Δwidth)²). Both axes below use the same scale, so the circles are true distances.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>One neighbour says sea bass, three neighbours say salmon</h4></div>
+        <p class="fig-lede">The circle around the query reaches the k-th nearest sample. Its colour and the vote tally show the decision.</p>
+        <div data-viz="knn-steps"></div>
+        <p class="step-note" data-role="knn-note" aria-live="polite"></p>
+        <div data-viz="knn"></div>
+        <div data-viz="knn-table"></div>
+      </figure>
+      <ul>
+        <li><strong>k = 1: the nearest sample is B1, so x is classified as sea bass.</strong></li>
+        <li><strong>k = 3: the nearest samples are B1, S2 and S1, which gives 2 salmon votes to 1 sea bass, so x is classified as salmon.</strong></li>
+        <li>The two rules disagree. 1-NN follows a single (possibly noisy) closest sample, while k-NN takes a majority vote.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>input → sensing → segmentation → feature extraction → classification → post-processing → decision. Costs and adjustments for context enter at post-processing, adjustments for context and for missing features at classification. 1-NN takes the class of the nearest sample, k-NN the majority of the k nearest.</p>
+    <p class="source">Source: L12 p.17-19 PR system stages · L12 p.18 flowchart · L12 p.4-6 fish problem and preprocessing · L12 p.8-11 length, lightness, decision boundary and cost · L12 p.12-15 lightness + width, best boundary, generalization · L12 p.41 nearest neighbor and k-NN · Notes: Lecture 12 › Pattern recognition system flowchart · Lecture 12 › Choosing features, decision boundary and cost · Lecture 12 › Nearest neighbor and k-NN</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w5" data-sample="5" data-part="w" data-num="5" data-topic="Entropy and DPCM">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · 10 pts · Lectures 4 and 5, Compression</p>
+    <h3 class="q-title">Compression: entropy, DPCM and compression ratio</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><div class="prompt"><span>A source emits five symbols with these probabilities:</span><div class="given" data-viz="given"></div><span>Compute the entropy. Why can no lossless code have an average length below it? <span class="pts">(3 pts)</span></span></div></li>
+      <li><span class="tag">(b)</span><span>Samples f1 to f6 = 60, 63, 67, 67, 64, 71. <span class="pts">(4 pts)</span><br>(i) Simple difference coding: the first sample is sent as is, then d<sub>n</sub> = f<sub>n</sub> − f<sub>n−1</sub>. What is sent? Show that the decoder rebuilds f exactly.<br>(ii) DPCM: the prediction is the previous reconstructed sample, f̂<sub>n</sub> = f̃<sub>n−1</sub>, with f̃<sub>1</sub> = f<sub>1</sub> = 60. The prediction error e<sub>n</sub> = f<sub>n</sub> − f̂<sub>n</sub> is quantized to the nearest multiple of 4. For n = 2 to 6 give e<sub>n</sub>, the quantized error, the reconstructed sample f̃<sub>n</sub> and the reconstruction error f<sub>n</sub> − f̃<sub>n</sub>.</span></li>
+      <li><span class="tag">(c)</span><span>A 512 x 512, 8-bit gray image is saved as PNG (131,072 bytes) and as JPEG (16,384 bytes). Compute both compression ratios. Which file is lossy and which is lossless, and why can JPEG go below the entropy limit while PNG cannot? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Entropy: η = Σ p<sub>i</sub> log₂(1/p<sub>i</sub>)</h4>
+      <div data-viz="ent-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Entropy is the area under the self-information blocks</h4></div>
+        <p class="fig-lede">Each symbol is a block p wide and log₂(1/p) bits tall, so its area is p · log₂(1/p). The total area is the entropy. A fixed-length code is the dashed 3-bit line over the whole width.</p>
+        <div data-viz="ent"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Entropy η</span><span class="v pri">1.875</span><span class="sub">bits per symbol, the lower bound</span></div>
+          <div class="stat"><span class="label">Huffman</span><span class="v ok">1.875</span><span class="sub">lengths 1, 2, 3, 4, 4</span></div>
+          <div class="stat"><span class="label">Fixed length</span><span class="v sec">3</span><span class="sub">bits for 5 symbols</span></div>
+        </div>
+      </figure>
+      <ul>
+        <li><strong>η = 1.875 bits/symbol.</strong> A fixed-length code needs 3 bits for 5 symbols.</li>
+        <li>Why no lossless code can beat it: log₂(1/p<sub>i</sub>) is the self-information of s<sub>i</sub>, the number of bits needed to encode s<sub>i</sub>. The entropy is the average of it, so it is the lower bound on the average code length: η ≤ l̄ (Huffman: η ≤ l̄ &lt; η + 1). A lossless code must keep all the information, so it cannot use fewer bits on average. Here Huffman lengths 1, 2, 3, 4, 4 reach exactly 1.875, because every p is a power of 1/2.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(i) Difference coding</h4>
+      <p><strong>Sent: 60, 3, 4, 0, −3, 7.</strong> The decoder adds each difference to the previous value.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Small differences instead of large samples</h4></div>
+        <p class="fig-lede">Top: the samples. Bottom: what is sent after the first sample, the step from each sample to the next. The decoder runs the sums on the right and gets f back exactly.</p>
+        <div class="given">
+          <div data-viz="diff" style="flex: 3 1 420px"></div>
+          <div class="chain">
+            <span>60 (sent as is)</span>
+            <span>60 + 3 = <b>63</b></span>
+            <span>63 + 4 = <b>67</b></span>
+            <span>67 + 0 = <b>67</b></span>
+            <span>67 − 3 = <b>64</b></span>
+            <span>64 + 7 = <b>71</b></span>
+          </div>
+        </div>
+      </figure>
+      <p><span class="result">This is exactly f, so the coding is lossless.</span> The differences cluster around 0, so they need fewer bits.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(ii) DPCM</h4>
+      <p>The formulas are f̂<sub>n</sub> = f̃<sub>n−1</sub>, e<sub>n</sub> = f<sub>n</sub> − f̂<sub>n</sub>, ẽ<sub>n</sub> = 4 · round(e<sub>n</sub>/4) and f̃<sub>n</sub> = f̂<sub>n</sub> + ẽ<sub>n</sub>. No e<sub>n</sub> is exactly halfway between two multiples of 4, so there are no rounding ties.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Predict from the reconstruction, quantize the error, rebuild</h4></div>
+        <p class="fig-lede">Each step predicts from the previous reconstructed sample, measures the error to the true sample, rounds it to a multiple of 4 and adds it to the prediction. Hollow dots are the true samples, filled dots the decoder's output.</p>
+        <div data-viz="dpcm-steps"></div>
+        <p class="step-note" data-role="dpcm-note" aria-live="polite"></p>
+        <div data-viz="dpcm"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>true sample f<sub>n</sub> (hollow)</span>
+          <span><i class="sw-sec"></i>prediction f̂<sub>n</sub> and error e<sub>n</sub></span>
+          <span><i class="sw-pri"></i>quantized error ẽ<sub>n</sub> and reconstruction f̃<sub>n</sub></span>
+        </div>
+        <div data-viz="dpcm-table"></div>
+      </figure>
+      <p>Reconstructed: <span class="result">60, 64, 68, 68, 64, 72.</span> DPCM is lossy, but each error is at most half a step (2). The predictor uses reconstructed values, because the decoder only has those, so the errors do not accumulate. The reconstruction error equals the quantization error e<sub>n</sub> − ẽ<sub>n</sub>.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Compression ratios</h4>
+      <pre class="calc">B0 = 512 × 512 × 8 = 2,097,152 bits = 262,144 bytes
+PNG:  262,144 / 131,072 = 2.0    (4 bits/pixel)
+JPEG: 262,144 / 16,384  = 16.0   (0.5 bits/pixel)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Lossless stops at the entropy, lossy trades distortion for rate</h4></div>
+        <p class="fig-lede">Left, to scale: bits per pixel of each file. Right, schematic: the rate distortion curve R(D). At D = 0 the rate cannot drop below H. Only a coder that accepts distortion can go lower.</p>
+        <div data-viz="ratio"></div>
+      </figure>
+      <ul>
+        <li><strong>PNG: 262,144 / 131,072 = 2.0</strong> (4 bits/pixel). <strong>PNG is lossless:</strong> the decompressed image equals the original exactly.</li>
+        <li><strong>JPEG: 262,144 / 16,384 = 16.0</strong> (0.5 bits/pixel). <strong>JPEG is lossy:</strong> the result is a close approximation of the original.</li>
+        <li>A lossless coder is bounded by the entropy (rate distortion: R(D) = H at D = 0). A lossy coder accepts distortion D &gt; 0, and quantization (the main source of loss) throws information away, so R(D) &lt; H. That gives a much higher compression ratio.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>η = Σ p<sub>i</sub> log₂(1/p<sub>i</sub>) is the lower bound on the average code length of a lossless code (η ≤ l̄ &lt; η + 1 for Huffman). DPCM predicts from the reconstructed samples and sends the quantized prediction error. Compression ratio = B0/B1.</p>
+    <p class="source">Source: L4 p.12-13 entropy and self-information · L4 p.30 η ≤ l̄ &lt; η + 1 · L4 p.6 transformation stage: predict, send the prediction error (DPCM tables are textbook context, Li and Drew 6.3.5-6.3.6) · L4 p.10-11 lossless vs lossy, compression ratio B0/B1 · L5 p.11-13 lossy compression, rate distortion, quantization · class remark: JPG lossy, PNG lossless · Notes: Lecture 4 › Entropy · Lecture 4 › Differential coding and DPCM · Lecture 4 › Compression ratio · Lecture 5 › Lossy compression and rate distortion</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w6" data-sample="5" data-part="w" data-num="6" data-topic="Sampling">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · 10 pts · Lecture 2, Sound and sampling</p>
+    <h3 class="q-title">Sound and sampling</h3>
+  </div>
+  <div class="prompt">
+    <p>A signal x(t) = 5 sin(2π·250t + π/2) volts.</p>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Give its peak amplitude, frequency, period and phase (in degrees and as a time shift). Find its wavelength in air if the speed of sound is 340 m/s. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>A second tone 2 sin(2π·3000t) is added. What is the Nyquist sampling frequency for the mix? If the mix is sampled at fs = 4 kHz, at what frequency does each tone appear after reconstruction? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>A 5 s stereo recording is made at 48 kHz with 16 bits per sample. Compute the bit rate and the file size in bytes. The sample rate is then halved: give the new highest frequency that can be captured and the new file size. <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Read off A sin(2πft + φ)</h4>
+      <ul>
+        <li><strong>Peak amplitude A = 5 V</strong> (the maximum strength of the signal).</li>
+        <li><strong>Frequency f = 250 Hz.</strong></li>
+        <li><strong>Period T = 1/f = 1/250 = 4 ms.</strong></li>
+        <li><strong>Phase φ = π/2 rad = 90°</strong>, which is a time shift of T/4 = 4/4 = <strong>1 ms</strong>. The wave starts at its peak: x(0) = 5 sin(π/2) = 5 V.</li>
+        <li><strong>Wavelength λ = v/f = vT = 340 × 0.004 = 1.36 m.</strong></li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The 90° phase moves every peak 1 ms earlier</h4></div>
+        <p class="fig-lede">The solid wave is x(t). The dashed wave is the same tone with phase 0. Peaks of x(t) come at 0, 4 and 8 ms, one quarter period before the dashed peaks.</p>
+        <div data-viz="wave"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Nyquist and aliasing</h4>
+      <ul>
+        <li>f<sub>max</sub> = 3000 Hz, so the <strong>Nyquist sampling frequency is 2 × 3000 = 6 kHz</strong>: the signal must be sampled at more than 6 kHz.</li>
+        <li>f<sub>s</sub> = 4 kHz &lt; 6 kHz, so the mix is undersampled.</li>
+        <li><strong>The 250 Hz tone</strong> is below f<sub>s</sub>/2 = 2 kHz, so it appears at <strong>250 Hz</strong> (correct).</li>
+        <li><strong>The 3000 Hz tone</strong> is above 2 kHz, so it aliases to <strong>f<sub>s</sub> − f = 4000 − 3000 = 1000 Hz</strong>. Check: sin(2π·3000·n/4000) = −sin(2π·1000·n/4000) for every n.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Above f<sub>s</sub>/2 a tone folds back to a lower frequency</h4></div>
+        <p class="fig-lede">Drag the sample rate. Top: the two tones on a frequency axis, with the band above f<sub>s</sub>/2 shaded. Bottom: the 3000 Hz tone, its samples, and the slowest wave through the same samples, which is what reconstruction returns.</p>
+        <div data-viz="fs-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Nyquist rate</span><span class="v">6 kHz</span><span class="sub">2 × 3000 Hz, f<sub>s</sub> must be above it</span></div>
+          <div class="stat"><span class="label">250 Hz tone</span><span class="v ok" data-role="a250"></span><span class="sub">after reconstruction</span></div>
+          <div class="stat"><span class="label">3000 Hz tone</span><span class="v" data-role="a3000"></span><span class="sub">after reconstruction</span></div>
+        </div>
+        <p class="verdict" data-role="fs-verdict"></p>
+        <div data-viz="spec"></div>
+        <div data-viz="time"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>tone in the signal</span>
+          <span><i class="sw-bad"></i>alias after reconstruction</span>
+          <span><i class="sw-sec-soft"></i>above f<sub>s</sub>/2</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Bit rate and file size</h4>
+      <pre class="calc">Bit rate = fs × bits × channels
+48,000 × 16 × 2 = 1,536,000 bit/s   (1.536 Mbps)
+Size = 1,536,000 × 5 / 8 = 960,000 bytes</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Halving f<sub>s</sub> halves the band and the file</h4></div>
+        <p class="fig-lede">The captured band always ends at f<sub>s</sub>/2. The bits per sample and the channel count do not change, so the file size follows f<sub>s</sub>.</p>
+        <div data-viz="band"></div>
+        <div data-viz="band-table"></div>
+      </figure>
+      <p><span class="result">Halved, f<sub>s</sub> = 24 kHz: the highest frequency is below 12 kHz (it was below 24 kHz), the bit rate is 768,000 bit/s and the size is 480,000 bytes.</span> The 16 bits per sample do not change. Content between 12 and 24 kHz now aliases, unless it is low-pass filtered first.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>f = 1/T, λ = v/f, and a phase of 90° = π/2 is a shift of T/4. Nyquist: f<sub>s</sub> &gt; 2 f<sub>max</sub>, or the tone aliases (here to f<sub>s</sub> − f). Bit rate = f<sub>s</sub> × bits × channels.</p>
+    <p class="source">Source: L2 p.16 amplitude, frequency, period, phase · L2 p.21 f = 1/T · L2 p.24 phase 90° = π/2 = T/4 shift · L2 p.25-26 wavelength · L2 p.47-48 Nyquist f_s &gt; 2 f_max · L2 p.51 aliasing (alias formula: textbook context) · L2 p.19, p.34-35 sampling rate and bit rate · Notes: Lecture 2 › Sine wave parameters · Lecture 2 › Sampling theorem and Nyquist · Lecture 2 › Aliasing · Lecture 2 › Halving the sample rate</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w7" data-sample="5" data-part="w" data-num="7" data-topic="Arithmetic and logic">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · 10 pts · Lecture 9, Arithmetic and logic operations</p>
+    <h3 class="q-title">Image arithmetic and logic</h3>
+  </div>
+  <div class="prompt">
+    <p>Two 8-bit images (gray levels 0 to 255):</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute F + G, F − G and 1.2 × F, with clamping. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Which arithmetic operations change brightness and which change contrast? Show it with the pixels 120 and 210 of F after F + 40 and after 1.2 × F. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>For the pixel values p = 172 and q = 105, write both in binary and compute p AND q, p OR q, p XOR q and NOT p (binary and decimal). <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>Compute the negative of F. <span class="pts">(1 pt)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Clamping</h4>
+      <p>Results below 0 become 0, and results above 255 become 255.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Pixel by pixel, then clamp to 0..255</h4></div>
+        <p class="fig-lede">Each result pixel uses only the pixels at the same position. Red cells left the 8-bit range and are clamped. The clamped images are drawn in their gray levels.</p>
+        <div data-viz="ops"></div>
+      </figure>
+      <div data-viz="ops-table"></div>
+      <p>Without clamping, uint8 wraps around: 290 → 34 and 260 → 4.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Brightness vs contrast</h4>
+      <ul>
+        <li><strong>Addition and subtraction change brightness:</strong> F + 40 turns 120 and 210 into 160 and 250. The difference stays 90, so the image is brighter but its contrast is the same.</li>
+        <li><strong>Multiplication and division change contrast:</strong> 1.2 × F turns 120 and 210 into 144 and 252. The difference grows from 90 to 108, so contrast increases. (Division decreases it. Subtraction is also used for motion detection.)</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Adding shifts both pixels, multiplying spreads them</h4></div>
+        <p class="fig-lede">The two pixels 120 and 210 on the 0 to 255 gray scale. The bracket is their difference, which is the contrast between them.</p>
+        <div data-viz="bc"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Bitwise operations</h4>
+      <p>p = 172 = <code>1010 1100</code> and q = 105 = <code>0110 1001</code>.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Each output bit uses only the two bits in its column</h4></div>
+        <p class="fig-lede">Pick an operation. The column headers are the place values, so a row's decimal value is the sum of the headers over its 1 bits.</p>
+        <div data-viz="bits-steps"></div>
+        <p class="step-note" data-role="bits-note" aria-live="polite"></p>
+        <div data-viz="bits"></div>
+      </figure>
+      <div data-viz="bits-table"></div>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Negative: s = 255 − r</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>The negative flips the gray scale</h4></div>
+        <p class="fig-lede">The line s = 255 − r maps dark to bright and bright to dark. The dots are the four pixels of F.</p>
+        <div data-viz="neg"></div>
+      </figure>
+      <p>Negative of F: <span class="result">135 45 / 215 25.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Addition and subtraction change brightness, multiplication and division change contrast. Clamp results to 0..255. NOT = 255 − pixel, XOR gives 1 where the bits differ, and the negative is s = 255 − r.</p>
+    <p class="source">Source: L9 p.46-50 arithmetic operations: brightness vs contrast · L9 p.52 clamping · L9 p.55 NOT = 255 − pixel · L9 p.56 XOR · L9 p.58 AND · L9 p.59 OR · L7 p.35-36 same-size images, pixel by pixel · L6 p.44-45 image negative · Notes: Lecture 9 › Arithmetic operations · Lecture 9 › Logic operations · Lecture 7 › Arithmetic and logical operations · Lecture 6 › Intensity transformations (negative)</p>
+  </div>
+</article>
+
+<article class="q" id="s5-w8" data-sample="5" data-part="w" data-num="8" data-topic="Color purity">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · 10 pts · Lecture 7, Color</p>
+    <h3 class="q-title">Color: dimensions, illuminants, chromaticity and purity</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Name and define the three dimensions of color. In the Munsell system, what are the ranges of value and chroma? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>What do the CIE standard illuminants A, B, C, D65 and E represent? <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>A color has tristimulus values X = 95, Y = 94, Z = 61. Compute its chromaticity coordinates x, y and z. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>The reference white is W = (0.31, 0.32). The line from W through the color meets the spectral locus at D = (0.51, 0.48), about 580 nm. What is the dominant wavelength of the color? Compute its purity, and say what purity 0 and purity 1 mean. <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><strong>Hue:</strong> what color it is (red, green, yellow, blue). It is the angle around the gray (black-white) axis of the color solid.</li>
+        <li><strong>Saturation (chroma, colorfulness):</strong> how strong or pure the color is, from pink to bright red. It is the distance from the gray axis.</li>
+        <li><strong>Value (lightness, brightness):</strong> how light or dark the color is (black, gray, white). It is the height on the axis.</li>
+        <li><strong>Munsell (1915), equal perceptual steps:</strong> value runs 0 (dark) to 10 (pure white), and chroma runs 0 (neutral) to 20 (saturated). There are 10 principal hues, R, YR, Y, GY, G, BG, B, PB, P, RP, each split into 10.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Hue is an angle, chroma a distance, value a height</h4></div>
+        <p class="fig-lede">Left: the 10 Munsell principal hues around the gray axis, with chroma growing outward. Right: one slice through the solid for hue R, value up the axis and chroma outward. Schematic, the colors are approximate.</p>
+        <div data-viz="solid"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) CIE standard illuminants</h4>
+      <ul>
+        <li><strong>A:</strong> tungsten light</li>
+        <li><strong>B:</strong> sunset</li>
+        <li><strong>C:</strong> blue sky</li>
+        <li><strong>D65:</strong> average daylight</li>
+        <li><strong>E:</strong> equal-energy white, x = y = z = 1/3</li>
+      </ul>
+      <p>All of them lie near the blackbody locus.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The illuminants sit on or near the blackbody locus</h4></div>
+        <p class="fig-lede">Left: the CIE xy chromaticity diagram, with the spectral locus labelled in nm. Right: the boxed region near white, enlarged. The curve is the blackbody locus, from warm (tungsten, about 2856 K) to cool (blue sky).</p>
+        <div data-viz="illum"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Chromaticity</h4>
+      <pre class="calc">x = X/(X+Y+Z),  y = Y/(X+Y+Z),  z = Z/(X+Y+Z)
+X + Y + Z = 95 + 94 + 61 = 250
+x = 95/250 = 0.380   y = 94/250 = 0.376   z = 61/250 = 0.244
+check: 0.380 + 0.376 + 0.244 = 1</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>x, y and z are the shares of X + Y + Z</h4></div>
+        <p class="fig-lede">Dividing by the sum removes the intensity. The three shares always add to 1, so only (x, y) is plotted.</p>
+        <div data-viz="share"></div>
+      </figure>
+      <p><span class="result">x = 0.380, y = 0.376, z = 0.244.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Dominant wavelength and purity</h4>
+      <ul>
+        <li><strong>Dominant wavelength:</strong> the wavelength of the spectral color which, added to the reference white, produces the given color. Follow the ray from W through S to the locus at D: <strong>about 580 nm (yellow)</strong>.</li>
+        <li><strong>Purity = |WS| / |WD|.</strong> WS = (0.380 − 0.31, 0.376 − 0.32) = (0.070, 0.056), so |WS| = √(0.0049 + 0.003136) = √0.008036 = 0.0896.</li>
+        <li>WD = (0.51 − 0.31, 0.48 − 0.32) = (0.20, 0.16), so |WD| = √(0.04 + 0.0256) = √0.0656 = 0.2561.</li>
+        <li><strong>Purity = 0.0896 / 0.2561 = 0.35.</strong> Check with one coordinate: 0.07/0.20 = 0.35.</li>
+        <li>Purity 0 = the color is the white point (no saturation). Purity 1 = a pure spectral color on the locus. So S is a pale (desaturated) yellow: dominant wavelength ≈ hue, purity ≈ saturation.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>S lies 35% of the way from white to the spectral locus</h4></div>
+        <p class="fig-lede">The ray from W through S hits the locus at D near 580 nm. That point names the hue. How far S is along the ray names the purity.</p>
+        <div data-viz="pur-steps"></div>
+        <p class="step-note" data-role="pur-note" aria-live="polite"></p>
+        <div data-viz="pur"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>x = X/(X+Y+Z), y = Y/(X+Y+Z), z = Z/(X+Y+Z). Given a reference white, the dominant wavelength (hue) is where the ray from white through the color meets the locus, and purity = |WS| / |WD| (saturation) runs from 0 at white to 1 on the locus.</p>
+    <p class="source">Source: L7 p.38 Munsell (value 0-10, chroma 0-20) · L7 p.39 hue, value, saturation · L7 p.66 color description · L7 p.58 CIE standard illuminants · L7 p.54 chromaticity coordinates · L7 p.61 dominant wavelength · L7 p.63-65 purity · Notes: Lecture 7 › Color dimensions and Munsell · Lecture 7 › Chromaticity diagram and illuminants · Lecture 7 › Dominant wavelength and purity</p>
+  </div>
+</article>

@@ -1,0 +1,648 @@
+<article class="q" id="s2-mc1" data-sample="2" data-part="mc" data-num="1" data-topic="Aliasing">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2, Sampling theorem and aliasing</p>
+    <h3 class="q-title">An analog audio signal contains frequencies up to 12 kHz. Which sampling rate will cause aliasing?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>48 kHz</span>
+      <span class="why">No. 48 &gt; 24 kHz, so every frequency up to 12 kHz is captured (4 samples per cycle).</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>30 kHz</span>
+      <span class="why">No. 30 &gt; 24 kHz, 2.5 samples per cycle of the highest frequency.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>25 kHz</span>
+      <span class="why">No. 25 &gt; 24 kHz. It is only just above the limit, and that is enough.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>20 kHz</span>
+      <span class="why">Correct. 20 &lt; 24 kHz, so the 12 kHz content comes back as a false 8 kHz tone.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The sampling theorem says to sample at more than twice the highest frequency: f<sub>s</sub> &gt; 2 × 12 = 24 kHz. Only 20 kHz is below that limit.</p>
+    <p>A 20 kHz sampler can only represent frequencies below f<sub>s</sub>/2 = 10 kHz. The 12 kHz tone is undersampled and is played back as a tone at 20 − 12 = 8 kHz. This loss of information during digitization is aliasing.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The 12 kHz tone sampled at each option's rate</h4>
+    </div>
+    <p class="fig-lede">The thin line is the 12 kHz tone and the dots are its samples. The thick line is the lowest-frequency sine that passes through every dot, which is what playback reconstructs. Pick a rate.</p>
+    <div data-viz="steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Samples per cycle</span><span class="v" data-role="spc"></span><span class="sub">f<sub>s</sub> / 12 kHz, must be &gt; 2</span></div>
+      <div class="stat"><span class="label">Highest kept</span><span class="v pri" data-role="half"></span><span class="sub">f<sub>s</sub> / 2</span></div>
+      <div class="stat"><span class="label">Played back</span><span class="v" data-role="out"></span><span class="sub">frequency through the dots</span></div>
+    </div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="wave"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>the 12 kHz tone</span>
+      <span><i class="sw-ok"></i>playback equals the tone</span>
+      <span><i class="sw-bad"></i>playback is a false (alias) tone</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Where the 12 kHz tone lands after sampling</h4>
+    </div>
+    <p class="fig-lede">Sampling makes copies of the spectrum around every multiple of f<sub>s</sub>, so a 12 kHz tone also appears at f<sub>s</sub> − 12 and f<sub>s</sub> + 12. Playback keeps only the shaded band from 0 to f<sub>s</sub>/2. For rates above 24 kHz the tone is inside the band and its copies are outside. At 20 kHz the tone falls outside and its copy at 8 kHz falls inside.</p>
+    <div data-viz="fold"></div>
+    <div class="legend">
+      <span><i class="sw-pri-soft"></i>band kept, 0 to fₛ/2</span>
+      <span><i class="sw-pri"></i>the 12 kHz tone</span>
+      <span><i class="sw-sec"></i>copy outside the band</span>
+      <span><i class="sw-bad"></i>copy inside the band (alias)</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Sample at a frequency greater than twice the maximal frequency in the signal, f<sub>s</sub> &gt; 2f<sub>max</sub>. Sampling below that undersamples, and "aliasing is the term used to describe loss of information during digitization."</p>
+    <p class="source">Source: L2 p.47, p.51 · Notes: Lecture 2 › 13. Sampling Theorem and Nyquist · Lecture 2 › 14. Aliasing: Undersampling, Spatial and Temporal</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc2" data-sample="2" data-part="mc" data-num="2" data-topic="MIDI status byte">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 3, Structure of MIDI messages</p>
+    <h3 class="q-title">How many MIDI channels are there, and where is the channel number stored in a channel message?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>16 channels (0 to 15), in the four low-order bits of the status byte</span>
+      <span class="why">Correct. Four bits give 2⁴ = 16 values, 0000 to 1111.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>16 channels (0 to 15), in the four most significant bits of the status byte</span>
+      <span class="why">No. The top bit is the status flag 1, and the next three bits hold the message.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>8 channels, in the three message bits of the status byte</span>
+      <span class="why">No. The three middle bits hold the message type (note on, note off, ...).</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>128 channels, in the first data byte</span>
+      <span class="why">No. A data byte has 7 free bits, 0 to 127, for values such as the key number.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> MIDI has 16 channels, numbered 0 to 15. A channel message starts with a status byte whose most significant bit is 1. The four low-order bits identify the channel and the three remaining bits hold the message, so the byte reads 1ttt nnnn.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The status byte: flag, message, channel</h4>
+    </div>
+    <p class="fig-lede">Pick a voice message and drag the channel. The channel only changes the low four bits, the second hex digit. The message only changes bits 6 to 4, so the first hex digit runs from &amp;H8 to &amp;HE. The data bytes after it start with 0.</p>
+    <div data-viz="type"></div>
+    <div data-viz="chan"></div>
+    <div data-viz="byte"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Every channel status byte: one row per message, one column per channel</h4>
+    </div>
+    <p class="fig-lede">All voice-message status bytes from &amp;H80 to &amp;HEF (Table 6.3, n = channel). The first hex digit picks the row and the second picks the column. There are 16 columns because the channel has 4 bits. The highlighted cell follows Figure 1.</p>
+    <div data-viz="map"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>16 MIDI channels, numbered from 0 to 15. Status byte 1ttt nnnn: most significant bit set to 1, the four low-order bits identify the channel, the three remaining bits hold the message. Data byte 0ddddddd.</p>
+    <p class="source">Source: L3 p.18, p.35 · Notes: Lecture 3 › 7. MIDI Basics, Concepts and Terminology · Lecture 3 › 10. Structure of MIDI Messages</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc3" data-sample="2" data-part="mc" data-num="3" data-topic="Entropy">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 4, Entropy</p>
+    <h3 class="q-title">A source emits 8 different symbols. Its entropy is largest when ... , and the largest value is ...</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>one symbol has probability close to 1; 3 bits/symbol</span>
+      <span class="why">No. A near-certain symbol carries almost no information, so the entropy is close to 0.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>all symbols are equally likely; 8 bits/symbol</span>
+      <span class="why">No. 8 is the number of symbols. 8 bits/symbol needs 256 equally likely symbols.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>all symbols are equally likely; 3 bits/symbol</span>
+      <span class="why">Correct. log₂ 8 = 3.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>all symbols are equally likely; 1 bit/symbol</span>
+      <span class="why">No. 1 bit is the maximum for 2 symbols.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Entropy η = −Σ p<sub>i</sub> log₂ p<sub>i</sub> is the average information per symbol. It is largest when no symbol is easier to predict than another, so all 8 have p = 1/8. Each symbol then carries log₂ 8 = 3 bits and η = 8 × (1/8) × 3 = 3 bits/symbol. The slide's example works the same way: 256 equally likely gray levels give log₂ 256 = 8 bits.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Entropy of 8 symbols as one symbol takes over</h4>
+    </div>
+    <p class="fig-lede">Symbol s₁ gets probability p and the other seven share the rest equally. Drag p. The entropy peaks at p = 1/8, where all eight bars are equal, and falls toward 0 as s₁ becomes certain.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Entropy</span><span class="v pri" data-role="h"></span><span class="sub">bits per symbol</span></div>
+      <div class="stat"><span class="label">s₁ information</span><span class="v sec" data-role="i1"></span><span class="sub">bits, log₂(1/p)</span></div>
+      <div class="stat"><span class="label">Each other symbol</span><span class="v" data-role="q"></span><span class="sub">probability (1 − p)/7</span></div>
+    </div>
+    <div data-viz="main"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The maximum is log₂ of the number of symbols</h4>
+    </div>
+    <p class="fig-lede">With N equally likely symbols each one carries log₂ N bits. Each doubling of N adds one bit. 8 symbols need 3 bits, so 8 bits/symbol needs N = 256, the slide's uniform gray-level image.</p>
+    <div data-viz="logn"></div>
+    <p class="fig-lede">At the maximum a fixed 3-bit code is already optimal for 8 symbols:</p>
+    <div class="chips"><span>s₁ 000</span><span>s₂ 001</span><span>s₃ 010</span><span>s₄ 011</span><span>s₅ 100</span><span>s₆ 101</span><span>s₇ 110</span><span>s₈ 111</span></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>η = Σ p<sub>i</sub> log₂(1/p<sub>i</sub>). A uniform distribution gives the maximum, log₂ N bits per symbol: 3 bits for 8 symbols, 8 bits for 256 gray levels.</p>
+    <p class="source">Source: L4 p.12, p.13 · Notes: Lecture 4 › 5. Entropy: Basics of Information Theory</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc4" data-sample="2" data-part="mc" data-num="4" data-topic="Frequency masking">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 5, Frequency masking</p>
+    <h3 class="q-title">Which statement about frequency masking, as used by MPEG audio (MP3), is true?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>A higher tone masks a lower tone better than the reverse</span>
+      <span class="why">No. This is backwards. Masking reaches much further up in frequency than down.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>A lower tone can mask a higher tone</span>
+      <span class="why">Correct. This is the first rule on slide 14.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Two tones that are widely separated in frequency mask each other strongly</span>
+      <span class="why">No. Widely separated tones give little masking.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The weaker the masking tone, the wider the range of frequencies it masks</span>
+      <span class="why">No. The greater the power of the masking tone, the wider its influence.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> A loud tone raises the hearing threshold around its own frequency, and the raised region reaches much further above the tone than below it. So a lower tone can mask a higher tone, and the reverse is not true.</p>
+    <p>A more powerful masker widens the region, and two tones far apart barely mask each other. MPEG audio uses these rules to remove sounds that are masked anyway.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>A 1 kHz masker hides the tone above it and spares the tone below</h4>
+    </div>
+    <p class="fig-lede">The dashed curve is the threshold in quiet (Eq. 14.1). The masker raises it into the shaded masking curve, and a tone under the curve cannot be heard. Three 20 dB test tones sit at 600 Hz (about 3 critical bands below), 1.6 kHz (about 3 above) and 6 kHz (far away). Drag the masker level.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">600 Hz, below</span><span class="v" data-role="p0"></span><span class="sub" data-role="p0s"></span></div>
+      <div class="stat"><span class="label">1.6 kHz, above</span><span class="v" data-role="p1"></span><span class="sub" data-role="p1s"></span></div>
+      <div class="stat"><span class="label">6 kHz, far</span><span class="v" data-role="p2"></span><span class="sub" data-role="p2s"></span></div>
+      <div class="stat"><span class="label">Masked range</span><span class="v pri" data-role="range"></span><span class="sub">where the curve beats the threshold in quiet</span></div>
+    </div>
+    <div data-viz="main"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>masker and its masking curve</span>
+      <span><i class="sw-sec"></i>test tone, audible</span>
+      <span><i class="sw-seg"></i>test tone, masked (hollow)</span>
+    </div>
+    <p class="fig-lede">The curve is a simplified textbook model (Terhardt), drawn on a critical-band (Bark) axis where it becomes a triangle. It peaks 10 dB under the masker, falls 27 dB per Bark below it, and falls 24 + 230/f − 0.2L dB per Bark above it (f = 1000 Hz, L = masker level). The upper side is the shallow one, and it gets shallower as L grows.</p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Frequency masking: a lower tone can mask a higher tone; the reverse is not true. The greater the power of the masking tone, the wider its influence, so widely separated tones give little masking. MPEG audio removes sounds which are masked anyway.</p>
+    <p class="source">Source: L5 p.14 · Notes: Lecture 5 › 7. Psychoacoustics: Masking and Threshold of Hearing</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc5" data-sample="2" data-part="mc" data-num="5" data-topic="Bilinear interpolation">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 6, Image resampling and interpolation</p>
+    <h3 class="q-title">When an image is resampled, bilinear interpolation computes each new pixel from how many nearest original pixels?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>1</span>
+      <span class="why">No. One pixel is nearest neighbour: copy the closest original pixel.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>4</span>
+      <span class="why">Correct. The 2×2 block around the new position.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>9</span>
+      <span class="why">No. None of the three slide methods uses a 3×3 block. 9 pixels is the size of a 3×3 filter mask.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>16</span>
+      <span class="why">No. 16 pixels, a 4×4 block, is bicubic.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Bilinear interpolation takes the 2 × 2 = 4 original pixels around the new position. It interpolates linearly along x on the two rows, then once along y between those two results. Nearest neighbour uses 1 pixel and bicubic uses 16. The slide lists the three methods; the pixel counts are textbook context.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Which original pixels feed one new pixel</h4>
+    </div>
+    <p class="fig-lede">After rescaling, the new pixel P lands at (x, y) = (2.3, 2.6), between the original pixel centres (dots). Each method reads a different block around P. Pick a method.</p>
+    <div data-viz="steps"></div>
+    <div data-viz="foot"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Inside the 2×2 block, each weight is an area</h4>
+    </div>
+    <p class="fig-lede">P splits the square between the four pixels into four rectangles. Each corner's weight is the area of the rectangle opposite it, so the closest corner gets the largest weight and the four weights sum to 1. Corner values from the Lecture 6 notes example: f₀₀ = 10, f₁₀ = 20, f₀₁ = 30, f₁₁ = 60. Drag the offsets a (across) and b (down).</p>
+    <div data-viz="sa"></div>
+    <div data-viz="sb"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Bilinear, 4 pixels</span><span class="v ok" data-role="bil"></span><span class="sub">weighted sum of the corners</span></div>
+      <div class="stat"><span class="label">Nearest neighbour, 1 pixel</span><span class="v sec" data-role="nn"></span><span class="sub" data-role="nns"></span></div>
+    </div>
+    <div data-viz="square"></div>
+    <pre class="calc" data-role="calc"></pre>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Resample when rescaling, applying a geometrical transformation, or when the output coordinates are not discrete. Nearest neighbor: 1 pixel, fast and simple, loss of sharpness. Bilinear: the 4 nearest pixels. Bicubic: 16 pixels, sharpest, slow.</p>
+    <p class="source">Source: L6 p.36 (pixel counts are textbook context) · Notes: Lecture 6 › 12. Image Resampling and Interpolation</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc6" data-sample="2" data-part="mc" data-num="6" data-topic="m-adjacency">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 7, Connectivity and adjacency</p>
+    <h3 class="q-title">Why is m-adjacency (mixed adjacency) used?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>To eliminate the multiple path connections that arise with 8-adjacency</span>
+      <span class="why">Correct. This is the slide 24 wording.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>To connect two pixels even when one of their values is not in V</span>
+      <span class="why">No. 4-, 8- and m-adjacency all need both values in V.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>To make every diagonal neighbour adjacent, exactly as 8-adjacency does</span>
+      <span class="why">No. m-adjacency drops a diagonal link when a shared 4-neighbour is in V.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>To measure the city-block (D4) distance between two pixels</span>
+      <span class="why">No. D₄ = |x − s| + |y − t| is a distance measure and ignores V.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> With 8-adjacency, three pixels in an L shape form a triangle, so two different paths join the same pair. m-adjacency keeps every 4-neighbour link. It keeps a diagonal link only when the two pixels share no 4-neighbour with a value in V. The redundant diagonal is dropped and one path remains.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The slide example under 8-adjacency and m-adjacency</h4>
+    </div>
+    <p class="fig-lede">V = {1}, coordinates (row, col). Lines join adjacent pixels. Under 8-adjacency, (0,2) reaches (1,1) directly and through (0,1). m-adjacency drops the direct diagonal and keeps the diagonal (1,1)–(2,2), whose shared 4-neighbours are both 0.</p>
+    <div data-viz="main"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The m-adjacency test, pair by pair</h4>
+    </div>
+    <p class="fig-lede">p and q are outlined. For a diagonal pair, the dashed squares are the two pixels that are 4-neighbours of both. If either of them is in V, the diagonal link is dropped. Pick a pair.</p>
+    <div data-viz="steps"></div>
+    <div data-viz="test"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>p and q with values from V are m-connected if q ∈ N₄(p), or q ∈ N<sub>D</sub>(p) and N₄(p) ∩ N₄(q) has no pixels whose values are from V. "m-connectivity eliminates the multiple path connections that arises in 8-connectivity."</p>
+    <p class="source">Source: L7 p.23, p.24 · Notes: Lecture 7 › 5. Connectivity and Adjacency: 4, 8 and m</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc7" data-sample="2" data-part="mc" data-num="7" data-topic="Lookup table">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 9, Lookup tables</p>
+    <h3 class="q-title">A 3-bit image is passed through the look-up table (LUT) below. What does a pixel with value 5 become?</h3>
+    <div class="scroll">
+      <table class="tbl">
+        <thead><tr><th class="l">Index</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead>
+        <tbody><tr><td class="l">Output</td><td>1</td><td>2</td><td>3</td><td>3</td><td>4</td><td>6</td><td>7</td><td>7</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>4</span>
+      <span class="why">No. That is the 5th entry counted from 1, which is index 4.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>5</span>
+      <span class="why">No. Only the identity LUT leaves a value unchanged, and this LUT is not the identity.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>6</span>
+      <span class="why">Correct. LUT[5] = 6.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>7</span>
+      <span class="why">No. 7 is stored at indexes 6 and 7.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> A LUT uses the current pixel value as the array index, and the new value is the array element at that index. Indexes start at 0, so value 5 reads the entry under index 5, which is 6. Counting entries from 1 lands on index 4 and gives the wrong answer 4.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The pixel value is an address into the table</h4>
+    </div>
+    <p class="fig-lede">The LUT sits in memory as 8 entries at addresses 0 to 7. The pixel value picks the address and the stored value goes out. The dashed cell is the entry you read if you count from 1. Pick an input value.</p>
+    <div data-viz="steps"></div>
+    <div data-viz="mem"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The same table applied to every pixel of a 3-bit image</h4>
+    </div>
+    <p class="fig-lede">Shades run from 0 (black) to 7 (white). The seven pixels with value 5 (outlined) all become 6. The table also merges levels: 2 and 3 both become 3, and 6 and 7 both become 7.</p>
+    <div data-viz="img"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>"An LUT is simply a table of cross-references linking index numbers to output values." Use the current pixel value as the array index; the new value is the array element pointed by this index. Indexes start at 0.</p>
+    <p class="source">Source: L9 p.9, p.10-11 · Notes: Lecture 9 › 3. Lookup Tables</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc8" data-sample="2" data-part="mc" data-num="8" data-topic="Closing">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 10, Opening and closing</p>
+    <h3 class="q-title">Morphological closing of a binary image with a small structuring element is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>an erosion followed by a dilation; it removes small bright spots</span>
+      <span class="why">No. Erosion first is opening, and removing small bright spots is opening's effect.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>a dilation followed by an erosion; it removes thin protrusions and breaks narrow isthmuses</span>
+      <span class="why">No. The order is right, but these effects belong to opening.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>an erosion followed by a dilation; it fills small holes</span>
+      <span class="why">No. Erosion first is opening, and opening does not fill holes.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>a dilation followed by an erosion; it fills small holes (dark spots) and narrow gaps</span>
+      <span class="why">Correct. "Closing can remove small dark spots."</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Closing is A • B = (A ⊕ B) ⊖ B. The dilation grows the object and swallows any hole or gap narrower than B. The erosion then shrinks the outline back to its old place. A filled hole has no background pixel left inside, so the erosion cannot reopen it.</p>
+    <p>Opening is the other order, erosion then dilation. It removes small bright spots and thin protrusions and breaks narrow isthmuses, which is what options a and b describe.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Closing in two steps: dilate, then erode</h4>
+    </div>
+    <p class="fig-lede">B is the 3×3 square of 1s. Pixels outside the image count as 0. The outlined pixels are the 1-pixel gap at the top and the hole in the middle: 0 in A, 1 after closing. Everything else returns to A exactly.</p>
+    <div data-viz="close"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Opening and closing on the same image</h4>
+    </div>
+    <p class="fig-lede">Opening removes the bright spot, the thin bar and the narrow isthmus between the gap and the hole (outlined pixels were 1 in A). Closing keeps all three and fills the gap and the hole.</p>
+    <div data-viz="compare"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>1, object</span>
+      <span><i class="sw-seg"></i>0, background</span>
+      <span><i class="sw-bad"></i>outline: removed by opening</span>
+      <span><i class="sw-ok"></i>outline: filled by closing</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Closing is a dilation followed by an erosion, A • B = (A ⊕ B) ⊖ B. "Closing can remove small dark spots and connect small bright cracks." Opening is an erosion followed by a dilation and can remove small bright spots.</p>
+    <p class="source">Source: L10 p.28, p.29 · Notes: Lecture 10 › 5. Opening and Closing</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc9" data-sample="2" data-part="mc" data-num="9" data-topic="Median filter">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 11, Median filtering</p>
+    <h3 class="q-title">Which filter is best for removing salt-and-pepper (impulse) noise while preserving edges?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>3x3 average (low-pass) filter</span>
+      <span class="why">No. It smears each spike into its neighbours and blurs the edge. Low-pass suits Gaussian noise.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>Median filter</span>
+      <span class="why">Correct. "An effective method for removing impulse noise" that keeps sharp edges.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Max filter</span>
+      <span class="why">No. Max removes only dark spikes, and it grows every bright spike.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Laplacian filter</span>
+      <span class="why">No. The Laplacian is an edge operator. It makes the spikes stand out even more.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> The median filter sorts the window and keeps the middle value. A lone spike always sorts to one end of the list, so it never becomes the output. At an edge the side with more pixels in the window wins, so the edge stays sharp.</p>
+    <p>The average mixes the spike into every output it touches. Max and min each remove one kind of spike, and both fail on mixed impulse noise.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>A noisy edge through four filters</h4>
+    </div>
+    <p class="fig-lede">A 7×8 image, 60 on the left and 190 on the right, with three salt (255) and two pepper (0) pixels (outlined). Each output pixel uses the 3×3 window around it, with the border pixels repeated. Red outlines mark output pixels that differ from the clean edge. Pick a filter.</p>
+    <div data-viz="steps"></div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="main"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Inside one window: sort, then take the middle</h4>
+    </div>
+    <p class="fig-lede">The nine window values sorted. The median is the 5th value. The mean and the max are shown for comparison. Pick a window.</p>
+    <div data-viz="wsteps"></div>
+    <div data-viz="sort"></div>
+    <p class="step-note" data-role="wnote" aria-live="polite"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Median filtering is "an effective method for removing impulse noise" and preserves sharp edges; a lowpass filter is suited for removing Gaussian noise. Min removes white spikes, max removes dark spikes, and both fail on mixed impulse noise.</p>
+    <p class="source">Source: L11 p.53, p.60 · Notes: Lecture 11 › 13. Median and Color Median Filtering · Lecture 11 › 14. Minimum and Maximum Filtering</p>
+  </div>
+</article>
+
+<article class="q" id="s2-mc10" data-sample="2" data-part="mc" data-num="10" data-topic="Reject class">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 12, Statistical pattern recognition</p>
+    <h3 class="q-title">In a statistical pattern recognition system, the "reject class" is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>the class with the largest number of training samples</span>
+      <span class="why">No. Class size plays no part in rejection.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>the set of pixels removed during segmentation</span>
+      <span class="why">No. Segmentation separates objects from the background before any feature is measured.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>a generic class for objects that are not in any of the designated known classes</span>
+      <span class="why">Correct. This is the slide 36 definition.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>the cluster that unsupervised learning forms first</span>
+      <span class="why">No. Clusters come from unsupervised learning. Reject is an output of the classifier.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> A classifier takes the feature vector and assigns it to one of the designated classes or to the reject class. Reject is the generic class for objects that match none of the known classes. With the nearest class mean, the object goes to the closest class only if it is close enough, and it is rejected otherwise.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Nearest class mean with a reject distance</h4>
+    </div>
+    <p class="fig-lede">Two known classes of fish in the feature space X = [lightness, width], with their means (crosses). A dashed circle of radius 2 marks "close enough". An object inside a circle gets that class, and an object outside both circles goes to the reject class. Pick an object.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="space"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>class 1, salmon</span>
+      <span><i class="sw-sec"></i>class 2, sea bass</span>
+      <span><i class="sw-bad"></i>reject</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Where the reject decision is made</h4>
+    </div>
+    <p class="fig-lede">The pattern recognition system from sensing to decision. The classifier receives the feature vector and outputs one known class or reject. Segmentation comes earlier and only separates objects from the background.</p>
+    <div data-viz="flow"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Reject class: "a generic class for objects not in any of the designated known classes". A classifier inputs the feature vector and assigns it to one of a set of designated classes or to the reject class.</p>
+    <p class="source">Source: L12 p.31, p.36 · Notes: Lecture 12 › 6. Learning, Statistical and Structural PR · Lecture 12 › 7. Feature Vectors, Character Features and Terminology</p>
+  </div>
+</article>

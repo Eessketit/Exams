@@ -1,0 +1,584 @@
+<article class="q" id="s4-w1" data-part="w" data-num="1" data-topic="Logistic regression">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Open question · Lecture 2.2, Logistic regression</p>
+    <h3 class="q-title">Logistic regression</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Why does linear regression fail for classification? Use the tumour-size example.</span></li>
+      <li><span class="tag">(b)</span><span>Write the hypothesis of logistic regression and explain how its output is interpreted and how it gives a decision boundary.</span></li>
+      <li><span class="tag">(c)</span><span>Write the cost function of logistic regression. Why is the squared-error cost of linear regression not used?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Fit a straight line h<sub>θ</sub>(x) = Xθ to tumour size vs malignant (0/1) and predict y = 1 when h ≥ 0.5.</li>
+        <li>On clean data the 0.5 crossing separates the classes. Add one very large malignant tumour far to the right. The least-squares line flattens, its 0.5 crossing moves right, and some malignant tumours are now predicted benign. One correct but extreme example ruins the classifier.</li>
+        <li>Also, y is 0 or 1, but a straight line can output values &gt; 1 or &lt; 0. Logistic regression keeps 0 ≤ h<sub>θ</sub>(x) ≤ 1.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>One extreme tumour drags the 0.5 crossing past a malignant tumour</h4></div>
+        <p class="fig-lede">Eight example tumours, four benign (y = 0) and four malignant (y = 1), fitted with a least-squares line. The shaded zone is where the line is at least 0.5, so the model says malignant. Add a malignant tumour of size 20 and the crossing slides from 4.5 to 5.27, past the malignant tumour of size 5.</p>
+        <div data-viz="lin-steps"></div>
+        <p class="step-note" data-role="lin-note" aria-live="polite"></p>
+        <div data-viz="lin"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>malignant, y = 1</span>
+          <span><i class="sw-sec"></i>benign, y = 0</span>
+          <span><i class="sw-ter"></i>least-squares line h(x)</span>
+          <span><i class="sw-pri-soft"></i>h ≥ 0.5, predicted malignant</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Hypothesis, probability, decision boundary</h4>
+      <p class="formula">h<sub>θ</sub>(x) = g(θᵀx),&nbsp;&nbsp; g(z) = 1 / (1 + e⁻ᶻ)&nbsp;&nbsp; (sigmoid / logistic function)</p>
+      <ul>
+        <li>g(0) = 0.5, g → 1 as z → ∞, g → 0 as z → −∞. So the output always stays between 0 and 1.</li>
+        <li>Interpretation: h<sub>θ</sub>(x) = P(y = 1 | x; θ). If h = 0.7, tell the patient there is a 70% chance the tumour is malignant. P(y = 0 | x; θ) = 1 − 0.7 = 0.3.</li>
+        <li>Decision: predict y = 1 if h ≥ 0.5. This happens exactly when θᵀx ≥ 0, so the <b>decision boundary</b> is θᵀx = 0.</li>
+        <li>Example θ = [−3, 1, 1]: predict 1 when x₁ + x₂ ≥ 3, so the boundary is the line x₁ + x₂ = 3. Polynomial features (x₁², x₂², ...) give a curved boundary.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The sigmoid turns θᵀx into a probability</h4></div>
+        <p class="fig-lede">Move z = θᵀx. The curve gives h = g(z), read as P(y = 1). The bar below splits the patient's 100% into P(y = 1) and P(y = 0). The output crosses 0.5 exactly at z = 0, which is why the threshold on h becomes a threshold on θᵀx.</p>
+        <div data-viz="sig-slider"></div>
+        <p class="step-note" data-role="sig-note" aria-live="polite"></p>
+        <div data-viz="sig"></div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The decision boundary is where θᵀx = 0</h4></div>
+        <p class="fig-lede">Left: θ = [−3, 1, 1]. Points on the shaded side of the line x₁ + x₂ = 3 have z ≥ 0 and h ≥ 0.5, so they are predicted 1. The point (1.5, 1.5) lies on the line, h = 0.5, and the tie goes to 1. Right: with features [1, x₁, x₂, x₁², x₂²] and θ = [−1, 0, 0, 1, 1] the same rule gives the circle x₁² + x₂² = 1.</p>
+        <div data-viz="bound"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>predicted 1 (h ≥ 0.5)</span>
+          <span><i class="sw-sec"></i>predicted 0 (h &lt; 0.5)</span>
+          <span><i class="sw-ok"></i>on the boundary, h = 0.5</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Cost function</h4>
+      <pre class="calc">Cost(h, y) = −log(h<sub>θ</sub>(x))        if y = 1
+             −log(1 − h<sub>θ</sub>(x))    if y = 0
+           = −y log h − (1 − y) log(1 − h)
+
+J(θ) = −(1/m) Σ [ y⁽ⁱ⁾ log h<sub>θ</sub>(x⁽ⁱ⁾) + (1 − y⁽ⁱ⁾) log(1 − h<sub>θ</sub>(x⁽ⁱ⁾)) ]</pre>
+      <ul>
+        <li>A confident wrong answer is punished hard. For y = 1 the cost → ∞ as h → 0, and it is 0 at h = 1.</li>
+        <li>Why not MSE (textbook context): with the sigmoid inside, (h − y)² gives a <b>non-convex</b> J with flat regions and local minima, so gradient descent can get stuck. The log loss is convex, with one global minimum.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Log loss grows without limit, squared error goes flat</h4></div>
+        <p class="fig-lede">Left: the two branches of the cost against h (slide 15). Right: the cost of one example with y = 1 against z = θᵀx, the variable gradient descent moves. The log loss is convex and keeps a slope near −1 when the model is badly wrong. The squared error (1 − g(z))² bends the other way left of z = −0.69, the ochre dot, and flattens, so its gradient almost vanishes exactly where the model most needs to learn.</p>
+        <div data-viz="cost-slider"></div>
+        <p class="step-note" data-role="cost-note" aria-live="polite"></p>
+        <div data-viz="cost"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>−log h, cost when y = 1 (log loss)</span>
+          <span><i class="sw-sec"></i>−log(1 − h), cost when y = 0</span>
+          <span><i class="sw-ter"></i>squared error (1 − h)² for y = 1</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>h<sub>θ</sub>(x) = g(θᵀx) with g(z) = 1/(1 + e⁻ᶻ) is the probability P(y = 1 | x; θ). Predict 1 when h ≥ 0.5, which is θᵀx ≥ 0, so the decision boundary is θᵀx = 0. Cost = −y log h − (1 − y) log(1 − h): convex, while squared error with a sigmoid is non-convex.</p>
+    <p class="source">Source: L2.2 p.6-8 linear regression with threshold 0.5 and the extreme tumour · L2.2 p.9 h can be &gt; 1 or &lt; 0 · L2.2 p.10 sigmoid · L2.2 p.11 probability · L2.2 p.12-13 threshold and decision boundary · L2.2 p.14-16 cost · Notes: L2.2 › Why linear regression fails for classification · L2.2 › Hypothesis: the sigmoid function · L2.2 › Decision boundary, linear and non linear · L2.2 › Cost function: log loss, and why not MSE</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w2" data-part="w" data-num="2" data-topic="KNN">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Open question · Lecture 3.2, K-nearest neighbours</p>
+    <h3 class="q-title">K-nearest neighbours</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Describe the KNN algorithm for classification and for regression. Why is it called lazy and non-parametric?</span></li>
+      <li><span class="tag">(b)</span><span>Give the Euclidean, Manhattan and Minkowski distances, and when each is used.</span></li>
+      <li><span class="tag">(c)</span><span>How is k chosen, and what happens when k is very small or very large? Give the advantages and limitations of KNN.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) The algorithm</h4>
+      <pre class="calc">1. choose k and a distance function
+2. compute the distance from the new point to every training point
+3. rank the distances and take the k closest points
+4. classification: the most frequent label among the k neighbours
+   regression:     the average of their values</pre>
+      <ul>
+        <li>Assumption: similar data points lie close together.</li>
+        <li><b>Non-parametric</b>: it learns no parameters, it memorizes the training set. <b>Lazy</b>: no modelling at training time. All the work happens at prediction time.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Classify the star: measure, rank, vote</h4></div>
+        <p class="fig-lede">23 stored training points in two classes. Nothing was computed before the star arrived. Now KNN measures the distance to every point, ranks them, and lets the k closest vote. The dashed circle reaches the k-th neighbour. As on slide 47, the answer depends on k: k = 3 says B, k = 6 says A.</p>
+        <div data-viz="knn-slider"></div>
+        <p class="step-note" data-role="knn-note" aria-live="polite"></p>
+        <div data-viz="knn"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>class A (circles)</span>
+          <span><i class="sw-sec"></i>class B (squares)</span>
+          <span><i class="sw-ter"></i>new point to classify</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Regression: the prediction is the average of the k nearest values</h4></div>
+        <p class="fig-lede">Ten training points (x, y) and a query at x = 5.4. The ringed points are its k nearest neighbours, and the blue dot is their average. The blue line is the KNN prediction for every x with the same k. Small k follows every bump of the data; k = 10 = N predicts the overall mean 4.8 everywhere.</p>
+        <div data-viz="reg-slider"></div>
+        <p class="step-note" data-role="reg-note" aria-live="polite"></p>
+        <div data-viz="reg"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>training point</span>
+          <span><i class="sw-pri"></i>KNN prediction</span>
+          <span><i class="sw-ter"></i>query x = 5.4</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Distance measures</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Distance</th><th class="l">Formula</th><th class="l">Use</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Euclidean</b></td><td class="l">√((x₂ − x₁)² + (y₂ − y₁)²)</td><td class="l">straight line; continuous features (height, salary); the default</td></tr>
+            <tr><td class="l"><b>Manhattan</b></td><td class="l">Σ |xᵢ − yᵢ|</td><td class="l">grid-like paths; integer features</td></tr>
+            <tr><td class="l"><b>Minkowski</b></td><td class="l">(Σ |xᵢ − yᵢ|ᵖ)<sup>1/p</sup></td><td class="l">general form: p = 1 Manhattan, p = 2 Euclidean</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>One pair of points, three distances</h4></div>
+        <p class="fig-lede">Left: from P(1, 1) to Q(4, 5) the gaps are 3 and 4. Euclidean takes the straight line, Manhattan walks the grid. Right: all points at distance 1 from the centre under the chosen p. p = 1 gives a diamond, p = 2 a circle, and larger p pushes the shape toward a square.</p>
+        <div data-viz="dist-slider"></div>
+        <p class="step-note" data-role="dist-note" aria-live="polite"></p>
+        <div data-viz="dist"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Euclidean, p = 2</span>
+          <span><i class="sw-sec"></i>Manhattan, p = 1</span>
+          <span><i class="sw-ter"></i>Minkowski with the chosen p</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Choosing k, pros and cons</h4>
+      <ul>
+        <li>Split the data into train and test, try different k, and plot the error rate against k. Choose the <b>elbow</b>, where a larger k barely lowers the error (k = 5 on slide 49).</li>
+        <li>Small k (k = 1) follows single noisy points, so it <b>overfits</b>. Large k smooths the prediction; k = N always predicts the majority class.</li>
+        <li>Advantages: simple, adaptable (new samples are used at once), easy to program (only k and a distance metric to set).</li>
+        <li>Limitations: difficult to scale (stores all the data and scans it for every prediction), curse of dimensionality (distances grow with the number of dimensions), overfitting with small k.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Small k overfits, k = N predicts the majority everywhere</h4></div>
+        <p class="fig-lede">The data of Figure 1, with every location coloured by the class KNN would give it. Two points sit inside the other class's area: the B square at (2, 3) and the A circle at (8.2, 7.3). Step through k and watch their patches appear and disappear.</p>
+        <div data-viz="reg2-steps"></div>
+        <p class="step-note" data-role="reg2-note" aria-live="polite"></p>
+        <div data-viz="regions"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>predicted A</span>
+          <span><i class="sw-sec-soft"></i>predicted B</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>KNN: compute the distance to every training point, take the k closest, then the majority label (classification) or the average (regression). Non-parametric because it learns no parameters, lazy because all the work happens at prediction time. Choose k at the elbow of error rate vs k; small k overfits.</p>
+    <p class="source">Source: L3.2 p.33 similarity, non-parametric · L3.2 p.35-37 distance measures · L3.2 p.39 classification and regression · L3.2 p.41 lazy · L3.2 p.46-49 choosing k · L3.2 p.51-53 pros and cons · Notes: L3.2 › KNN: idea and properties · L3.2 › Distance measures · L3.2 › Choosing k · L3.2 › KNN pros and cons</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w3" data-part="w" data-num="3" data-topic="SVM kernels">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Open question · Lecture 4.2, Support vector machine</p>
+    <h3 class="q-title">Kernels in SVM</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>When is a linear SVM enough, and when is a non-linear SVM needed? Explain the idea of a kernel with an example.</span></li>
+      <li><span class="tag">(b)</span><span>Name the kernels from the lecture with their formulas and hyperparameters.</span></li>
+      <li><span class="tag">(c)</span><span>List the advantages and disadvantages of SVM.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Linear vs non-linear, and the kernel idea</h4>
+      <ul>
+        <li><b>Linear SVM</b>: the data is linearly separable, so one straight line (hyperplane) splits the two classes.</li>
+        <li><b>Non-linear SVM</b>: no straight line separates them, e.g. 1D data green-red-green, or a green disk inside a red ring (slide 44).</li>
+        <li>Kernel idea: <b>map the data to a higher dimension</b> where a hyperplane does separate the classes.</li>
+        <li>Example: points x = −3 ... 3, class + when |x| ≥ 2. No threshold on x works, but with φ(x) = x² the values become 9, 4, 1, 0, 1, 4, 9, and x² = 2.5 separates the classes.</li>
+        <li>In 2D, adding x₁² + x₂² lifts the inner disk below the ring, and a flat plane cuts them apart (slide 46).</li>
+        <li>Kernel trick (textbook context): the SVM needs only dot products, so K(x<sub>i</sub>, x<sub>j</sub>) gives φ(x<sub>i</sub>)·φ(x<sub>j</sub>) directly, without ever computing φ.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>1D: no threshold works, until x² is added</h4></div>
+        <p class="fig-lede">Top: the seven points on the x line. The + points sit on both sides of the − points, so any single cut leaves at least two points on the wrong side. Bottom: each point lifted to height φ(x) = x². Now the − points sit at 0 and 1, the + points at 4 and 9, and the flat line x² = 2.5 splits them.</p>
+        <div data-viz="lift1"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>class + (|x| ≥ 2)</span>
+          <span><i class="sw-sec"></i>class −</span>
+          <span><i class="sw-ok"></i>separating line in the new space</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>2D: lift with z = x<sub>1</sub><sup>2</sup> + x<sub>2</sub><sup>2</sup>, cut with a flat plane</h4></div>
+        <p class="fig-lede">Left: a disk of − points inside a ring of + points, seen from above. No straight line separates them. Right: the same points lifted to height z = x₁² + x₂². The disk stays below z = 0.81 and the ring rises above z = 4.84, so the flat plane z = 2.5 separates them. Seen from above, that plane cuts along the green circle of radius √2.5 ≈ 1.58.</p>
+        <div data-viz="lift2"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>ring, class +</span>
+          <span><i class="sw-sec"></i>disk, class −</span>
+          <span><i class="sw-ok"></i>plane z = 2.5 and its trace, the circle</span>
+        </div>
+      </figure>
+      <pre class="calc">kernel trick with the slide-47 polynomial kernel, d = 2, in 1D:
+K(x, z) = (x·z + 1)² = 1 + 2xz + x²z² = φ(x)·φ(z),   φ(x) = (1, √2·x, x²)
+x = 2, z = 3:  K = (6 + 1)² = 49
+               φ(2)·φ(3) = 1·1 + 2.828·4.243 + 4·9 = 1 + 12 + 36 = 49</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Kernels and hyperparameters</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Kernel</th><th class="l">Formula</th><th class="l">Hyperparameters</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Linear</b></td><td class="l">K(x, z) = xᵀz</td><td class="l">C</td></tr>
+            <tr><td class="l"><b>Polynomial</b> (slide 47)</td><td class="l">(X1ᵀ · X2 + 1)<sup>d</sup></td><td class="l">degree d (set manually), C</td></tr>
+            <tr><td class="l"><b>Sigmoid</b> (slide 48)</td><td class="l">tanh(α xᵀy + c)</td><td class="l">α, c; "a proxy for neural networks"</td></tr>
+            <tr><td class="l"><b>RBF / Gaussian</b></td><td class="l">exp(−γ‖x − z‖²)</td><td class="l">γ and C</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Which kernel to use is decided by <b>hyperparameter tuning</b>. A large γ gives a wiggly boundary that overfits; a small γ gives a smooth, almost linear one.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>RBF γ sets how far one point's influence reaches</h4></div>
+        <p class="fig-lede">Left: the disk and ring data plus one mislabelled ring point inside the disk. Each point adds a bump K = exp(−γ‖x − x<sub>i</sub>‖²) with its sign, and the colour shows the sign of the sum f(x) = Σ y<sub>i</sub> K(x, x<sub>i</sub>). This is the SVM decision function with every weight set to 1, so only γ changes. Right: one bump against distance. Its width is about 1/√γ.</p>
+        <div data-viz="rbf-slider"></div>
+        <p class="step-note" data-role="rbf-note" aria-live="polite"></p>
+        <div data-viz="rbf"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>f &gt; 0, predicted +</span>
+          <span><i class="sw-sec-soft"></i>f &lt; 0, predicted −</span>
+          <span><i class="sw-bad"></i>mislabelled point</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Advantages and disadvantages (slide 49)</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Advantages</th><th class="l">Disadvantages</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Works well when the data is linear</td><td class="l">Choosing a good kernel is not easy</td></tr>
+            <tr><td class="l">More effective in high dimensions</td><td class="l">Does not give good results on big datasets</td></tr>
+            <tr><td class="l">The kernel trick solves complex problems</td><td class="l">Hyperparameters C and γ are hard to tune and their effect is hard to visualize</td></tr>
+            <tr><td class="l">Not sensitive to outliers (only the support vectors matter)</td><td class="l"></td></tr>
+            <tr><td class="l">Useful for image classification</td><td class="l"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Linear SVM when one hyperplane splits the classes; non-linear SVM when none does. A kernel maps the data to a higher dimension where a hyperplane separates it, e.g. x → x². Kernels: linear, polynomial (X1ᵀ · X2 + 1)<sup>d</sup>, sigmoid tanh(α xᵀy + c), RBF exp(−γ‖x − z‖²). Which kernel to use is decided by hyperparameter tuning.</p>
+    <p class="source">Source: L4.2 p.6-7 linear vs non-linear SVM · L4.2 p.44 data no line can split · L4.2 p.45-46 map to a higher dimension · L4.2 p.47 polynomial kernel · L4.2 p.48 sigmoid kernel · L4.2 p.49 advantages, disadvantages, C and gamma · Notes: L4.2 › Types: linear vs non-linear SVM · L4.2 › Kernels and the kernel trick · L4.2 › Advantages and disadvantages</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w4" data-part="w" data-num="4" data-topic="Evaluation metrics">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Problem · Lecture 3.1, Evaluating learning algorithms</p>
+    <h3 class="q-title">Evaluating a classifier and a regressor</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>A classifier is tested on 12 examples (1 = positive). Build the confusion matrix and compute accuracy, precision, recall and F1.</span></li>
+    </ol>
+    <div class="given" data-viz="given-a"></div>
+    <ol class="subq">
+      <li><span class="tag">(b)</span><span>A regression model predicts h = [2.5, 5.5, 7, 8, 12] for the targets y = [3, 5, 7, 9, 11]. Compute MSE, RMSE, MAE and R².</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Confusion matrix</h4>
+      <ul>
+        <li>Label each example. The second word is what the model predicted; the first says whether it was right.</li>
+        <li>TP = 4, FN = 2, FP = 1, TN = 5 (total 12).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Twelve examples sorted into four cells</h4></div>
+        <p class="fig-lede">Each column is one example: actual on top, predicted below, outcome underneath. The matrix uses the slide-14 layout, with rows = predicted and columns = actual. Pick an outcome to see which examples land in its cell.</p>
+        <div data-viz="cm-steps"></div>
+        <p class="step-note" data-role="cm-note" aria-live="polite"></p>
+        <div data-viz="cm"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1, positive</span>
+          <span><i class="sw-seg"></i>0, negative</span>
+          <span><i class="sw-ok"></i>correct (TP, TN)</span>
+          <span><i class="sw-bad"></i>wrong (FP, FN)</span>
+        </div>
+      </figure>
+      <pre class="calc">Accuracy  = (TP + TN) / total = (4 + 5) / 12  = 75%
+Precision = TP / (TP + FP)    = 4 / (4 + 1)   = 0.80
+Recall    = TP / (TP + FN)    = 4 / (4 + 2)   = 0.667
+F1        = 2 · P · R / (P + R) = 2 · 0.8 · 0.667 / (0.8 + 0.667) = 0.727</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Each metric reads a different part of the matrix</h4></div>
+        <p class="fig-lede">Shaded cells form the denominator, outlined cells the numerator. Precision looks only at the predicted-positive row, recall only at the actual-positive column. F1 is the harmonic mean of the two, so it sits closer to the smaller one.</p>
+        <div data-viz="met-steps"></div>
+        <p class="step-note" data-role="met-note" aria-live="polite"></p>
+        <div data-viz="met"></div>
+      </figure>
+      <p>Result: <span class="result">accuracy 75%, precision 0.80, recall 0.667, F1 0.727.</span> The model raises few false alarms (high precision) but misses a third of the positives (lower recall).</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Regression metrics</h4>
+      <p>Errors h − y = [−0.5, 0.5, 0, −1, 1]; ȳ = 35/5 = 7.</p>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th>i</th><th>h</th><th>y</th><th>h − y</th><th>(h − y)²</th><th>|h − y|</th><th>(y − ȳ)²</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>2.5</td><td>3</td><td>−0.5</td><td>0.25</td><td>0.5</td><td>16</td></tr>
+            <tr><td>2</td><td>5.5</td><td>5</td><td>0.5</td><td>0.25</td><td>0.5</td><td>4</td></tr>
+            <tr><td>3</td><td>7</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>4</td><td>8</td><td>9</td><td>−1</td><td>1</td><td>1</td><td>4</td></tr>
+            <tr><td>5</td><td>12</td><td>11</td><td>1</td><td>1</td><td>1</td><td>16</td></tr>
+            <tr><td>Σ</td><td></td><td></td><td></td><td class="hl">2.5</td><td class="hl">3</td><td class="hl">40</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre class="calc">MSE  = 2.5 / 5      = 0.5
+RMSE = √0.5         = 0.707    (in the units of y)
+MAE  = 3 / 5        = 0.6
+R²   = 1 − 2.5 / 40 = 0.9375   (the model explains about 94% of the variance)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Errors against the mean: where the four numbers come from</h4></div>
+        <p class="fig-lede">Top: targets y and predictions h for the five examples. Bottom: the quantity each metric adds up, per example. R² compares the squared errors of the model with the squared distances of y from its mean ȳ = 7, the error of a model that always predicts the mean.</p>
+        <div data-viz="rm-steps"></div>
+        <p class="step-note" data-role="rm-note" aria-live="polite"></p>
+        <div data-viz="rm"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>target y</span>
+          <span><i class="sw-pri"></i>prediction h, and h − y</span>
+          <span><i class="sw-ter"></i>y − ȳ</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">MSE 0.5, RMSE 0.707, MAE 0.6, R² 0.9375.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Confusion matrix: TP, FP, FN, TN. Accuracy = (TP + TN)/total, Precision = TP/(TP + FP), Recall = TP/(TP + FN), F1 = 2PR/(P + R). MSE = (1/m) Σ (h − y)², RMSE = √MSE in the units of y, MAE = (1/m) Σ |h − y|, R² = 1 − SS<sub>res</sub>/SS<sub>tot</sub>.</p>
+    <p class="source">Source: L3.1 p.14 confusion matrix · L3.1 p.20-25 accuracy, precision, recall, F1 · L3.1 p.10-12 MSE, RMSE, MAE · L3.1 p.13 R² · L3.1 p.26-27 implementation · Notes: L3.1 › Confusion matrix and axis layout · L3.1 › Accuracy, precision, recall, F1 · L3.1 › Regression metrics: MSE, RMSE, MAE · L3.1 › R-squared</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w5" data-part="w" data-num="5" data-topic="K-Means++">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Problem · Lecture 6.1, K-Means clustering</p>
+    <h3 class="q-title">K-Means++ and the elbow method</h3>
+  </div>
+  <div class="prompt">
+    <p>Points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8). Use squared Euclidean distance.</p>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>K-Means++ picks C(5, 4) as the first centroid. Compute D(x)² for every point and the probability of each point becoming the second centroid.</span></li>
+      <li><span class="tag">(b)</span><span>Suppose the second centroid is E. Run K-Means with K = 2 from centroids C and E until convergence. Give the clusters and J.</span></li>
+      <li><span class="tag">(c)</span><span>Repeat (b) with the second centroid A instead. Which result is better, and what does this show?</span></li>
+      <li><span class="tag">(d)</span><span>The best possible J for K = 1 to 5 is 71.2, 18.33, 2.0, 1.0 and 0. Which K does the elbow method choose?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) D(x)² and the sampling probabilities</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Point</th><th>D(x)² to C(5, 4)</th><th>Probability</th></tr></thead>
+          <tbody>
+            <tr><td class="l">A (1, 2)</td><td>16 + 4 = 20</td><td>20/72 = 0.278</td></tr>
+            <tr><td class="l">B (2, 1)</td><td>9 + 9 = 18</td><td>18/72 = 0.250</td></tr>
+            <tr><td class="l">C (5, 4)</td><td>0</td><td>0</td></tr>
+            <tr><td class="l">D (6, 5)</td><td>1 + 1 = 2</td><td>2/72 = 0.028</td></tr>
+            <tr><td class="l">E (9, 8)</td><td>16 + 16 = 32</td><td class="hl">32/72 = 0.444</td></tr>
+            <tr><td class="l">sum</td><td>72</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Far points get picked more often, in proportion to D(x)²</h4></div>
+        <p class="fig-lede">Each line is labelled with D(x)², the squared distance from C. The bar on the right stacks the probabilities D(x)²/72. E, the farthest point, takes 44% of the bar; D, right next to C, gets under 3%.</p>
+        <div data-viz="pp"></div>
+      </figure>
+      <p>Result: <span class="result">E is the most likely second centroid (0.444), A the second most likely (0.278).</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) K-Means from C and E</h4>
+      <ul>
+        <li>Iteration 1 (squared distances to C / to E): A 20 / 100, B 18 / 98, C 0 / 32, D 2 / 18, E 32 / 0. Clusters <b>{A, B, C, D}</b> and <b>{E}</b>.</li>
+        <li>New centroids: (14/4, 12/4) = <b>(3.5, 3)</b> and <b>(9, 8)</b>.</li>
+        <li>Iteration 2: A 7.25 / 100, B 6.25 / 98, C 3.25 / 32, D 10.25 / 18, so nothing changes. <b>Converged</b>.</li>
+        <li>J = 7.25 + 6.25 + 3.25 + 10.25 + 0 = <b>27</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Start at C and E: E ends up alone</h4></div>
+        <p class="fig-lede">Diamonds are the centroids. Step through assign, update, assign again. The table shows the squared distance from each point to each centroid, with the smaller one highlighted.</p>
+        <div data-viz="kmE-steps"></div>
+        <p class="step-note" data-role="kmE-note" aria-live="polite"></p>
+        <div data-viz="kmE"></div>
+        <div data-viz="kmE-table"></div>
+      </figure>
+      <p>Result: <span class="result">clusters {A, B, C, D} and {E}, J = 27.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) K-Means from C and A</h4>
+      <ul>
+        <li>Iteration 1: A and B go to A (0 and 2 vs 20 and 18); C, D, E go to C (0, 2, 32 vs 20, 34, 100). Clusters <b>{A, B}</b> and <b>{C, D, E}</b>.</li>
+        <li>New centroids: <b>(1.5, 1.5)</b> and <b>(6.667, 5.667)</b>. Iteration 2: no change, so converged.</li>
+        <li>J = (0.5 + 0.5) + (5.556 + 0.889 + 10.889) = <b>18.33</b>.</li>
+        <li><b>(c) is better</b> (18.33 &lt; 27). K-Means only finds a local minimum, and the result depends on the initial centroids. K-Means++ makes good starts likely but not certain. In practice K-Means is run several times and the lowest J is kept (textbook context).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Start at C and A: the two natural groups</h4></div>
+        <p class="fig-lede">Same procedure, other start. Both runs converge after one update, but to different clusterings. Neither run can leave its local minimum, so the start decides the answer.</p>
+        <div data-viz="kmA-steps"></div>
+        <p class="step-note" data-role="kmA-note" aria-live="polite"></p>
+        <div data-viz="kmA"></div>
+        <div data-viz="kmA-table"></div>
+      </figure>
+      <p>Result: <span class="result">clusters {A, B} and {C, D, E}, J = 18.33 &lt; 27, so (c) is better.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Elbow method</h4>
+      <ul>
+        <li>The drops are 71.2 → 18.33 (−52.9), → 2.0 (−16.3), → 1.0 (−1.0), → 0 (−1.0).</li>
+        <li>After K = 3 the curve flattens, so the elbow is <b>K = 3</b>: clusters {A, B}, {C, D}, {E}.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>J against K bends at K = 3</h4></div>
+        <p class="fig-lede">Left: the best J for each K. J always falls and reaches 0 at K = 5, one cluster per point, so the lowest J is not the goal. Right: the best clustering for the chosen K. Beyond K = 3 each extra cluster only splits off a single point and saves 1.0.</p>
+        <div data-viz="elbow-steps"></div>
+        <p class="step-note" data-role="elbow-note" aria-live="polite"></p>
+        <div data-viz="elbow"></div>
+      </figure>
+      <p>Result: <span class="result">K = 3, clusters {A, B}, {C, D}, {E}.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>K-Means++: choose the first centroid at random, then pick each next centroid with probability proportional to D(x)², the squared distance to the nearest chosen centroid. K-Means converges only to a local minimum that depends on the start. Elbow method: plot J (inertia) against K and choose the K where the decrease levels off.</p>
+    <p class="source">Source: L6.1 p.7-9 K-Means steps and J · L6.1 p.19 random initialization problem · L6.1 p.21 K-Means++ steps · L6.1 p.22-23 worked table on the same five points · L6.1 p.28-30 elbow curve · Notes: L6.1 › K-Means++ initialization · L6.1 › The algorithm in five steps · L6.1 › Choosing the right K: the elbow curve</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w6" data-part="w" data-num="6" data-topic="Decision tree">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Problem · Lecture 4.1, Decision tree</p>
+    <h3 class="q-title">Decision tree with ID3</h3>
+  </div>
+  <div class="prompt">
+    <p>Is an email spam?</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the entropy of the dataset and the information gain of each attribute. Choose the root.</span></li>
+      <li><span class="tag">(b)</span><span>Find the best attribute for the impure branch of the root, and continue until all leaves are pure.</span></li>
+      <li><span class="tag">(c)</span><span>Draw the final tree.</span></li>
+      <li><span class="tag">(d)</span><span>Classify {Link = No, Known = No, Attachment = Yes} and {Link = Yes, Known = Yes, Attachment = Yes}.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Root</h4>
+      <p class="formula">E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ &nbsp;&nbsp;·&nbsp;&nbsp; IG(S, a) = E(S) − Σ<sub>v</sub> (|S<sub>v</sub>| / |S|) · E(S<sub>v</sub>)</p>
+      <pre class="calc">5 Yes, 7 No:  E(S) = −(5/12) log₂(5/12) − (7/12) log₂(7/12) = 0.980</pre>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Attribute</th><th class="l">Value: Yes/No (entropy)</th><th>Weighted E</th><th>IG</th></tr></thead>
+          <tbody>
+            <tr class="on"><td class="l"><b>Known</b></td><td class="l">No 5/2 (0.863), Yes 0/5 (0)</td><td>7/12 · 0.863 = 0.503</td><td class="hl">0.476</td></tr>
+            <tr><td class="l">Link</td><td class="l">Yes 4/2 (0.918), No 1/5 (0.650)</td><td>0.784</td><td>0.196</td></tr>
+            <tr><td class="l">Attachment</td><td class="l">No 2/5 (0.863), Yes 3/2 (0.971)</td><td>0.908</td><td>0.072</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Known sender removes the most entropy</h4></div>
+        <p class="fig-lede">Each split sends the 12 emails into two branches. The bars show spam vs not spam in each branch with its entropy, and the chart on the right compares the information gains. Known = Yes holds 5 emails and all of them are not spam, a pure branch with entropy 0.</p>
+        <div data-viz="root-steps"></div>
+        <p class="step-note" data-role="root-note" aria-live="polite"></p>
+        <div data-viz="root"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>spam (Yes)</span>
+          <span><i class="sw-sec"></i>not spam (No)</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">Known sender is the root.</span> Known = Yes is pure (0/5), so it becomes a <b>No leaf</b>.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Impure branches</h4>
+      <ul>
+        <li>Branch <b>Known = No</b> (rows 1, 2, 4, 6, 7, 10, 11: 5 Yes / 2 No, E = 0.863):
+          <ul>
+            <li>Link: Yes 4/0 (0), No 1/2 (0.918); weighted 3/7 · 0.918 = 0.394; IG = <b>0.470</b>.</li>
+            <li>Attachment: No 2/2 (1), Yes 3/0 (0); weighted 4/7 · 1 = 0.571; IG = 0.292.</li>
+            <li>Split on <b>Link</b>. Both attributes give one pure child, but Link's pure child is bigger (4 rows vs 3) and its impure child smaller, so it removes more entropy.</li>
+          </ul>
+        </li>
+        <li>Branch <b>Known = No, Link = No</b> (rows 4, 7, 10: 1 Yes / 2 No, E = 0.918):
+          <ul>
+            <li>Attachment: No 0/2, Yes 1/0, IG = <b>0.918</b> (perfect). Split on <b>Attachment</b>.</li>
+          </ul>
+        </li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Inside Known = No: Link first, then Attachment</h4></div>
+        <p class="fig-lede">The same comparison on the 7 emails from unknown senders. Then the last impure branch, Link = No with 3 emails, splits perfectly on Attachment, and every leaf is pure.</p>
+        <div data-viz="br-steps"></div>
+        <p class="step-note" data-role="br-note" aria-live="polite"></p>
+        <div data-viz="br"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>spam (Yes)</span>
+          <span><i class="sw-sec"></i>not spam (No)</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Final tree and (d) classification</h4>
+      <pre class="calc">Known [Yes=5, No=7]
+|- Yes -&gt; No [0/5]
+|- No  -&gt; Link [Yes=5, No=2]
+            |- Yes -&gt; Yes [4/0]
+            |- No  -&gt; Attachment [Yes=1, No=2]
+                        |- Yes -&gt; Yes [1/0]
+                        |- No  -&gt; No  [0/2]</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The final tree, and the path of each new email</h4></div>
+        <p class="fig-lede">Counts in brackets are spam / not spam among the training emails that reach each node. Pick an email to follow its path from the root to a leaf.</p>
+        <div data-viz="tree-steps"></div>
+        <p class="step-note" data-role="tree-note" aria-live="polite"></p>
+        <div data-viz="tree"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>leaf: spam</span>
+          <span><i class="sw-sec"></i>leaf: not spam</span>
+          <span><i class="sw-ok"></i>path of the chosen email</span>
+        </div>
+      </figure>
+      <ul>
+        <li>{Link = No, Known = No, Attachment = Yes}: Known = No, then Link = No, then Attachment = Yes, so <b>Spam</b>.</li>
+        <li>{Link = Yes, Known = Yes, Attachment = Yes}: Known = Yes, so <b>Not spam</b>. One question is enough.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>ID3: at each node compute E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ and IG = E(S) − Σ (|S<sub>v</sub>|/|S|) E(S<sub>v</sub>), split on the attribute with the highest IG, and stop when a node is pure: "when purity is 100%, we make it a leaf node".</p>
+    <p class="source">Source: L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example · Notes: L4.1 › Entropy · L4.1 › Information gain · L4.1 › Worked example: PlayTennis tree built with ID3</p>
+  </div>
+</article>

@@ -1,0 +1,546 @@
+<article class="q" id="s3-w1" data-part="w" data-num="1" data-topic="Polynomial regression">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Open question · Lecture 2.1, Multivariate and polynomial regression</p>
+    <h3 class="q-title">Gradient descent, the normal equation and polynomial regression</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Write the vectorized gradient descent update and the normal equation for multivariate linear regression.</span></li>
+      <li><span class="tag">(b)</span><span>Compare the two methods (the four points of the comparison table).</span></li>
+      <li><span class="tag">(c)</span><span>How can linear regression fit a curved relationship? Why is polynomial regression still a linear model, and what is its main hyperparameter?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Loss: J(θ) = (1/2m) Σ (h<sub>θ</sub>(x⁽ⁱ⁾) − y⁽ⁱ⁾)², with h = Xθ and x₀ = 1 for every example.</li>
+        <li>Gradient descent (repeat): <b>θ := θ − α · (1/m) · Xᵀ(Xθ − y)</b>. All θ<sub>j</sub> are updated simultaneously.</li>
+        <li>Normal equation (one step): <b>θ = (XᵀX)⁻¹ · Xᵀy</b>.</li>
+        <li>Shapes: X is m × (n + 1) with the column of 1s first, θ is (n + 1) × 1 and y is m × 1.</li>
+        <li>The link between them: setting the gradient (1/m)Xᵀ(Xθ − y) to 0 gives XᵀXθ = Xᵀy, which the normal equation solves directly.</li>
+      </ul>
+      <pre class="calc">J(θ) = (1/2m) Σ (hθ(x⁽ⁱ⁾) − y⁽ⁱ⁾)²        h = Xθ,  x₀ = 1
+gradient descent, repeat:   θ := θ − α · (1/m) · Xᵀ(Xθ − y)
+normal equation, once:      θ = (XᵀX)⁻¹ · Xᵀy</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Two routes to the same minimum of J(θ)</h4></div>
+        <p class="fig-lede">Contours of J(θ₀, θ₁) for the data of Q4 (x = 1, 2, 4 and y = 3, 5, 9). Gradient descent starts at θ = [0, 0] and moves one step of size α downhill per iteration. The normal equation lands on the minimum θ = [1, 2] in one step. The gray ellipses are levels of J. Drag α and watch the path and the iteration count.</p>
+        <div data-viz="alpha"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Iterations</span><span class="v pri" data-role="iters">109</span><span class="sub">until J &lt; 0.001</span></div>
+          <div class="stat"><span class="label">J after 10 steps</span><span class="v" data-role="j10">0.008</span><span class="sub">start J = 19.167</span></div>
+          <div class="stat"><span class="label">Normal equation</span><span class="v ok">1 step</span><span class="sub">θ = [1, 2], J = 0</span></div>
+        </div>
+        <p class="verdict" data-role="alpha-verdict"></p>
+        <div data-viz="bowl"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>gradient descent path</span>
+          <span><i class="sw-ok"></i>normal equation, one step</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) The comparison table (slide 42)</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Gradient descent</th><th class="l">Normal equation</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Need to choose the learning rate α</td><td class="l">No need to choose α</td></tr>
+            <tr><td class="l">Needs many iterations</td><td class="l">No iterations</td></tr>
+            <tr><td class="l">Works well even when the number of features is very large</td><td class="l">Very slow when the number of features is very large</td></tr>
+            <tr><td class="l"></td><td class="l">Needs to compute (XᵀX)⁻¹</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Rule of thumb: few features (n = 3), use the normal equation, which is exact and fast. Very many features (n = 10⁶), use gradient descent.</li>
+        <li>Why: inverting an (n + 1) × (n + 1) matrix costs about n³ operations (textbook context), while one gradient descent step grows only linearly in n.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Inverting XᵀX grows like n³, one gradient step grows like n</h4></div>
+        <p class="fig-lede">Time for one solve as the number of features n grows, both axes on log scales. The cost model is only an illustration: 10⁹ operations per second, (n + 1)³ operations to invert XᵀX, and gradient descent with 1000 iterations over m = 1000 examples, 1000 · m · (n + 1) operations. Ten times the features costs the normal equation a thousand times more, and gradient descent ten times more.</p>
+        <div data-viz="cost-steps"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">XᵀX to invert</span><span class="v" data-role="size">4 × 4</span><span class="sub" data-role="entries">16 entries</span></div>
+          <div class="stat"><span class="label">Normal equation</span><span class="v sec" data-role="t-ne">64 ns</span><span class="sub">(n + 1)³ / 10⁹ s</span></div>
+          <div class="stat"><span class="label">Gradient descent</span><span class="v pri" data-role="t-gd">4 ms</span><span class="sub">1000 iterations</span></div>
+        </div>
+        <div data-viz="cost"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>normal equation, invert XᵀX</span>
+          <span><i class="sw-pri"></i>gradient descent, 1000 iterations</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li>On curved data a straight line y = ax + b underfits. <b>Construct new features</b> from x (x², x³, ...) and train a standard linear regression on them: h = w₁x + w₂x² + w₃x³ + b.</li>
+        <li>The model is still <b>linear in the parameters w</b>. "Polynomial" refers only to the shape of the features, so the gradient descent update and the normal equation work unchanged with X columns [1, x, x², x³].</li>
+        <li>In code: <code>make_pipeline(PolynomialFeatures(degree=2), LinearRegression())</code>. The main hyperparameter is the <b>degree</b>. Too low underfits, too high overfits.</li>
+      </ul>
+      <pre class="calc">PolynomialFeatures(degree=3):   x = 2  →  [1, x, x², x³] = [1, 2, 4, 8]
+h = b·1 + w₁·x + w₂·x² + w₃·x³    a weighted sum of columns, linear in w</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The degree decides between underfitting and overfitting</h4></div>
+        <p class="fig-lede">Eight training points (dots) from an S-shaped curve, and four validation points (rings) that the model never sees. Every curve is plain linear regression on the columns [1, x, x², …, xᵈ], solved with the normal equation. Degree 1 and 2 miss the S shape, degree 3 follows it, and degree 7 passes through every training dot but swings away from the rings.</p>
+        <div data-viz="deg"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Weights</span><span class="v" data-role="nw">4</span><span class="sub">b and w₁ … wᵈ</span></div>
+          <div class="stat"><span class="label">Training MSE</span><span class="v pri" data-role="mse-tr">0.070</span><span class="sub">8 dots</span></div>
+          <div class="stat"><span class="label">Validation MSE</span><span class="v ter" data-role="mse-va">0.051</span><span class="sub">4 rings</span></div>
+        </div>
+        <p class="verdict" data-role="deg-verdict"></p>
+        <div data-viz="poly"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>fitted curve, linear in w</span>
+          <span><i class="sw-ter"></i>validation point</span>
+        </div>
+        <p class="fig-lede">The first rows of X for this degree. The model sees only these columns and takes a weighted sum of them.</p>
+        <div data-viz="design"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Gradient descent repeats θ := θ − α(1/m)Xᵀ(Xθ − y). It needs α and many iterations, and works well with very many features. The normal equation θ = (XᵀX)⁻¹Xᵀy needs no α and no iterations, but is very slow when the number of features is very large. Polynomial regression constructs x², x³, ... as new features and stays linear in w; the degree is its main hyperparameter.</p>
+    <p class="source">Source: L2.1 p.3 two approaches · L2.1 p.7 loss J(θ) · L2.1 p.20 vectorized update · L2.1 p.33-41 normal equation · L2.1 p.42 comparison table · L2.1 p.45-47 polynomial regression · Notes: L2.1 › Loss and the vectorised gradient descent update · L2.1 › Normal equation · L2.1 › Gradient descent vs normal equation · L2.1 › Polynomial regression</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w2" data-part="w" data-num="2" data-topic="Naive Bayes">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Open question · Lecture 3.2, Naive Bayes</p>
+    <h3 class="q-title">Naive Bayes classifier</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>State Bayes theorem and explain each term. In the classifier, what are A and B?</span></li>
+      <li><span class="tag">(b)</span><span>What is the "naive" assumption, and how does it change the formula for P(class | x₁, ..., xₙ)? How is the class decided?</span></li>
+      <li><span class="tag">(c)</span><span>Give three advantages and three disadvantages of Naive Bayes.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <p class="formula">P(A | B) = P(B | A) · P(A) / P(B)</p>
+      <ul>
+        <li>P(A | B): probability of A given B (the posterior). P(B | A): probability of B given A (the likelihood). P(A), P(B): the probabilities of the events (prior and evidence).</li>
+        <li>Bayes theorem gives the probability of an event from prior knowledge of conditions related to it.</li>
+        <li>In the classifier: <b>A = the class</b> (Buy / No Buy), <b>B = the features</b> (Day, Discount, Free Delivery).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Bayes theorem on the 15 shopping records</h4></div>
+        <p class="fig-lede">Each tile is one visit from the lecture's shopping data (slide 14), blue for Buy and plum for No Buy, sorted by Day. Pick the evidence B. The prior and the likelihood count tiles in the Buy block, the evidence counts the highlighted row, and the posterior counts Buy tiles inside that row only.</p>
+        <div data-viz="bayes-steps"></div>
+        <div data-viz="bayes"></div>
+        <p class="formula" data-role="bayes-formula"></p>
+        <p class="step-note" data-role="bayes-note" aria-live="polite"></p>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <ul>
+        <li>Naive assumption: the features are <b>independent of each other given the class</b>. So P(x₁, ..., xₙ | A) = P(x₁ | A) · P(x₂ | A) · ... · P(xₙ | A).</li>
+        <li>Posterior (lecture form): P(A | x₁, ..., xₙ) = P(x₁ | A) ⋯ P(xₙ | A) · P(A) / (P(x₁) ⋯ P(xₙ)).</li>
+        <li>Compute it for every class, <b>normalize</b> the values so they add up to 1, and pick the class with the larger value. The denominator is the same for every class, so the decision is the same as argmax P(A) Π P(xᵢ | A).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The naive assumption: each feature depends only on the class</h4></div>
+        <p class="fig-lede">Left: the model as a graph. The class points to every feature, and the features have no links between them. Right: what this saves on the shopping data. Without the assumption each class needs a count for every one of the 3 × 2 × 2 = 12 value combinations, and 15 rows leave 14 of the 24 cells at 0. With it each class needs only 3 + 2 + 2 = 7 single-feature counts, and none of them is 0.</p>
+        <div data-viz="naive"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Buy count</span>
+          <span><i class="sw-sec"></i>No Buy count</span>
+          <span><i class="sw-seg"></i>no example in the data (count 0)</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>One query, factor by factor, then normalize (slides 22-25)</h4></div>
+        <p class="fig-lede">Query: Holiday, Discount = Yes, Free Delivery = Yes. Each class starts at its prior and is multiplied by one likelihood per feature. The slide then divides both scores by P(Discount) · P(Free Delivery) · P(Holiday) = 0.1956 and normalizes them so they add up to 1. Step through the product.</p>
+        <div data-viz="prod-steps"></div>
+        <p class="step-note" data-role="prod-note" aria-live="polite"></p>
+        <div data-viz="prod"></div>
+      </figure>
+      <p>Result: <span class="result">Buy 0.192 vs No Buy 0.0213, normalized 90 % vs 10 %, so the customer buys.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Advantages (slide 27)</th><th class="l">Disadvantages (slide 28)</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Simple and easy to implement</td><td class="l">Independence assumption: rarely true for real data</td></tr>
+            <tr><td class="l">Needs less training data</td><td class="l">Zero-frequency problem: an unseen value gets probability 0 and wipes out the product; fix with Laplace smoothing</td></tr>
+            <tr><td class="l">Handles continuous and discrete data</td><td class="l">Poor probability calibration: use the scores to rank, not as true confidence</td></tr>
+            <tr><td class="l">Highly scalable; fast, so good for real-time prediction</td><td class="l">Biased toward the majority class on imbalanced data</td></tr>
+            <tr><td class="l">Not sensitive to irrelevant features</td><td class="l"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Figure 2 shows "needs less training data": 7 counts per class are well filled by 15 rows, 12 joint counts are not.</li>
+        <li>Figure 3 shows the calibration point: the slide's two scores add up to 1.09 before normalizing, so they are not true probabilities.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>P(A | B) = P(B | A) P(A) / P(B), with A = the class and B = the features. Naive: the features are independent given the class, so P(B | A) = P(x₁ | A) ⋯ P(xₙ | A). Compute the score for every class, normalize, and pick the largest.</p>
+    <p class="source">Source: L3.2 p.7 Bayes theorem · L3.2 p.9 definition · L3.2 p.16 A = class, B = features · L3.2 p.23-25 posterior and normalization · L3.2 p.27 advantages · L3.2 p.28 disadvantages · Notes: L3.2 › Probability basics and Bayes theorem · L3.2 › Naive Bayes classifier: the naive assumption · L3.2 › Advantages and disadvantages of Naive Bayes</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w3" data-part="w" data-num="3" data-topic="Missing values, outliers">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Open question · Lecture 5.2, Data preparation</p>
+    <h3 class="q-title">Missing values and outliers</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Name and explain the three mechanisms of missing data, with an example of each.</span></li>
+      <li><span class="tag">(b)</span><span>List the methods for handling missing values and when each is used.</span></li>
+      <li><span class="tag">(c)</span><span>Explain the IQR rule and the Z-score rule for detecting outliers. Apply both to the data 2, 4, 4, 5, 6, 7, 8, 8, 30 (Q1 = 4, Q3 = 8, μ = 8.22, σ = 7.93).</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Mechanism</th><th class="l">Meaning</th><th class="l">Slide example</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>MCAR</b>, Missing Completely At Random</td><td class="l">not related to any variable</td><td class="l">a sensor briefly went offline</td></tr>
+            <tr><td class="l"><b>MAR</b>, Missing At Random</td><td class="l">related to other observed variables</td><td class="l">older respondents skip income questions</td></tr>
+            <tr><td class="l"><b>MNAR</b>, Missing Not At Random</td><td class="l">depends on the missing value itself (hardest)</td><td class="l">high earners hide their income</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Where the gaps fall decides the mechanism</h4></div>
+        <p class="fig-lede">Sixteen survey answers, age against income. Rings are incomes the survey did not get; the ring shows the true value that is hidden from us. Under MCAR the gaps are scattered. Under MAR they follow age, a column we can see. Under MNAR they follow income itself, so the mean of what is left drops and nothing in the data shows why.</p>
+        <div data-viz="mech-steps"></div>
+        <p class="step-note" data-role="mech-note" aria-live="polite"></p>
+        <div data-viz="mech"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>income observed</span>
+          <span><i class="sw-sec"></i>income missing (true value hidden)</span>
+          <span><i class="sw-ok"></i>mean of the observed incomes (dashed: true mean of all 16)</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Method</th><th class="l">Code</th><th class="l">Use</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Drop</td><td class="l"><code>dropna()</code></td><td class="l">remove the row or the column (e.g. a column that is mostly empty)</td></tr>
+            <tr><td class="l">Mean / Median</td><td class="l"><code>mean()</code> / <code>median()</code></td><td class="l">numeric columns</td></tr>
+            <tr><td class="l">Mode</td><td class="l"><code>mode()</code></td><td class="l">categorical columns</td></tr>
+            <tr><td class="l">KNN Imputer</td><td class="l"><code>KNNImputer</code></td><td class="l">fill from the nearest neighbours</td></tr>
+            <tr><td class="l">Iterative Imputer</td><td class="l"><code>IterativeImputer</code> (MICE)</td><td class="l">predict each missing value from the other columns</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Diagnose the mechanism first. Dropping every row with a missing value is a common mistake.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Five ways to fill the same gaps</h4></div>
+        <p class="fig-lede">A small table with two missing incomes and one missing city. Mean and median put the same number into both gaps, whatever the age. KNN and the iterative imputer use the age column, so the older person gets a higher income. Mode fills the categorical City column. Drop throws away 3 of the 7 rows.</p>
+        <div data-viz="imp-steps"></div>
+        <p class="step-note" data-role="imp-note" aria-live="polite"></p>
+        <div data-viz="imp-table"></div>
+        <div data-viz="imp"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>observed income</span>
+          <span><i class="sw-sec"></i>filled without using age (mean, median)</span>
+          <span><i class="sw-ter"></i>filled from age (KNN, iterative)</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <ul>
+        <li><b>IQR rule</b> ("robust, distribution-free"): IQR = Q3 − Q1, lower bound = Q1 − 1.5·IQR, upper bound = Q3 + 1.5·IQR. Values outside the bounds are outliers.</li>
+        <li><b>Z-score rule</b>: z = (x − μ)/σ, and |z| &gt; 3 is an outlier. It assumes roughly normal data.</li>
+      </ul>
+      <pre class="calc">IQR = 8 − 4 = 4          1.5 · IQR = 6
+bounds = [4 − 6, 8 + 6] = [−2, 14]      30 &gt; 14   → outlier
+z(30) = (30 − 8.22) / 7.93 = 2.75       2.75 &lt; 3  → not flagged
+same rule in data units: μ ± 3σ = 8.22 ± 23.78 = [−15.56, 32.00]</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Both rules as fences on one number line</h4></div>
+        <p class="fig-lede">Top: the IQR fences, built from the middle half of the data, so 30 cannot move them. Bottom: the Z-score fences μ ± 3σ, with the z scale under them. The value 30 itself pulls μ up and inflates σ, so its own fence moves out to 32. Switch to the second view to compute μ and σ without 30.</p>
+        <div data-viz="out-steps"></div>
+        <p class="step-note" data-role="out-note" aria-live="polite"></p>
+        <div data-viz="out"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>data value</span>
+          <span><i class="sw-ok"></i>inside the fences</span>
+          <span><i class="sw-bad"></i>flagged as an outlier</span>
+        </div>
+      </figure>
+      <ul>
+        <li>IQR flags <b>30 as an outlier</b>. The Z-score rule does <b>not flag 30</b>, because the outlier itself inflates μ and σ (masking).</li>
+        <li>Extra check: with only 9 values and the population σ, no |z| can be larger than √(9 − 1) = 2.83, so |z| &gt; 3 cannot flag anything in this data set.</li>
+        <li>That is why the slide says to "combine with IQR when in doubt". After detection, decide whether to fix, cap or keep the outlier. ML-based detectors: Isolation Forest, Local Outlier Factor, autoencoders.</li>
+      </ul>
+      <p>Result: <span class="result">IQR bounds [−2, 14], 30 is an outlier; z(30) = 2.75 &lt; 3, not flagged.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MCAR: not related to any variable. MAR: related to other observed variables. MNAR: depends on the missing value itself. IQR rule: outside [Q1 − 1.5·IQR, Q3 + 1.5·IQR], robust. Z-score rule: |z| &gt; 3, assumes normal data and can be masked by the outlier, so "combine with IQR when in doubt".</p>
+    <p class="source">Source: L5.2 p.9 six problems of raw data · L5.2 p.10 MCAR, MAR, MNAR · L5.2 p.11 handling methods · L5.2 p.13 IQR rule · L5.2 p.14 Z-score rule · L5.2 p.15 ML-based detectors · L5.2 p.36 dropping every row with a NaN is a mistake · Notes: L5.2 › Missing values · L5.2 › Outliers: IQR, Z score, ML detectors</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w4" data-part="w" data-num="4" data-topic="Linear regression">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Problem · Lecture 2.1, Gradient descent and normal equation</p>
+    <h3 class="q-title">Linear regression: gradient descent and normal equation</h3>
+  </div>
+  <div class="prompt">
+    <p>Data: x = [1, 2, 4], y = [3, 5, 9]. Model h<sub>θ</sub>(x) = θ₀ + θ₁x. Start at θ = [0, 0]ᵀ with α = 0.05.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Write X (with x₀) and compute the loss J(θ) = (1/2m) Σ(h − y)² at the start.</span></li>
+      <li><span class="tag">(b)</span><span>Do one gradient descent update and give the new θ.</span></li>
+      <li><span class="tag">(c)</span><span>Compute J at the new θ.</span></li>
+      <li><span class="tag">(d)</span><span>Solve the same problem with the normal equation and predict y for x = 5.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">X = [[1, 1],      y = [3, 5, 9]ᵀ      m = 3
+     [1, 2],
+     [1, 4]]
+θ = [0, 0]:  h = Xθ = [0, 0, 0],   h − y = [−3, −5, −9]
+J = (9 + 25 + 81) / (2 × 3) = 115 / 6 = 19.167</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">Xᵀ(h − y) = [−3 − 5 − 9,  −3 − 10 − 36] = [−17, −49]
+(1/m)Xᵀ(h − y) = [−5.667, −16.333]
+θ = [0, 0] − 0.05 · [−5.667, −16.333] = [0.2833, 0.8167]</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The gradient Xᵀ(h − y), one row of Xᵀ per parameter</h4></div>
+        <p class="fig-lede">Each row of Xᵀ is one column of X. The row of 1s collects the plain errors for θ₀, and the row of x values weights the errors by x for θ₁. Then multiply by α/m = 0.05/3 and subtract from θ. Pick a row.</p>
+        <div data-viz="grad-steps"></div>
+        <p class="step-note" data-role="grad-note" aria-live="polite"></p>
+        <div data-viz="grad"></div>
+      </figure>
+      <p>Result: <span class="result">θ = [0.2833, 0.8167]</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <pre class="calc">h = 0.2833 + 0.8167x = [1.100, 1.917, 3.550]
+h − y = [−1.900, −3.083, −5.450]
+J = (3.610 + 9.507 + 29.703) / 6 = 42.819 / 6 = 7.137</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The line after each update, with its errors</h4></div>
+        <p class="fig-lede">The three data points, the current line h = θ₀ + θ₁x, and the error h − y of each point as a dashed segment. The loss is the mean of the squared segments, divided by 2. One update cuts J from 19.167 to 7.137. Later steps get smaller and smaller, and gradient descent needs hundreds of iterations to reach the line the normal equation finds at once.</p>
+        <div data-viz="line-steps"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">θ₀</span><span class="v pri" data-role="t0">0.2833</span><span class="sub">intercept</span></div>
+          <div class="stat"><span class="label">θ₁</span><span class="v pri" data-role="t1">0.8167</span><span class="sub">slope</span></div>
+          <div class="stat"><span class="label">J(θ)</span><span class="v" data-role="jv">7.137</span><span class="sub">(1/2m) Σ (h − y)²</span></div>
+        </div>
+        <p class="step-note" data-role="line-note" aria-live="polite"></p>
+        <div data-viz="line"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>line after gradient descent steps</span>
+          <span><i class="sw-ok"></i>normal equation line</span>
+          <span><i class="sw-sec"></i>error h − y</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">J = 7.137</span>. The loss fell from 19.167 to 7.137 in one step.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Normal equation</h4>
+      <pre class="calc">XᵀX = [[3, 7], [7, 21]]        (m, Σx; Σx, Σx²)
+det = 3 · 21 − 7 · 7 = 63 − 49 = 14
+(XᵀX)⁻¹ = (1/14) [[21, −7], [−7, 3]]
+Xᵀy = [Σy, Σxy] = [17, 3 + 10 + 36] = [17, 49]
+θ = (1/14) [21·17 − 7·49, −7·17 + 3·49] = (1/14) [14, 28] = [1, 2]
+h = 1 + 2x,   x = 5:  1 + 2·5 = 11</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>θ = (XᵀX)⁻¹ · Xᵀy in one pass</h4></div>
+        <p class="fig-lede">XᵀX holds m, Σx and Σx². Its inverse swaps the diagonal, negates the off-diagonal and divides by the determinant 14. Xᵀy holds Σy and Σxy. One matrix product gives θ, with no α and no iterations.</p>
+        <div data-viz="ne"></div>
+      </figure>
+      <ul>
+        <li>θ = [1, 2], so h = 1 + 2x. It fits all three points exactly (J = 0).</li>
+        <li>Gradient descent would reach [1, 2] only after many iterations (Figure 2); the normal equation gets it in one step, with no α.</li>
+      </ul>
+      <p>Result: <span class="result">θ = [1, 2], h = 1 + 2x, prediction for x = 5 is 11.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Add x₀ = 1 as the first column of X. One step: θ := θ − α(1/m)Xᵀ(Xθ − y), here [0.2833, 0.8167], and J falls from 19.167 to 7.137. Normal equation: θ = (XᵀX)⁻¹Xᵀy = [1, 2], so h(5) = 11.</p>
+    <p class="source">Source: L2.1 p.7 loss with 1/2m · L2.1 p.10-11 X with the column of 1s · L2.1 p.19-23 worked first update · L2.1 p.33-41 normal equation · L2.1 p.43 code · Notes: L2.1 › Loss and the vectorised gradient descent update · L2.1 › Worked example: first update from zero theta · L2.1 › Normal equation</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w5" data-part="w" data-num="5" data-topic="KNN">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Problem · Lecture 3.2, K-nearest neighbours</p>
+    <h3 class="q-title">K-nearest neighbours</h3>
+  </div>
+  <div class="prompt">
+    <p>Eight training points of classes A and B. Query point Q = (3, 3).</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the Euclidean distance from Q to every point and rank them.</span></li>
+      <li><span class="tag">(b)</span><span>Classify Q with k = 1, k = 3 and k = 5.</span></li>
+      <li><span class="tag">(c)</span><span>Repeat the k = 3 classification with the Manhattan distance. Does the answer change?</span></li>
+      <li><span class="tag">(d)</span><span>A test of k gives these error rates: k = 1: 0.30, k = 3: 0.22, k = 5: 0.18, k = 7: 0.17, k = 9: 0.17. Which k should be chosen, and why?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <p class="formula">d = √((x1 − 3)² + (x2 − 3)²)</p>
+      <div data-viz="rank"></div>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>k = 1: nearest is P4 (A), so <b>A</b>.</li>
+        <li>k = 3: P4 (A), P5 (B), P7 (B): 2 B vs 1 A, so <b>B</b>.</li>
+        <li>k = 5: add P2 (A) and P1 (A): 3 A vs 2 B, so <b>A</b>.</li>
+        <li>The prediction depends on k (as in the slide 47 star example).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Grow the circle around Q until it holds k points</h4></div>
+        <p class="fig-lede">The number in each point is its rank by Euclidean distance from Q. The circle has the radius of the k-th nearest point, so the points inside it are the k neighbours that vote. Blue circles are class A, plum squares are class B. Pick k.</p>
+        <div data-viz="k-steps"></div>
+        <p class="step-note" data-role="k-note" aria-live="polite"></p>
+        <div data-viz="knn"></div>
+      </figure>
+      <p>Result: <span class="result">k = 1 → A, k = 3 → B, k = 5 → A.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <ul>
+        <li>Manhattan |x1 − 3| + |x2 − 3|: the three smallest are P4 (2, A), P5 (2, B) and P2 (3, A). Vote 2 A vs 1 B, so <b>A</b>.</li>
+        <li>The answer changes from B to A. P7 is close in a straight line (2.83) but 4 blocks away on the grid, and P2 replaces it.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>A circle for Euclidean, a diamond for Manhattan</h4></div>
+        <p class="fig-lede">All points at the same Euclidean distance from Q form a circle. All points at the same Manhattan distance form a diamond, because only moves along the grid count. The k = 3 boundary is the circle of radius 2.83 for Euclidean and the diamond of radius 3 for Manhattan. P7 sits on the circle but outside the diamond, and P2 does the opposite.</p>
+        <div data-viz="metric-steps"></div>
+        <p class="step-note" data-role="metric-note" aria-live="polite"></p>
+        <div data-viz="metric"></div>
+      </figure>
+      <p>Result: <span class="result">Manhattan, k = 3 → A. The answer changes.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) What to write</h4>
+      <ul>
+        <li>Choose <b>k = 5</b>, the elbow point. The error drops quickly from k = 1 to k = 5 (0.30 to 0.18), then almost stops improving (0.17).</li>
+        <li>Very small k overfits. Larger k smooths and costs more computation without gaining accuracy.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The error curve bends at k = 5</h4></div>
+        <p class="fig-lede">Error rate against k for the five tested values. From k = 1 to 5 each step of 2 cuts the error by 0.04 to 0.08. After k = 5 the gain is 0.01 and then 0, so a larger k buys nothing.</p>
+        <div data-viz="elbow"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>KNN: compute the distance from the query to every training point, rank them, and take the majority class of the k nearest. The answer depends on k and on the distance measure. Choose k at the elbow of the error rate, here k = 5.</p>
+    <p class="source">Source: L3.2 p.35 Euclidean · L3.2 p.36 Manhattan · L3.2 p.39 KNN steps · L3.2 p.42-44 Iris worked example (distance, rank, nearest neighbours) · L3.2 p.47 the answer depends on k · L3.2 p.48-49 choose k at the elbow of the error rate · Notes: L3.2 › Distance measures · L3.2 › KNN worked example: Iris · L3.2 › Choosing k</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w6" data-part="w" data-num="6" data-topic="ID3">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Problem · Lecture 4.1, Decision tree</p>
+    <h3 class="q-title">Decision tree with ID3</h3>
+  </div>
+  <div class="prompt">
+    <p>Will a customer wait for a table at a restaurant?</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the entropy of the dataset.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the information gain of Patrons, Hungry and Price, and choose the root.</span></li>
+      <li><span class="tag">(c)</span><span>Which branches become leaves right away? Finish the tree.</span></li>
+      <li><span class="tag">(d)</span><span>Predict Wait for {Full, Hungry = No, Cheap} and for {Some, Hungry = No, Expensive}.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">7 Yes, 5 No out of 12
+E(S) = −(7/12) log₂(7/12) − (5/12) log₂(5/12)
+     = 0.5833 · 0.7776 + 0.4167 · 1.2630
+     = 0.4536 + 0.5263 = 0.980</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Every entropy in this question lies on one curve</h4></div>
+        <p class="fig-lede">Binary entropy against the share of Yes in a node. A 50/50 node has entropy 1 and a pure node has entropy 0. The root (7 Yes, 5 No) is close to 50/50, so its entropy 0.980 is close to 1. Pick a node to see its value.</p>
+        <div data-viz="ent-steps"></div>
+        <p class="step-note" data-role="ent-note" aria-live="polite"></p>
+        <div data-viz="ent"></div>
+      </figure>
+      <p>Result: <span class="result">E(S) = 0.980</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Root</h4>
+      <p class="formula">IG(S, a) = E(S) − Σ<sub>v</sub> |S<sub>v</sub>| / |S| · E(S<sub>v</sub>)</p>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Attribute</th><th class="l">Value: Yes/No (entropy)</th><th class="l">Weighted E</th><th>IG</th></tr></thead>
+          <tbody>
+            <tr class="on"><td class="l"><b>Patrons</b></td><td class="l">None 0/3 (0), Some 4/0 (0), Full 3/2 (0.971)</td><td class="l">5/12 · 0.971 = 0.405</td><td class="hl">0.575</td></tr>
+            <tr><td class="l">Hungry</td><td class="l">Yes 5/2 (0.863), No 2/3 (0.971)</td><td class="l">7/12 · 0.863 + 5/12 · 0.971 = 0.908</td><td>0.072</td></tr>
+            <tr><td class="l">Price</td><td class="l">Cheap 4/2 (0.918), Expensive 3/3 (1)</td><td class="l">0.959</td><td>0.021</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Sort the rows down each split and weigh the children</h4></div>
+        <p class="fig-lede">Each square is one row of the table, blue for Wait = Yes and plum for Wait = No. A good split sends each class into its own child, so the children are pure and the weighted entropy is small. The bars compare the information gain of the attributes at the same node. The last two buttons repeat the test inside the Full branch.</p>
+        <div data-viz="ig-steps"></div>
+        <p class="step-note" data-role="ig-note" aria-live="polite"></p>
+        <div data-viz="ig"></div>
+      </figure>
+      <p>Result: <span class="result">Patrons has by far the largest IG (0.575) and becomes the root.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Leaves and the rest of the tree</h4>
+      <ul>
+        <li><b>None</b> (0/3) is pure, so it becomes a <b>No leaf</b>. <b>Some</b> (4/0) is pure, so it becomes a <b>Yes leaf</b>.</li>
+        <li><b>Full</b> (rows 6, 7, 8, 9, 11: 3 Yes / 2 No, E = 0.971) needs another split.</li>
+        <li>Inside Full: Hungry gives Yes 3/0 and No 0/2, IG = <b>0.971</b> (perfect). Price gives Cheap 2/1 (0.918) and Expensive 1/1 (1), weighted 0.951, IG = 0.020. Split on <b>Hungry</b>.</li>
+        <li>Price is never used.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The finished tree, and the two predictions of (d)</h4></div>
+        <p class="fig-lede">Each node shows its Yes/No counts. Leaves are green for Yes and red for No. Pick a query to follow its path from the root to a leaf.</p>
+        <div data-viz="tree-steps"></div>
+        <p class="step-note" data-role="tree-note" aria-live="polite"></p>
+        <div data-viz="tree"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Predictions</h4>
+      <ul>
+        <li>{Full, Hungry = No, Cheap}: Patrons = Full, then Hungry = No, so <b>No</b>.</li>
+        <li>{Some, Hungry = No, Expensive}: Patrons = Some, so <b>Yes</b> (no more questions).</li>
+      </ul>
+      <p>Result: <span class="result">No, and Yes.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋. IG = E(S) − Σ |Sᵥ|/|S| · E(Sᵥ); the attribute with the highest IG becomes the node. A pure node becomes a leaf. Here Patrons (IG 0.575) is the root, None and Some are leaves, and Full splits on Hungry.</p>
+    <p class="source">Source: L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example · Notes: L4.1 › Entropy · L4.1 › Information gain · L4.1 › Worked example: PlayTennis tree built with ID3</p>
+  </div>
+</article>

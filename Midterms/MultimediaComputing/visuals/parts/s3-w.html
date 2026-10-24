@@ -1,0 +1,613 @@
+<article class="q" id="s3-w1" data-sample="3" data-part="w" data-num="1" data-topic="Opening">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · 10 pts · Lecture 10, Morphology</p>
+    <h3 class="q-title">Morphology: opening</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is morphological opening? Write its formula and state what it removes from a binary image. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Apply opening to the 7x7 binary image A using the 3x3 structuring element B. Show the intermediate result and the final result. Rows and columns are numbered 0-6 from the top-left; pixels outside the image are 0. <span class="pts">(6 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Opening "is obtained by the <b>erosion</b> of an image followed by a <b>dilation</b>", both with the same SE B.</li>
+        <li>A ∘ B = (A ⊖ B) ⊕ B = ∪{(B)<sub>z</sub> | (B)<sub>z</sub> ⊆ A}, the union of all translates of B that fit inside A.</li>
+        <li>The erosion removes foreground pixels from the edges of regions. The dilation restores the size of everything that survived.</li>
+        <li>"Opening can remove small bright spots and connect small dark cracks." It smooths the contour of an object, "breaks narrow isthmuses, and eliminates thin protrusions".</li>
+        <li>Anything B cannot fit into disappears: isolated noise pixels, 1-pixel-wide lines.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Step 1: erosion A ⊖ B</h4>
+      <ul>
+        <li>A pixel stays 1 only if the whole 3x3 window around it is 1, so B fits there. Outside the image counts as 0.</li>
+        <li>(2,2), (2,3), (3,2), (3,3): window all 1, so 1.</li>
+        <li>(2,4): its window has (1,5) = 0 and (3,5) = 0, so 0.</li>
+        <li>(1,1): the top row of its window is row 0, all 0, so 0. Every other edge pixel of the block fails the same way.</li>
+        <li>Protrusion (2,5), (2,6) and noise pixel (5,6): their windows contain 0s, so 0.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Erosion keeps only the origins where B fits inside A</h4></div>
+        <p class="fig-lede">The outline is B placed with its origin on the chosen pixel. Every 0 inside the outline is marked. One miss is enough to make the output 0.</p>
+        <div data-viz="ero-steps"></div>
+        <p class="step-note" data-role="ero-note" aria-live="polite"></p>
+        <div data-viz="ero"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1 (foreground)</span>
+          <span><i class="sw-seg"></i>0 (background)</span>
+          <span><i class="sw-sec"></i>B footprint</span>
+          <span><i class="sw-bad"></i>0 under B, B does not fit</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Step 2: dilation of A ⊖ B by B</h4>
+      <ul>
+        <li>A pixel becomes 1 if its 3x3 window hits at least one 1 of A ⊖ B.</li>
+        <li>So each of the 4 surviving pixels grows back into a 3x3 square. Their union is rows 1-4, cols 1-4.</li>
+        <li>Pixel count: 19 in A, 4 after erosion, 16 after opening. A ∘ B ⊆ A, as it must be.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Dilation stamps a copy of B on every surviving pixel</h4></div>
+        <p class="fig-lede">Each 1 of A ⊖ B puts a 3x3 copy of B into the output. The union of the four copies is the opening, the union of the translates of B that fit inside A.</p>
+        <div data-viz="dil-steps"></div>
+        <p class="step-note" data-role="dil-note" aria-live="polite"></p>
+        <div data-viz="dil"></div>
+      </figure>
+      <p>Result: <span class="result">A ∘ B is the 4x4 block at rows 1-4, cols 1-4, restored exactly. The protrusion (2,5), (2,6) and the isolated noise pixel (5,6) are removed.</span></p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>What opening removed from A</h4></div>
+        <p class="fig-lede">A drawn once more, split into the pixels that survive the opening and the pixels it removed. B is 3 pixels wide, so the 1-pixel-wide protrusion and the single noise pixel cannot hold it.</p>
+        <div data-viz="diff"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>kept in A ∘ B</span>
+          <span><i class="sw-bad"></i>removed by opening</span>
+          <span><i class="sw-seg"></i>0 in A</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="label">A</span><span class="v">19</span><span class="sub">pixels equal to 1</span></div>
+          <div class="stat"><span class="label">A ⊖ B</span><span class="v sec">4</span><span class="sub">origins where B fits</span></div>
+          <div class="stat"><span class="label">A ∘ B</span><span class="v ok">16</span><span class="sub">the 4x4 block, 3 pixels removed</span></div>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Opening = erosion followed by dilation, A ∘ B = (A ⊖ B) ⊕ B. It removes small bright spots, breaks narrow isthmuses and eliminates thin protrusions, and keeps the shape of everything B fits into.</p>
+    <p class="source">Source: L10 p.26 opening definition · L10 p.29 opening effects and formula · L10 p.23 erosion · L10 p.20 dilation · L10 p.35 3x3 SE as noise filter · Notes: Lecture 10 › Opening and closing · Lecture 10 › Erosion · Lecture 10 › Dilation</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w2" data-sample="3" data-part="w" data-num="2" data-topic="Order-statistic filters">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · 10 pts · Lecture 11, Spatial filtering</p>
+    <h3 class="q-title">Order-statistic filters: median, max, min</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Explain how the median, max and min filters work. Which one removes salt (white, 255) noise, which removes pepper (black, 0) noise, and which one handles both? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>The 5x5 image I below has salt and pepper noise. Apply a 3x3 median, max and min filter at pixel P1 = (1,1) and at pixel P2 = (2,3) (row, column; (0,0) is the top-left). For each pixel give the sorted window and the three outputs, and comment on the results. <span class="pts">(6 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>All three are nonlinear filters. Sort the pixels of the 3x3 window and replace the centre pixel by one of them.</li>
+        <li><b>Median</b> = the middle value, the 5th of 9. "An effective method for removing impulse noise" that preserves "sharp edges ... and detail". It removes <b>both salt and pepper</b>.</li>
+        <li><b>Min</b> = the smallest value. "Min filter: removes white spikes; overall intensity will be reduced." White spikes are <b>salt</b>.</li>
+        <li><b>Max</b> = the largest value. "Max: removes dark spikes; overall intensity is increased." Dark spikes are <b>pepper</b>.</li>
+        <li>"Both the min and max filters fail in removing mixed impulse noises." Only a cascade of max and min filters, or the median, removes salt and pepper together.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <p>P1 = (1,1) and P2 = (2,3) are interior pixels, so no border rule is needed.</p>
+      <pre class="calc">P1 (1,1): 50 52 55 / 51 255 57 / 53 56 58
+  sorted 50 51 52 53 [55] 56 57 58 255
+  median 55   max 255   min 50
+P2 (2,3): 57 60 62 / 58 0 64 / 61 63 255
+  sorted 0 57 58 60 [61] 62 63 64 255
+  median 61   max 255   min 0</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Sort the window, then pick a rank</h4></div>
+        <p class="fig-lede">Each window is unrolled and sorted. Min takes rank 1, the median rank 5 and max rank 9. Noise values sort to the ends, so the median never picks them while fewer than 5 of the 9 pixels are noise.</p>
+        <div data-viz="win-steps"></div>
+        <p class="step-note" data-role="win-note" aria-live="polite"></p>
+        <div data-viz="win"></div>
+        <div data-viz="win-table"></div>
+      </figure>
+      <ul>
+        <li>P1's window has only salt. Min removes it (50, slightly darker than its neighbours), max keeps the 255, and the median 55 is clean.</li>
+        <li>P2's window has pepper at the centre and salt at the corner (3,4). Max gives 255 and min gives 0, so <b>both fail on mixed noise</b>. The median 61 is clean.</li>
+        <li>A 3x3 mean would give 76.33 and 75.56, with the noise smeared into the output.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The three filters over the whole interior of I</h4></div>
+        <p class="fig-lede">The same 3x3 filters applied at all nine interior pixels, rows 1-3 and cols 1-3. Outputs that are still 0 or 255 are outlined. The median output is clean, max spreads the salt and min spreads the pepper.</p>
+        <div data-viz="all"></div>
+      </figure>
+      <p>Result: <span class="result">P1: median 55, max 255, min 50. P2: median 61, max 255, min 0. Only the median removes the mixed salt and pepper noise.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Median removes impulse (salt and pepper) noise and keeps edges. Min removes white spikes (salt), max removes dark spikes (pepper), and both fail on mixed impulse noise.</p>
+    <p class="source">Source: L11 p.53 median removes impulse noise · L11 p.55 median method · L11 p.60 min/max filtering · Notes: Lecture 11 › Median and color median filtering · Lecture 11 › Minimum and maximum filtering</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w3" data-sample="3" data-part="w" data-num="3" data-topic="Histogram specification">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · 10 pts · Lecture 9, Histogram processing</p>
+    <h3 class="q-title">Histogram specification</h3>
+  </div>
+  <div class="prompt">
+    <p>A 3-bit image A (L = 8, 4x4 pixels) and a desired histogram are given.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the histogram of A and the equalization mapping s = T(r) using the normalized sum. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute G(z) for the desired histogram. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Build the look-up table z = G⁻¹(T(r)). <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>Apply it to A and write the output image and its histogram. <span class="pts">(2 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>Method</h4>
+      <ul>
+        <li>Histogram specification "requires both a desired histogram and the image as input".</li>
+        <li>(1) Equalize the original image, s = T(r). (2) Equalize the desired histogram, v = G(z). (3) Apply the inverse transform, z = G⁻¹(s) = G⁻¹[T(r)].</li>
+        <li>Normalized sum = cumulative count × (L − 1)/N² = cumulative × 7/16. s is rounded to the nearest integer. G(z) is kept unrounded, and each s goes to the z whose G(z) is closest (equal G values: smallest z).</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(a) Histogram of A and T(r)</h4>
+      <div data-viz="t-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>T(r) is the running sum of the histogram, scaled by 7/16</h4></div>
+        <p class="fig-lede">Left: the histogram of A. Right: the cumulative count times 7/16 (open circles) and its rounded value s (filled). Step through r to watch the sum grow.</p>
+        <div data-viz="t-steps"></div>
+        <p class="step-note" data-role="t-note" aria-live="polite"></p>
+        <div data-viz="t-chart"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) G(z) of the desired histogram</h4>
+      <div data-viz="g-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>G(z) equalizes the desired histogram the same way</h4></div>
+        <p class="fig-lede">Same normalized sum, cumulative × 7/16, now over the desired counts. G(z) stays unrounded, and levels 0 to 2 share G = 0 because the target has no pixels there.</p>
+        <div data-viz="g-chart"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Inverse look-up table</h4>
+      <div data-viz="inv-table"></div>
+      <ul>
+        <li>s = 1: |1 − 0| = 1 and |1 − 1.3125| = 0.3125, so z = 3.</li>
+        <li>s = 4: |4 − 3.0625| = 0.9375 &lt; |4 − 5.25| = 1.25, so z = 4.</li>
+        <li>s = 2 and s = 4 never occur in A, so the rule "smallest z with G(z) ≥ s" gives the same output here.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>r goes up through T, across at height s, and down through G⁻¹</h4></div>
+        <p class="fig-lede">Both curves share the vertical axis. For each input level r, read s = T(r) on the left, move across to the G(z) value closest to s on the right, and read z below it.</p>
+        <div data-viz="map-steps"></div>
+        <p class="step-note" data-role="map-note" aria-live="polite"></p>
+        <div data-viz="map"></div>
+        <div data-viz="lut-table"></div>
+      </figure>
+      <p>Result: <span class="result">LUT r → z: 1→3, 2→4, 3→5, 4→6, 5→7</span> (unused: 0→0, 6→7, 7→7).</p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Output image and histogram</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>The output histogram has the target's shape, not its exact counts</h4></div>
+        <p class="fig-lede">Each pixel of A is replaced through the LUT. Pixels with the same r all land on the same z, so whole bars move. A bar can never be split, which is why the counts stay off by one.</p>
+        <div class="given" data-viz="out-imgs"></div>
+        <div data-viz="out-chart"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>output histogram</span>
+          <span><i class="sw-sec-soft"></i>desired count</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">output histogram n₃..n₇ = 2, 5, 4, 3, 2</span> against the desired 3, 4, 5, 2, 2. Close to the target shape but not exact, because the levels are discrete.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Histogram specification: equalize the image, s = T(r); equalize the desired histogram, v = G(z); then map z = G⁻¹(s) = G⁻¹[T(r)] with an inverse look-up table.</p>
+    <p class="source">Source: L9 p.40-41 purpose and steps · L9 p.42 z = G⁻¹[T(r)] · L9 p.43 block diagram · L9 p.44 desired histogram and inverse LUT · L9 p.28-31 equalization factor (L-1)/N² and rounding · Notes: Lecture 9 › Histogram specification · Lecture 9 › Histogram equalization, worked example</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w4" data-sample="3" data-part="w" data-num="4" data-topic="Pattern recognition">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · 10 pts · Lecture 12, Pattern recognition</p>
+    <h3 class="q-title">Pattern recognition: flow chart and nearest class mean</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the flow chart of a pattern recognition system from input to decision, including the side inputs, and state in one line what each stage does. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Fish on a conveyor are described by the feature vector x = [lightness, width]. Training samples are given below. Use the nearest class mean classifier with Euclidean distance. A fish is put in the reject class if its distance to the nearest mean is greater than 4. Compute the two class means and classify x1 = [6, 18] and x2 = [11, 15]. <span class="pts">(5 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Flow chart (slide 18, read bottom to top)</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Five stages from input to decision, with three side inputs</h4></div>
+        <p class="fig-lede">Solid arrows carry the data up. Dotted arrows go back down from each stage to the one below it. The side inputs enter at classification and post-processing. Pick a stage to read its slide line.</p>
+        <div data-viz="flow-steps"></div>
+        <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+        <div data-viz="flow"></div>
+      </figure>
+      <ul>
+        <li><b>Sensing</b>: "Use of a transducer (camera or microphone)".</li>
+        <li><b>Segmentation (and grouping)</b>: "Patterns should be well separated and should not overlap".</li>
+        <li><b>Feature extraction</b>: "Discriminative features"; "Invariant features with respect to translation, rotation and scale".</li>
+        <li><b>Classification</b>: "Use a feature vector provided by a feature extractor to assign the object to a category".</li>
+        <li><b>Post-processing</b>: "Exploit context input dependent information other than from the target pattern itself to improve performance".</li>
+        <li>Side inputs: costs → post-processing; adjustments for context → classification and post-processing; adjustments for missing features → classification.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Nearest class mean</h4>
+      <ul>
+        <li>Rule (slide 38): compute the Euclidean distance from x to each class mean. Choose the closest class if it is close enough, otherwise reject.</li>
+      </ul>
+      <pre class="calc">salmon mean   = [(3+4+5)/3, (15+17+16)/3] = [4, 16]
+sea bass mean = [(7+9+8)/3, (20+21+22)/3] = [8, 21]
+
+x1 = [6, 18]:  d(salmon)   = √((6−4)² + (18−16)²) = √8  = 2.83
+               d(sea bass) = √((6−8)² + (18−21)²) = √13 = 3.61
+               nearest salmon, 2.83 ≤ 4  → salmon
+x2 = [11, 15]: d(salmon)   = √(7² + 1²) = √50 = 7.07
+               d(sea bass) = √(3² + 6²) = √45 = 6.71
+               nearest sea bass, 6.71 &gt; 4 → reject class</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>x1 falls inside the salmon circle, x2 falls outside both</h4></div>
+        <p class="fig-lede">Feature space drawn to scale, one unit the same length on both axes. The dashed circles have radius 4, the reject threshold. A fish is classified only if it lands inside the circle of its nearest mean.</p>
+        <div data-viz="nn-steps"></div>
+        <p class="step-note" data-role="nn-note" aria-live="polite"></p>
+        <div data-viz="nn"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>salmon samples and mean</span>
+          <span><i class="sw-sec"></i>sea bass samples and mean</span>
+          <span><i class="sw-ter"></i>fish to classify</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">means [4, 16] and [8, 21]; x1 → salmon (2.83); x2 → reject class (nearest 6.71 &gt; 4).</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Input → sensing → segmentation → feature extraction → classification → post-processing → decision, with costs and context adjustments as side inputs. Nearest class mean: assign x to the closest mean if it is close enough, otherwise reject.</p>
+    <p class="source">Source: L12 p.17-19 PR system stages · L12 p.18 flow chart · L12 p.12 fish features lightness and width · L12 p.31, p.36 classifier and reject class · L12 p.38 nearest class mean · Notes: Lecture 12 › Pattern recognition system flowchart · Lecture 12 › Nearest class mean</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w5" data-sample="3" data-part="w" data-num="5" data-topic="Arithmetic coding">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · 10 pts · Lectures 4-5, Compression</p>
+    <h3 class="q-title">Compression: lossy vs lossless, arithmetic coding</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is the difference between lossless and lossy compression? Classify JPEG, PNG and MP3. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Encode the message BAB$ ($ is the terminator) with arithmetic coding using the table below. Show low, high and range after each symbol, give the final interval, and generate the shortest binary codeword inside it. <span class="pts">(7 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>"If the compression and decompression processes induce no information loss, then the compression scheme is <b>lossless</b>; otherwise, it is <b>lossy</b>."</li>
+        <li>Lossless: the decoded data equals the original exactly, at a lower compression ratio. Examples: PNG (images), FLAC and Apple Lossless (audio, "at the cost of larger files"), Huffman, LZW, RLE.</li>
+        <li>Lossy: "The compressed data is not the same as the original data but a close approximation of it", with "a much higher compression ratio". Quantization is the main source of the loss. Examples: JPEG (images), MP3 and AAC (audio, perceptual coding).</li>
+        <li><b>JPEG → lossy, PNG → lossless, MP3 → lossy.</b></li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Lossless returns every value, lossy returns an approximation</h4></div>
+        <p class="fig-lede">One row of 8 pixel values through each kind of codec. The lossy path quantizes first (here to the nearest multiple of 10), and that rounding cannot be undone by the decoder.</p>
+        <div data-viz="loss"></div>
+        <div class="chips"><span class="arrow">lossless</span><span>PNG</span><span>FLAC</span><span>Apple Lossless</span></div>
+        <div class="chips"><span class="arrow">lossy</span><span class="out">JPEG</span><span class="out">MP3</span><span class="out">AAC</span></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Encoding BAB$</h4>
+      <ul>
+        <li>Both bounds use the old low: low′ = low + range × R<sub>low</sub>(s), high′ = low + range × R<sub>high</sub>(s), range′ = high′ − low′.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>BAB$ shrinks [0, 1) to [0.4804, 0.484)</h4></div>
+        <p class="fig-lede">Each column is the current interval split by the probability table. The chosen symbol's slice becomes the next column at full height, so every step multiplies the range by that symbol's probability.</p>
+        <div data-viz="ladder-steps"></div>
+        <p class="step-note" data-role="ladder-note" aria-live="polite"></p>
+        <div data-viz="ladder"></div>
+        <div data-viz="ladder-table"></div>
+      </figure>
+      <p>Final interval <span class="result">[0.4804, 0.484)</span>. Check: range = 0.3 × 0.4 × 0.3 × 0.1 = 0.0036.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Codeword (Procedure 7.2)</h4>
+      <ul>
+        <li>For k = 1, 2, ... set bit k to 1. If the value exceeds high, set it back to 0. Stop as soon as value ≥ low.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Add binary fractions until the value lands in [0.4804, 0.484)</h4></div>
+        <p class="fig-lede">Each bit k tries adding 2<sup>−k</sup>. A try above high is undone (bit 0). The lower line zooms in on the final interval, where the last four tries happen.</p>
+        <div data-viz="code-steps"></div>
+        <p class="step-note" data-role="code-note" aria-live="polite"></p>
+        <div data-viz="code"></div>
+        <div data-viz="code-table"></div>
+      </figure>
+      <p>Result: <span class="result">codeword 0.01111011₂ = 0.48046875, 8 bits</span>, and 0.4804 ≤ 0.48046875 &lt; 0.484.</p>
+      <pre class="calc">decode 0.48046875 → B   (0.48046875 − 0.4)/0.3 = 0.2682
+       0.2682     → A   0.2682/0.4             = 0.6706
+       0.6706     → B   (0.6706 − 0.4)/0.3     = 0.9019
+       0.9019     → $   stop</pre>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Lossless: no information loss, the original comes back exactly (PNG, FLAC). Lossy: a close approximation with a much higher compression ratio (JPEG, MP3). Arithmetic coding narrows [low, high) by each symbol's range, both bounds from the old low.</p>
+    <p class="source">Source: L4 p.10 lossless vs lossy definition · L5 p.11 lossy compression · L5 p.13 quantization is the main loss · L5 p.19-20 FLAC vs MP3/AAC · L5 p.3-4 arithmetic encoder · L5 p.8 codeword procedure · JPG lossy / PNG lossless from the class board · Notes: Lecture 4 › Compression, lossless vs lossy · Lecture 5 › Arithmetic coding basics · Lecture 5 › Generating the codeword</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w6" data-sample="3" data-part="w" data-num="6" data-topic="MPEG audio">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · 10 pts · Lecture 5, Psychoacoustics and MPEG audio</p>
+    <h3 class="q-title">Psychoacoustics and MPEG audio</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Explain frequency masking and temporal masking. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Draw the block diagram of the MPEG audio (MP3) encoder and say what each block does. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Bit allocation. Three sub-bands have the following SNR and SMR (in dB). Compute MNR = SNR - SMR for each sub-band and say which sub-band gets the next bit. Then allocate 3 bits one at a time, assuming each bit raises that sub-band's SNR by 6 dB. Give the final MNR of each sub-band. <span class="pts">(4 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Auditory masking "occurs whenever the presence of a strong audio signal makes a temporal or spectral neighborhood of weaker audio signals imperceptible." MPEG audio removes "sounds which are masked anyway".</li>
+        <li><b>Frequency masking</b>: a loud tone hides weaker tones at nearby frequencies. (1) A lower tone can effectively mask a higher tone. (2) The reverse is not true: a higher tone does not mask a lower tone well. (3) The greater the power of the masking tone, the wider its influence. (4) So two tones widely separated in frequency show little masking.</li>
+        <li><b>Temporal masking</b>: a loud sound hides weaker sounds close to it in time. Pre-masking about 20 ms before the masker, simultaneous masking while it is on (about 200 ms in the figure), post-masking about 150 ms after it.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>A loud 1 kHz tone raises the hearing threshold around it</h4></div>
+        <p class="fig-lede">A tone is heard only if it rises above the threshold. Three test tones of 25 dB sit below, just above and far above the 1 kHz masker. Drag the masker level: the raised region reaches further up in frequency than down, and widens as the masker gets louder.</p>
+        <div data-viz="fm-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">700 Hz, below</span><span class="v" data-role="p0">heard</span><span class="sub" data-role="p0s"></span></div>
+          <div class="stat"><span class="label">1.4 kHz, just above</span><span class="v" data-role="p1">masked</span><span class="sub" data-role="p1s"></span></div>
+          <div class="stat"><span class="label">5 kHz, far above</span><span class="v" data-role="p2">heard</span><span class="sub" data-role="p2s"></span></div>
+        </div>
+        <div data-viz="fm"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>threshold in quiet (Eq. 14.1)</span>
+          <span><i class="sw-pri"></i>masker and raised threshold</span>
+          <span><i class="sw-sec"></i>25 dB test tones</span>
+        </div>
+        <p class="fig-lede">The quiet curve is the slide formula. The masking curve is a sketch with the slide's shape: steep below the masker, shallow above it, shallower at higher power.</p>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Temporal masking reaches before and after the masker</h4></div>
+        <p class="fig-lede">The masker plays from 0 to 200 ms. A weaker sound inside the shaded region is not heard, even 20 ms before the masker starts and up to about 150 ms after it stops.</p>
+        <div data-viz="tm"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) MPEG audio encoder (slide 29)</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The psychoacoustic model steers the quantizer of each sub-band</h4></div>
+        <p class="fig-lede">The audio goes to two blocks in parallel. The filter bank makes the 32 sub-bands that get coded. The psychoacoustic model only decides how coarsely each sub-band may be quantized.</p>
+        <div data-viz="enc"></div>
+      </figure>
+      <ul>
+        <li><b>Filter bank</b>: "divides input into multiple sub-bands (32 equal frequency sub-bands)", time to frequency domain.</li>
+        <li><b>Psychoacoustic model</b>: "removing acoustically irrelevant parts", using the ear's "inability to hear quantization noise under auditory masking". (Textbook) It gives the SMR of each sub-band.</li>
+        <li><b>Quantization, bit/noise allocation</b>: "If noise level is high =&gt; rough quantization; if noise level is low =&gt; finer quantization is applied."</li>
+        <li><b>Multiplexer / entropy coder</b>: Huffman coding of the quantized values into the bitstream.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Bit allocation</h4>
+      <ul>
+        <li>Slide 37: compute MNR = SNR − SMR, find the sub-band with the lowest MNR, give it bits, update its SNR, repeat. Each bit adds 6 dB (slide 41).</li>
+      </ul>
+      <pre class="calc">round        SNR (1, 2, 3)   MNR (1, 2, 3)   lowest MNR
+start        28, 22, 35      16,  4, 15      sub-band 2
+after bit 1  28, 28, 35      16, 10, 15      sub-band 2
+after bit 2  28, 34, 35      16, 16, 15      sub-band 3
+after bit 3  28, 34, 41      16, 16, 21      done</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Each bit goes to the sub-band whose noise is least masked</h4></div>
+        <p class="fig-lede">Each bar is a sub-band's SNR. The plum line is its SMR. The dark part above the line is the MNR. The bar with the smallest dark part gets the next 6 dB.</p>
+        <div data-viz="bits-steps"></div>
+        <p class="step-note" data-role="bits-note" aria-live="polite"></p>
+        <div data-viz="bits"></div>
+      </figure>
+      <p>Result: <span class="result">the next bit goes to sub-band 2 (MNR 4 dB). After 3 bits: sub-band 2 gets 2 bits, sub-band 3 gets 1, sub-band 1 gets 0; final MNR = 16, 16, 21 dB.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>A lower tone masks a higher tone, and a louder masker masks a wider range. Temporal masking: about 20 ms before and 150 ms after the masker. Bit allocation: MNR = SNR − SMR, give the next bit to the sub-band with the lowest MNR.</p>
+    <p class="source">Source: L5 p.14 frequency masking rules · L5 p.35 masking effects (temporal ~20, ~200, ~150 ms) · L5 p.32 auditory masking · L5 p.29 encoding steps · L5 p.31 filter bank, 32 sub-bands · L5 p.37 bit allocation · L5 p.41 6 dB per bit · Notes: Lecture 5 › Psychoacoustics: masking · Lecture 5 › MPEG audio encoder</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w7" data-sample="3" data-part="w" data-num="7" data-topic="Interpolation">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · 10 pts · Lecture 6, Image basics and resampling</p>
+    <h3 class="q-title">Image resampling and interpolation</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>When do we need to resample an image? Compare nearest neighbour, bilinear and bicubic interpolation. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Four neighbouring pixels of an image are given as f(row, col). Find the value at the point (row 2.7, col 4.25) using bilinear interpolation, and using nearest neighbour interpolation. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>A 640 x 480 RGB image (24 bits per pixel) is downscaled by 50% in each direction. Give the new size and the storage before and after, in bytes. <span class="pts">(2 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>We need to resample the image when: rescaling; applying a geometrical transformation; the output image coordinates are not discrete.</li>
+        <li><b>Nearest neighbour</b>: the 1 closest pixel. "Fast and simple"; "loss of sharpness"; "artifacts (checkerboard)".</li>
+        <li><b>Bilinear</b>: the 4 nearest pixels, weighted by distance. Smoother than nearest neighbour, medium speed (textbook).</li>
+        <li><b>Bicubic</b>: the 16 nearest pixels, 4x4 (textbook). "Images are sharpest"; "fine details are preserved"; "slow".</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>More neighbours give a smoother, sharper curve</h4></div>
+        <p class="fig-lede">One image row with 8 pixels, resampled at every position between them. Drag the position: nearest neighbour copies 1 pixel, linear blends 2 and cubic blends 4. In 2D that is 1, 4 and 16 pixels.</p>
+        <div data-viz="prof-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Nearest, 1 pixel</span><span class="v sec" data-role="v-nn"></span><span class="sub">2D: 1 pixel</span></div>
+          <div class="stat"><span class="label">Linear, 2 pixels</span><span class="v pri" data-role="v-li"></span><span class="sub">2D bilinear: 4 pixels</span></div>
+          <div class="stat"><span class="label">Cubic, 4 pixels</span><span class="v ter" data-role="v-cu"></span><span class="sub">2D bicubic: 16 pixels</span></div>
+        </div>
+        <div data-viz="prof"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>nearest neighbour</span>
+          <span><i class="sw-pri"></i>linear</span>
+          <span><i class="sw-ter"></i>cubic (Keys, a = −0.5)</span>
+        </div>
+        <p class="fig-lede">The same three methods enlarging a 4x4 image 8 times. Nearest neighbour shows the blocky checkerboard. Bilinear blurs the edges. Bicubic stays smooth and keeps them sharper.</p>
+        <div data-viz="up"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">offsets   a = 4.25 − 4 = 0.25 (column),  b = 2.7 − 2 = 0.7 (row)
+row 2     40 + 0.25 (80 − 40)  = 50
+row 3     60 + 0.25 (120 − 60) = 75
+between   50 + 0.7 (75 − 50)   = 67.5
+check     0.225·40 + 0.075·80 + 0.525·60 + 0.175·120
+          = 9 + 6 + 31.5 + 21  = 67.5</pre>
+      <p class="formula">f = (1−a)(1−b) f(2,4) + a(1−b) f(2,5) + (1−a)b f(3,4) + ab f(3,5)</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Two interpolations along the rows, then one between them</h4></div>
+        <p class="fig-lede">The square spans the four given pixels, shaded by the bilinear value at every point. Step through the three 1D interpolations, the area weights and the nearest-neighbour answer.</p>
+        <div data-viz="bl-steps"></div>
+        <p class="step-note" data-role="bl-note" aria-live="polite"></p>
+        <div data-viz="bl"></div>
+      </figure>
+      <p>Result: <span class="result">bilinear = 67.5 (68 as an integer pixel); nearest neighbour: row 2.7 → 3, col 4.25 → 4, so f(3,4) = 60.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Storage</h4>
+      <pre class="calc">new size  640/2 × 480/2 = 320 × 240
+b = M × N × k, k = 24 bits = 3 bytes
+before    640 × 480 × 3 = 921,600 bytes
+after     320 × 240 × 3 = 230,400 bytes  (1/4)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Halving both sides keeps one pixel in four</h4></div>
+        <p class="fig-lede">Both images drawn to the same scale. Each new pixel stands for a 2x2 block of old pixels, so the storage drops to a quarter.</p>
+        <div data-viz="size"></div>
+      </figure>
+      <p>Result: <span class="result">320 x 240; 921,600 bytes before, 230,400 bytes after.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Resample when rescaling, applying a geometrical transformation, or when output coordinates are not discrete. Nearest neighbour is fast and simple with checkerboard artifacts; bicubic gives the sharpest images but is slow. Storage b = M × N × k.</p>
+    <p class="source">Source: L6 p.36 resampling and interpolation methods · L6 p.27 b = M x N x k · the bilinear formula is textbook context (the slide gives none) · Notes: Lecture 6 › Image resampling and interpolation · Lecture 6 › Representing and storing a digital image</p>
+  </div>
+</article>
+
+<article class="q" id="s3-w8" data-sample="3" data-part="w" data-num="8" data-topic="Intensity transforms">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · 10 pts · Lectures 6 and 9, Intensity transformations</p>
+    <h3 class="q-title">Intensity transformations</h3>
+  </div>
+  <div class="prompt">
+    <p>An 8-bit image (L = 256) has the pixel values r = 31, 63, 127 and 200. For each value compute:</p>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>the image negative, and give one application of it. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>the log transformation s = c log(1 + r) with c = 255 / log(1 + 255). <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>gamma correction s = 255 (r/255)^γ with γ = 0.5; also compute r = 127 with γ = 2.0. Which values of γ brighten the image? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>contrast stretching with low = 50 and high = 150. <span class="pts">(2 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) and (b) Negative and log</h4>
+      <ul>
+        <li>"Intensity transformation is a point process that converts an old pixel into a new pixel based on some predefined function", implemented with a LUT.</li>
+        <li><b>Negative</b> s = 255 − r: 31 → 224, 63 → 192, 127 → 128, 200 → 55. Applications: display of medical images; producing negative prints.</li>
+        <li><b>Log</b>: c = 255 / log₁₀(256) = 105.89 (with ln, c = 45.99; s is the same in any base). 1 + r = 32, 64, 128 are powers of 2, so s = 255 × log₂(1 + r) / 8.</li>
+      </ul>
+      <pre class="calc">r = 31    1 + r = 32    255 × 5/8 = 159.375 → 159
+r = 63    1 + r = 64    255 × 6/8 = 191.25  → 191
+r = 127   1 + r = 128   255 × 7/8 = 223.125 → 223
+r = 200   1 + r = 201   105.89 × log₁₀(201) = 105.89 × 2.3032 = 243.88 → 244</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The negative flips the scale, the log lifts the dark end</h4></div>
+        <p class="fig-lede">Each curve is a look-up table from input r to output s. The dots are the four given pixels. The log curve is steep near 0, so dark values spread out (31 → 159), and flat near 255, so bright values crowd together (127 to 200 → 223 to 244).</p>
+        <div data-viz="neg-steps"></div>
+        <div data-viz="neg"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Gamma, s = 255 (r/255)^γ (slide 47 convention)</h4>
+      <pre class="calc">γ = 0.5   31 → 88.91 → 89     63 → 126.75 → 127
+          127 → 179.96 → 180  200 → 225.83 → 226
+          (slide code, uint8 truncates: 88, 126, 179, 225)
+γ = 2.0   127 → 255 (127/255)² = 63.25 → 63 (darker)</pre>
+      <ul>
+        <li><b>With this convention γ &lt; 1 brightens and γ &gt; 1 darkens.</b></li>
+        <li>Slide 49 writes output = input^(1/γ), which reverses this. Say which form you use.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>γ below 1 bends the curve up, γ above 1 bends it down</h4></div>
+        <p class="fig-lede">Drag γ. The dashed diagonal is γ = 1, no change. Every point above it got brighter.</p>
+        <div data-viz="gam-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">r = 31</span><span class="v pri" data-role="g0"></span><span class="sub">rounded output</span></div>
+          <div class="stat"><span class="label">r = 63</span><span class="v pri" data-role="g1"></span><span class="sub">rounded output</span></div>
+          <div class="stat"><span class="label">r = 127</span><span class="v pri" data-role="g2"></span><span class="sub">rounded output</span></div>
+          <div class="stat"><span class="label">r = 200</span><span class="v pri" data-role="g3"></span><span class="sub">rounded output</span></div>
+        </div>
+        <p class="verdict" data-role="gam-verdict"></p>
+        <div data-viz="gam"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Contrast stretching (slide 37)</h4>
+      <pre class="calc">output = 0                        for x ≤ low
+         255 (x − low)/(high − low) for low &lt; x ≤ high
+         255                      for x ≥ high
+31  ≤ 50                         → 0
+63   255 × 13/100 = 33.15        → 33
+127  255 × 77/100 = 196.35       → 196
+200 ≥ 150                        → 255</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Contrast stretching maps [50, 150] onto the full [0, 255]</h4></div>
+        <p class="fig-lede">Inputs below low clip to 0 and inputs above high clip to 255. The 100 levels in between spread over 256 output levels, a slope of 2.55.</p>
+        <div data-viz="cs"></div>
+      </figure>
+      <p>Result: <span class="result">negative 224, 192, 128, 55; log 159, 191, 223, 244; γ = 0.5: 89, 127, 180, 226 (r = 127, γ = 2: 63); stretch 0, 33, 196, 255.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Intensity transformation is a point process applied through a LUT. Negative y = −x + 255. Gamma s = 255 (r/255)^γ: γ &lt; 1 brightens, γ &gt; 1 darkens. Contrast stretching: 0 below low, 255 above high, linear in between.</p>
+    <p class="source">Source: L6 p.44-45 negative y = -x + 255 and its applications · L6 p.47 gamma code 255*(img/255)**gamma · L6 p.37 contrast stretching formula · the log transform is textbook context (Gonzalez 3.2), not on the slides · Notes: Lecture 6 › Intensity transformations and gamma · Lecture 6 › Contrast stretching and thresholding · Lecture 9 › Contrast stretching and intensity transformations</p>
+  </div>
+</article>

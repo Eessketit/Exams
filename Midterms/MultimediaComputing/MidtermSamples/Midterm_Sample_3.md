@@ -12,7 +12,8 @@ d) 25 levels, step 0.16 V
 
 > **Answer: c)** b bits give 2^b = 2^5 = 32 levels; step δ = R/2^b = 4/32 = 0.125 V. (a) uses b instead of 2^b.  
 > **Source:** L2 p.29 2^b levels, step δ = R/2^b · L2 p.30 one signal at 8, 4 and 3 bits  
-> **Notes:** [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33)
+> **Notes:** [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33)  
+> **Visual:** [Sample 3 › Part 1 Q1](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc1)
 
 **2.** Using SQNR = 6.02N dB, going from 8-bit to 12-bit audio samples raises the maximum SQNR by about:  
 a) 4 dB  
@@ -22,7 +23,8 @@ d) 24 dB
 
 > **Answer: d)** Each bit adds about 6 dB: 6.02 x 12 - 6.02 x 8 = 72.24 - 48.16 = 24.08 dB. (c) 48 dB is the 8-bit SQNR itself, not the gain.  
 > **Source:** L3 p.9 each bit adds about 6 dB  
-> **Notes:** [Lecture 3 › SQNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#3-signal-to-quantization-noise-ratio-sqnr-slides-7-9)
+> **Notes:** [Lecture 3 › SQNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#3-signal-to-quantization-noise-ratio-sqnr-slides-7-9)  
+> **Visual:** [Sample 3 › Part 1 Q2](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc2)
 
 **3.** LZW starts with the dictionary 1 = A, 2 = B. What is the output for the input string BABAA?  
 a) 2 1 3 1  
@@ -32,7 +34,8 @@ d) 2 1 4 1
 
 > **Answer: a)** (B,A) out 2, add 3 = BA; (A,B) out 1, add 4 = AB; (BA,A) out 3, add 5 = BAA; A at EOF, out 1. (c) wrongly emits the code that was only just added.  
 > **Source:** L4 p.39 Algorithm 7.2, LZW compression · L4 p.40-41 worked example ABABBABCABABBA  
-> **Notes:** [Lecture 4 › LZW dictionary coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#11-lzw-dictionary-coding-slides-37-45)
+> **Notes:** [Lecture 4 › LZW dictionary coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#11-lzw-dictionary-coding-slides-37-45)  
+> **Visual:** [Sample 3 › Part 1 Q3](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc3)
 
 **4.** In lossy compression, the main source of the loss is:  
 a) entropy coding (e.g. Huffman)  
@@ -42,7 +45,8 @@ d) run-length coding
 
 > **Answer: b)** "Quantization ... main source of the loss in lossy compression." Huffman and run-length coding are lossless; the transformation is reversible.  
 > **Source:** L5 p.13 quantization is the main source of the loss  
-> **Notes:** [Lecture 5 › Lossy compression and rate distortion](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#6-lossy-compression-rate-distortion-and-quantization-slides-11-13)
+> **Notes:** [Lecture 5 › Lossy compression and rate distortion](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#6-lossy-compression-rate-distortion-and-quantization-slides-11-13)  
+> **Visual:** [Sample 3 › Part 1 Q4](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc4)
 
 **5.** On a background of intensity I = 200, the just noticeable difference is ΔIc = 4. The Weber ratio and its meaning are:  
 a) 0.02, poor brightness discrimination  
@@ -52,7 +56,8 @@ d) 0.2, poor brightness discrimination
 
 > **Answer: c)** Weber ratio = ΔIc/I = 4/200 = 0.02; a small ratio means good brightness discrimination. (b) inverts the ratio.  
 > **Source:** L6 p.6 Weber ratio ΔIc/I · L6 p.7 discrimination at different intensity levels  
-> **Notes:** [Lecture 6 › Brightness adaptation and Weber ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)
+> **Notes:** [Lecture 6 › Brightness adaptation and Weber ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)  
+> **Visual:** [Sample 3 › Part 1 Q5](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc5)
 
 **6.** A color has tristimulus values X = 30, Y = 45, Z = 75. Its chromaticity coordinates are:  
 a) x = 0.40, y = 0.60 (z is not used)  
@@ -62,7 +67,8 @@ d) x = 0.30, y = 0.45, z = 0.75, so x + y + z = 1.5
 
 > **Answer: b)** x = X/(X+Y+Z) = 30/150 = 0.2, y = 45/150 = 0.3, z = 75/150 = 0.5; x + y + z = 1 always. (a) leaves Z out of the sum.  
 > **Source:** L7 p.54 chromaticity coordinates x, y, z  
-> **Notes:** [Lecture 7 › CIE chromaticity diagram](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60)
+> **Notes:** [Lecture 7 › CIE chromaticity diagram](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60)  
+> **Visual:** [Sample 3 › Part 1 Q6](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc6)
 
 **7.** In histogram specification, T is the equalization of the input image and G is the equalization of the desired histogram. The output level z for an input level r is:  
 a) z = G⁻¹[T(r)]  
@@ -72,7 +78,8 @@ d) z = T[G⁻¹(r)]
 
 > **Answer: a)** (1) s = T(r), (2) v = G(z), (3) z = G⁻¹(s) = G⁻¹[T(r)].  
 > **Source:** L9 p.42 the three steps, z = G⁻¹[T(r)]  
-> **Notes:** [Lecture 9 › Histogram specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)
+> **Notes:** [Lecture 9 › Histogram specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)  
+> **Visual:** [Sample 3 › Part 1 Q7](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc7)
 
 **8.** Which expression is the dilation of A by the structuring element B?  
 a) {z | (B)z ⊆ A}  
@@ -82,7 +89,8 @@ d) {z | (B̂)z ∩ A ≠ ∅}
 
 > **Answer: d)** Dilation = all z where the reflected, shifted B̂ and A overlap by at least one element. (a) is erosion, (b) is opening.  
 > **Source:** L10 p.20 set definition of dilation  
-> **Notes:** [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)
+> **Notes:** [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)  
+> **Visual:** [Sample 3 › Part 1 Q8](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc8)
 
 **9.** According to the lecture, the Sobel operator is:  
 a) more sensitive to vertical and horizontal edges than to diagonal edges  
@@ -92,7 +100,8 @@ d) the operator with the smallest effective area, most susceptible to noise
 
 > **Answer: b)** Slide: Sobel is "more sensitive to diagonal edges than vertical and horizontal edges". (a) is Prewitt, (c) the Laplacian, (d) Roberts.  
 > **Source:** L11 p.38 Roberts, Sobel and Prewitt properties  
-> **Notes:** [Lecture 11 › First order derivative operators](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44)
+> **Notes:** [Lecture 11 › First order derivative operators](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44)  
+> **Visual:** [Sample 3 › Part 1 Q9](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc9)
 
 **10.** In the pattern recognition system flow chart, which stage receives "costs" as an input and exploits context (input-dependent information other than from the target pattern itself) to improve performance?  
 a) Segmentation  
@@ -102,7 +111,8 @@ d) Post-processing
 
 > **Answer: d)** Post-processing: "exploit context input dependent information other than from the target pattern itself to improve performance"; the "costs" arrow enters it. Classification gets context and missing-feature adjustments, not costs.  
 > **Source:** L12 p.18 flow chart, "costs" enter post-processing · L12 p.19 feature extraction, classification, post-processing  
-> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)
+> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)  
+> **Visual:** [Sample 3 › Part 1 Q10](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-mc10)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -133,7 +143,8 @@ B =        (origin = centre, in brackets)
 **Answer**
 
 **Source:** L10 p.26 opening definition · L10 p.29 opening effects and formula · L10 p.23 erosion · L10 p.20 dilation · L10 p.35 3x3 SE as noise filter  
-**Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)
+**Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)  
+**Visual:** [Sample 3 › Part 2 Q1 Morphology: opening](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w1)
 
 **(a) Write:**
 - Opening "is obtained by the **erosion** of an image followed by a **dilation**" (same SE B):
@@ -193,7 +204,8 @@ I =
 **Answer**
 
 **Source:** L11 p.53 median removes impulse noise · L11 p.55 median method · L11 p.60 min/max filtering  
-**Notes:** [Lecture 11 › Median and color median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Minimum and maximum filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)
+**Notes:** [Lecture 11 › Median and color median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Minimum and maximum filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)  
+**Visual:** [Sample 3 › Part 2 Q2 Order-statistic filters: median, max, min](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w2)
 
 **(a) Write:**
 - All three are nonlinear filters: sort the pixels of the 3x3 window and replace the centre pixel by one of them.
@@ -242,7 +254,8 @@ A =
 **Answer**
 
 **Source:** L9 p.40-41 purpose and steps · L9 p.42 z = G⁻¹[T(r)] · L9 p.43 block diagram · L9 p.44 desired histogram and inverse LUT · L9 p.28-31 equalization factor (L-1)/N² and rounding  
-**Notes:** [Lecture 9 › Histogram specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)
+**Notes:** [Lecture 9 › Histogram specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)  
+**Visual:** [Sample 3 › Part 2 Q3 Histogram specification](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w3)
 
 **Write:** Histogram specification "requires both a desired histogram and the image as input". Steps: (1) equalize the original image, s = T(r); (2) equalize the desired histogram, v = G(z); (3) apply the inverse transform, z = G⁻¹(s) = G⁻¹[T(r)].
 Convention (slides 29-31 and 44): normalized sum = cumulative count x (L-1)/N² = x 7/16; s is rounded to the nearest integer; G(z) is kept unrounded and each s goes to the z whose G(z) is closest (equal G values: smallest z).
@@ -319,7 +332,8 @@ Use the nearest class mean classifier with Euclidean distance. A fish is put in 
 **Answer**
 
 **Source:** L12 p.17-19 PR system stages · L12 p.18 flow chart · L12 p.12 fish features lightness and width · L12 p.31, p.36 classifier and reject class · L12 p.38 nearest class mean  
-**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Nearest class mean](../notes/12_Week7_Pattern_Recognition.md#10-nearest-class-mean-and-scaling-by-std-dev-slides-38-40-43-47)
+**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Nearest class mean](../notes/12_Week7_Pattern_Recognition.md#10-nearest-class-mean-and-scaling-by-std-dev-slides-38-40-43-47)  
+**Visual:** [Sample 3 › Part 2 Q4 Pattern recognition: flow chart and nearest class mean](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w4)
 
 **(a) Flow chart (slide 18, read bottom to top):**
 
@@ -390,7 +404,8 @@ Use the nearest class mean classifier with Euclidean distance. A fish is put in 
 **Answer**
 
 **Source:** L4 p.10 lossless vs lossy definition · L5 p.11 lossy compression · L5 p.13 quantization is the main loss · L5 p.19-20 FLAC vs MP3/AAC · L5 p.3-4 arithmetic encoder · L5 p.8 codeword procedure · JPG lossy / PNG lossless from the class board  
-**Notes:** [Lecture 4 › Compression, lossless vs lossy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#4-compression-lossless-vs-lossy-compression-ratio-slides-10-11) · [Lecture 5 › Arithmetic coding basics](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#1-arithmetic-coding-basics-slides-3-4) · [Lecture 5 › Generating the codeword](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#3-generating-the-codeword-slide-8)
+**Notes:** [Lecture 4 › Compression, lossless vs lossy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#4-compression-lossless-vs-lossy-compression-ratio-slides-10-11) · [Lecture 5 › Arithmetic coding basics](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#1-arithmetic-coding-basics-slides-3-4) · [Lecture 5 › Generating the codeword](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#3-generating-the-codeword-slide-8)  
+**Visual:** [Sample 3 › Part 2 Q5 Compression: lossy vs lossless, arithmetic coding](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w5)
 
 **(a) Write:**
 - "If the compression and decompression processes induce no information loss, then the compression scheme is **lossless**; otherwise, it is **lossy**."
@@ -444,7 +459,8 @@ Decoding check: 0.48046875 → B, (0.48046875 - 0.4)/0.3 = 0.2682 → A, 0.2682/
 **Answer**
 
 **Source:** L5 p.14 frequency masking rules · L5 p.35 masking effects (temporal ~20, ~200, ~150 ms) · L5 p.32 auditory masking · L5 p.29 encoding steps · L5 p.31 filter bank, 32 sub-bands · L5 p.37 bit allocation · L5 p.41 6 dB per bit  
-**Notes:** [Lecture 5 › Psychoacoustics: masking](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#7-psychoacoustics-masking-and-threshold-of-hearing-slides-14-16-33-36) · [Lecture 5 › MPEG audio encoder](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#10-mpeg-audio-encoder-filter-bank-psychoacoustic-model-bit-allocation-slides-29-32-37)
+**Notes:** [Lecture 5 › Psychoacoustics: masking](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#7-psychoacoustics-masking-and-threshold-of-hearing-slides-14-16-33-36) · [Lecture 5 › MPEG audio encoder](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#10-mpeg-audio-encoder-filter-bank-psychoacoustic-model-bit-allocation-slides-29-32-37)  
+**Visual:** [Sample 3 › Part 2 Q6 Psychoacoustics and MPEG audio](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w6)
 
 **(a) Write:** Auditory masking "occurs whenever the presence of a strong audio signal makes a temporal or spectral neighborhood of weaker audio signals imperceptible." MPEG audio removes "sounds which are masked anyway".
 - **Frequency masking** (a loud tone hides weaker tones at nearby frequencies):
@@ -514,7 +530,8 @@ Decoding check: 0.48046875 → B, (0.48046875 - 0.4)/0.3 = 0.2682 → A, 0.2682/
 **Answer**
 
 **Source:** L6 p.36 resampling and interpolation methods · L6 p.27 b = M x N x k · the bilinear formula is textbook context (the slide gives none)  
-**Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36) · [Lecture 6 › Representing and storing a digital image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28)
+**Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36) · [Lecture 6 › Representing and storing a digital image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28)  
+**Visual:** [Sample 3 › Part 2 Q7 Image resampling and interpolation](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w7)
 
 **(a) Write:** We need to resample the image when: rescaling; applying a geometrical transformation; the output image coordinates are not discrete.
 
@@ -555,7 +572,8 @@ An 8-bit image (L = 256) has the pixel values r = 31, 63, 127 and 200. For each 
 **Answer**
 
 **Source:** L6 p.44-45 negative y = -x + 255 and its applications · L6 p.47 gamma code 255*(img/255)**gamma · L6 p.37 contrast stretching formula · the log transform is textbook context (Gonzalez 3.2), not on the slides  
-**Notes:** [Lecture 6 › Intensity transformations and gamma](../notes/06_Week3_Image_Basics_Perception_Resampling.md#14-intensity-transformations-and-gamma-slides-44-57) · [Lecture 6 › Contrast stretching and thresholding](../notes/06_Week3_Image_Basics_Perception_Resampling.md#13-contrast-stretching-and-thresholding-slides-37-43) · [Lecture 9 › Contrast stretching and intensity transformations](../notes/09_Week5_Intensity_Transforms_Histogram.md#4-contrast-stretching-and-intensity-transformations-slides-2-13-26-55)
+**Notes:** [Lecture 6 › Intensity transformations and gamma](../notes/06_Week3_Image_Basics_Perception_Resampling.md#14-intensity-transformations-and-gamma-slides-44-57) · [Lecture 6 › Contrast stretching and thresholding](../notes/06_Week3_Image_Basics_Perception_Resampling.md#13-contrast-stretching-and-thresholding-slides-37-43) · [Lecture 9 › Contrast stretching and intensity transformations](../notes/09_Week5_Intensity_Transforms_Histogram.md#4-contrast-stretching-and-intensity-transformations-slides-2-13-26-55)  
+**Visual:** [Sample 3 › Part 2 Q8 Intensity transformations](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s3-w8)
 
 **Write:** "Intensity transformation is a point process that converts an old pixel into a new pixel based on some predefined function", implemented with a LUT.
 

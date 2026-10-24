@@ -1,0 +1,668 @@
+<article class="q" id="s4-w1" data-sample="4" data-part="w" data-num="1" data-topic="Morphology">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · 10 pts · Lecture 10, Opening and closing</p>
+    <h3 class="q-title">Morphology: closing</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is morphological closing? How does it differ from opening (order of the operations and effect on the image)? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Apply closing to the binary image A with the 3x3 structuring element B (all 1s, origin at the centre, marked in brackets). Show A ⊕ B first, then (A ⊕ B) ⊖ B. Pixels outside the image count as 0. Which pixels of A changed, and why? <span class="pts">(6 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Closing against opening</h4>
+      <ul>
+        <li><strong>Closing</strong> is a dilation followed by an erosion: A • B = (A ⊕ B) ⊖ B. "Closing can remove small dark spots and connect small bright cracks." It smooths contours, "fuses narrow breaks and long thin gulfs, eliminates small holes, and fills gaps in the contour". The result contains A: A ⊆ A • B.</li>
+        <li><strong>Opening</strong> is an erosion followed by a dilation: A ∘ B = (A ⊖ B) ⊕ B. "Opening can remove small bright spots and connect small dark cracks." It breaks narrow isthmuses and eliminates thin protrusions. The result lies inside A: A ∘ B ⊆ A.</li>
+        <li>Rolling ball picture: opening rolls B along the inside of the boundary of A, closing rolls B along the outside. Both are idempotent, so closing twice gives the same result as closing once.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Same two operations, opposite order</h4></div>
+        <p class="fig-lede">Both rows start from the image A of part (b). Closing grows A first, then shrinks it back, so small gaps stay filled. Opening shrinks first. No 3x3 block of 1s fits inside A, so erosion wipes it out and dilation has nothing to restore.</p>
+        <div data-viz="order"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1 (object)</span>
+          <span><i class="sw-seg"></i>0 (background)</span>
+          <span><i class="sw-ok"></i>0 of A that closing turned into 1</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Step 1: dilation A ⊕ B</h4>
+      <ul>
+        <li>Dilation with a 3x3 block of 1s is a 3x3 local maximum. A pixel becomes 1 if its window holds at least one 1 of A. Outside the image counts as 0.</li>
+        <li>Only (0,3) and (1,3) stay 0. The window of (1,3) covers rows 0-2, columns 2-4, and all of it is 0. The in-image part of the window of (0,3) is also all 0.</li>
+        <li>Every other pixel becomes 1, including the frame of the image: 47 ones.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Dilation is a 3x3 local maximum</h4></div>
+        <p class="fig-lede">Pick a pixel. The outlined 3x3 window on A decides the output pixel on the right: if any pixel in the window is 1, the output is 1.</p>
+        <div data-viz="dil-steps"></div>
+        <p class="step-note" data-role="dil-note" aria-live="polite"></p>
+        <div data-viz="dil"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Step 2: erosion (A ⊕ B) ⊖ B</h4>
+      <ul>
+        <li>Erosion is a 3x3 local minimum. A pixel stays 1 only if all 9 pixels of its window are 1.</li>
+        <li>Rows 0 and 6 and columns 0 and 6 become 0, because their windows reach outside the image.</li>
+        <li>(1,2), (1,3), (1,4), (2,2), (2,3), (2,4) become 0, because their windows contain (0,3) or (1,3).</li>
+        <li>Every other interior pixel stays 1.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Erosion is a 3x3 local minimum, and three gaps stay filled</h4></div>
+        <p class="fig-lede">Now the input is A ⊕ B. One 0 in the window is enough to make the output 0. Green pixels in the result were 0 in A.</p>
+        <div data-viz="ero-steps"></div>
+        <p class="step-note" data-role="ero-note" aria-live="polite"></p>
+        <div data-viz="ero"></div>
+      </figure>
+      <ul>
+        <li><strong>(4,2): the one-pixel hole is filled</strong> ("eliminates small holes").</li>
+        <li><strong>(2,5): the break in the right arm is fused</strong> ("fuses narrow breaks").</li>
+        <li><strong>(3,4): the one-pixel crack is filled</strong> ("fills gaps in the contour").</li>
+        <li>No 1 became 0, so A ⊆ A • B holds. The notch at rows 1-2, columns 2-4 is 3 pixels wide. B fits inside it, so it stays open. Closing only fills gaps smaller than the structuring element.</li>
+        <li>For contrast, opening A with the same B gives an empty image, because no 3x3 block of 1s fits inside A.</li>
+      </ul>
+      <p>Result: <span class="result">16 ones become 19. Changed pixels: (4,2), (2,5), (3,4), all 0 → 1.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Closing = dilation followed by erosion, A • B = (A ⊕ B) ⊖ B. It removes small dark spots, eliminates small holes and fills gaps in the contour, and A ⊆ A • B. Opening = erosion followed by dilation; it removes small bright spots, and A ∘ B ⊆ A.</p>
+    <p class="source">Source: L10 p.28-29 closing definition and effects · L10 p.26 opening · L10 p.12-13, 18 dilation = local max, erosion = local min · L10 p.34 properties · Notes: Lecture 10 › 5. Opening and closing · Lecture 10 › 3. Dilation · Lecture 10 › 4. Erosion</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w2" data-sample="4" data-part="w" data-num="2" data-topic="Filtering">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · 10 pts · Lecture 11, Spatial filtering</p>
+    <h3 class="q-title">Filtering: blurring</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Name and briefly explain the four ways to treat the image borders when convolving with a 3x3 mask. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>8-bit image I (rows and columns numbered from 0, pixel (row, col)). Average mask = (1/9) x [1 1 1; 1 1 1; 1 1 1]. Gaussian mask = (1/16) x [1 2 1; 2 4 2; 1 2 1].</span></li>
+      <li><span class="tag">(i)</span><span>Apply both masks at the interior pixel (2,2). Which result stays closer to the original value, and why? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(ii)</span><span>Apply both masks at the corner pixel (0,0), once with zero padding and once with duplication of the edges. Which border method gives the more realistic result? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Four border methods (slide 15)</h4>
+      <ul>
+        <li><strong>Zero padding:</strong> treat the empty cells of the window as zeros. Simple, but it darkens the border.</li>
+        <li><strong>Start convolving at the first position where the window does not overlap the image:</strong> start at (1,1) instead of (0,0) with a 3x3 mask. The output loses a 1-pixel frame (here 5x5 → 3x3).</li>
+        <li><strong>Duplication of the edges:</strong> copy the top row, the left side, the right side and the bottom of the image outward.</li>
+        <li><strong>Wrap-around:</strong> the opposite edge supplies the missing neighbours, as if the image were periodic.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>What fills the missing ring around the image</h4></div>
+        <p class="fig-lede">The ochre frame is the real 5x5 image. The ring outside it is what each method puts there. Gray shades are stretched so that 100 shows as white. The outlined 3x3 window is the one the mask sees at the corner (0,0); method 2 starts at (1,1) instead, and only the dashed 3x3 block gets an output.</p>
+        <div data-viz="borders"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(i) Interior pixel (2,2) = 100</h4>
+      <pre class="calc">Window        60  60  40
+              60 100  50
+              40  50  40
+Average   (60+60+40+60+100+50+40+50+40) / 9 = 500 / 9 = 55.56 → 56
+Gaussian  [1(60+40+40+40) + 2(60+60+50+50) + 4(100)] / 16
+          = (180 + 440 + 400) / 16 = 1020 / 16 = 63.75 → 64</pre>
+      <ul>
+        <li><strong>The Gaussian result stays closer to 100.</strong> It gives the centre the weight 4/16 = 0.25, against 1/9 = 0.11 for the average, and the corners only 1/16. So it blurs less.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The centre weight decides how much of 100 survives</h4></div>
+        <p class="fig-lede">Each row multiplies the window by the mask, cell by cell, and adds the products. The centre product is 100 of 500 for the average and 400 of 1020 for the Gaussian.</p>
+        <div data-viz="interior"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>Average, 1/9 each</span>
+          <span><i class="sw-pri"></i>Gaussian, 1/16 · 2/16 · 4/16</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(ii) Corner pixel (0,0) = 80</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Border rule</th><th class="l">Window</th><th>Average</th><th>Gaussian</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Zero padding</td><td class="l">[0 0 0; 0 80 80; 0 80 60]</td><td>300 / 9 = 33.33 (33)</td><td>700 / 16 = 43.75 (44)</td></tr>
+            <tr><td class="l">Duplication of edges</td><td class="l">[80 80 80; 80 80 80; 80 80 60]</td><td class="hl">700 / 9 = 77.78 (78)</td><td class="hl">1260 / 16 = 78.75 (79)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre class="calc">Gaussian, zero padding  [4(80) + 2(80+80) + 1(60)] / 16 = 700 / 16 = 43.75
+Gaussian, duplication   [1(80+80+80+60) + 2(4 x 80) + 4(80)] / 16 = 1260 / 16 = 78.75</pre>
+      <ul>
+        <li><strong>Duplication of the edges is more realistic.</strong> The corner area is bright (80), and the result stays near 80.</li>
+        <li>Zero padding mixes in five fake black pixels and darkens the corner, a dark frame artefact.</li>
+        <li>Wrap-around for comparison: average 51.11, Gaussian 58.75, because the far corner pixel 20 is pulled in.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Zero padding paints a dark frame on the output</h4></div>
+        <p class="fig-lede">Pick a border rule. Left: the image with its ring and the window at (0,0). Right: the whole filtered image for both masks, rounded. The corner is outlined. Gray shades are stretched so that 100 shows as white.</p>
+        <div data-viz="corner-steps"></div>
+        <p class="step-note" data-role="corner-note" aria-live="polite"></p>
+        <div data-viz="corner"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Border rules: zero padding, start at (1,1), duplication of the edges, wrap-around. The Gaussian mask weights the centre 4/16, so it blurs less than the 1/9 average. Duplication keeps a bright corner bright; zero padding darkens it.</p>
+    <p class="source">Source: L11 p.15 image borders · L11 p.14 applying a mask · L11 p.16-18 average mask · L11 p.19 Gaussian mask · Notes: Lecture 11 › 3. Convolution and image borders · Lecture 11 › 4. Blurring</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w3" data-sample="4" data-part="w" data-num="3" data-topic="Histogram equalization">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · 10 pts · Lecture 9, Histogram equalization</p>
+    <h3 class="q-title">Histogram equalization</h3>
+  </div>
+  <div class="prompt">
+    <p>3-bit image (L = 8 gray levels, 0-7), 5 x 5 = 25 pixels.</p>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the histogram n_k and the normalized histogram p(r_k) = n_k / 25 for k = 0..7. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute the normalized cumulative sum and the equalization mapping s_k (the look-up table). <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Give the histogram of the equalized image. Why is it not perfectly flat? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>Method</h4>
+      <ul>
+        <li>Steps: 1. compute the histogram; 2. calculate the normalized sum of the histogram; 3. transform the input image to the output image with a LUT.</li>
+        <li>Slide convention: factor (L − 1)/(M × N) = 7/25, round to the nearest integer.</li>
+      </ul>
+      <p class="formula">s<sub>k</sub> = round( (L−1)/(M×N) × Σ<sub>j≤k</sub> n<sub>j</sub> ) = round( 7 × cdf(r<sub>k</sub>) )</p>
+    </div>
+    <div class="sol-part">
+      <h4>(a) Histogram</h4>
+      <ul>
+        <li>n<sub>k</sub> = 0, 2, 5, 8, 6, 3, 1, 0 for k = 0..7 (sum 25).</li>
+        <li>p(r<sub>k</sub>) = 0.00, 0.08, 0.20, 0.32, 0.24, 0.12, 0.04, 0.00 (sum 1.00).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Counting the pixels of each gray level</h4></div>
+        <p class="fig-lede">Pick a level to outline its pixels in the image and its bar in the histogram. The image uses only levels 1 to 6, and level 3 alone holds 8 of the 25 pixels.</p>
+        <div data-viz="hist-steps"></div>
+        <p class="step-note" data-role="hist-note" aria-live="polite"></p>
+        <div data-viz="hist"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Cumulative sum and LUT</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Accumulating the CDF, then rounding to a level</h4></div>
+        <p class="fig-lede">Each bar is 7 × cdf(r<sub>k</sub>), the running pixel count scaled to the 0-7 range. The green dot is the rounded output level s<sub>k</sub>. Step through k to follow one row of the table.</p>
+        <div data-viz="cdf-steps"></div>
+        <p class="step-note" data-role="cdf-note" aria-live="polite"></p>
+        <div data-viz="cdf"></div>
+        <div data-viz="cdf-table"></div>
+      </figure>
+      <p>Result: <span class="result">LUT r → s: 0→0, 1→1, 2→2, 3→4, 4→6, 5→7, 6→7, 7→7.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Equalized histogram</h4>
+      <ul>
+        <li>New histogram for s = 0..7: <strong>0, 2, 5, 0, 8, 0, 6, 4</strong>.</li>
+        <li>The theory (p<sub>s</sub>(s) = 1) holds only for continuous levels. With discrete levels, all pixels of one level go to the same new level: the 8 pixels at r = 3 cannot be split.</li>
+        <li>Levels 5 and 6 merge into 7, and levels 3 and 5 stay empty.</li>
+        <li>HE cannot create new levels; it only moves them apart. Slide 26: "The resulting histogram is not flat".</li>
+        <li>It still stretches the contrast near the histogram maxima (3 → 4, 4 → 6) and spreads the range from 1-6 to 1-7.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The LUT moves whole bars; it cannot split them</h4></div>
+        <p class="fig-lede">Left: input histogram. Right: output histogram. Each arrow carries all pixels of one input level, and its width grows with the count. Levels 5 and 6 land on the same output level 7.</p>
+        <div data-viz="lut"></div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Before and after: the same picture with more contrast</h4></div>
+        <p class="fig-lede">The common levels 3 and 4 move apart to 4 and 6, so the middle of the image gets more contrast. Both images are drawn on the 0-7 gray scale.</p>
+        <div data-viz="images"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Histogram, normalized sum, LUT: s<sub>k</sub> = round(7 × cdf(r<sub>k</sub>)). The result is not flat because discrete levels can only be moved and merged, never split or created.</p>
+    <p class="source">Source: L9 p.14 histogram · L9 p.20 steps (histogram, normalized sum, transform) · L9 p.28 T(r) = (M/N²) ∫ h(w) dw · L9 p.29-31 worked example (factor 7/16, round to nearest) · L9 p.26 result not flat · Notes: Lecture 9 › 7. Histogram equalization, worked example · Lecture 9 › 6. Histogram equalization, theory</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w4" data-sample="4" data-part="w" data-num="4" data-topic="Pattern recognition">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · 10 pts · Lecture 12, Pattern recognition</p>
+    <h3 class="q-title">Pattern recognition</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the flow chart of a pattern recognition system from the input to the decision. Name the three side inputs and the stage(s) each one enters. Write one line on what each stage does. <span class="pts">(6 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>A fish sorter uses the feature vector x = [lightness, width]. Training samples:</span></li>
+    </ol>
+    <div class="scroll">
+      <table class="tbl">
+        <thead><tr><th class="l">Sample</th><th>Lightness</th><th>Width</th><th class="l">Class</th></tr></thead>
+        <tbody>
+          <tr><td class="l">S1</td><td>2</td><td>3</td><td class="l">salmon</td></tr>
+          <tr><td class="l">S2</td><td>3</td><td>5</td><td class="l">salmon</td></tr>
+          <tr><td class="l">S3</td><td>4</td><td>2</td><td class="l">salmon</td></tr>
+          <tr><td class="l">B1</td><td>6</td><td>5</td><td class="l">sea bass</td></tr>
+          <tr><td class="l">B2</td><td>8</td><td>8</td><td class="l">sea bass</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Classify the new fish x = [5, 5] with the nearest neighbour (1-NN) rule and Euclidean distance. Would 3-NN give the same class? <span class="pts">(4 pts)</span></p>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Flow chart, bottom to top as on slide 18</h4>
+      <ul>
+        <li>Order: input → sensing → segmentation → feature extraction → classification → post-processing → decision. Solid arrows carry data up; dotted arrows go down to the stage below.</li>
+        <li><strong>Side inputs:</strong> costs → post-processing; adjustments for context → post-processing and classification; adjustments for missing features → classification.</li>
+        <li><strong>Sensing:</strong> use of a transducer (camera or microphone).</li>
+        <li><strong>Segmentation and grouping:</strong> patterns should be well separated and should not overlap.</li>
+        <li><strong>Feature extraction:</strong> discriminative features, invariant with respect to translation, rotation and scale.</li>
+        <li><strong>Classification:</strong> use the feature vector provided by the feature extractor to assign the object to a category.</li>
+        <li><strong>Post-processing:</strong> exploit context (input-dependent information other than from the target pattern itself) to improve performance.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The pattern recognition system, input at the bottom</h4></div>
+        <p class="fig-lede">Pick a stage to read its slide line and see which side inputs enter it. The side inputs only enter the top two stages.</p>
+        <div data-viz="flow-steps"></div>
+        <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+        <div data-viz="flow"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Nearest neighbour</h4>
+      <ul>
+        <li>Nearest neighbour rule: keep all training samples, find the sample nearest to x and assign its class.</li>
+        <li>Euclidean distance d = √(Δ1² + Δ2²) from x = [5, 5].</li>
+      </ul>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Sample</th><th class="l">Class</th><th>Δ = sample − x</th><th>d²</th><th>d</th></tr></thead>
+          <tbody>
+            <tr><td class="l">S1 (2,3)</td><td class="l">salmon</td><td>(−3, −2)</td><td>9 + 4 = 13</td><td>3.61</td></tr>
+            <tr><td class="l">S2 (3,5)</td><td class="l">salmon</td><td>(−2, 0)</td><td>4 + 0 = 4</td><td>2.00</td></tr>
+            <tr><td class="l">S3 (4,2)</td><td class="l">salmon</td><td>(−1, −3)</td><td>1 + 9 = 10</td><td>3.16</td></tr>
+            <tr class="on"><td class="l">B1 (6,5)</td><td class="l">sea bass</td><td>(1, 0)</td><td>1 + 0 = 1</td><td class="hl">1.00</td></tr>
+            <tr><td class="l">B2 (8,8)</td><td class="l">sea bass</td><td>(3, 3)</td><td>9 + 9 = 18</td><td>4.24</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Order: B1 (1.00) &lt; S2 (2.00) &lt; S3 (3.16) &lt; S1 (3.61) &lt; B2 (4.24).</li>
+        <li><strong>1-NN: the nearest sample is B1 (d = 1), so x = sea bass.</strong></li>
+        <li><strong>3-NN: B1 (sea bass), S2 (salmon) and S3 (salmon) vote 2 to 1 for salmon.</strong> So no, 3-NN changes the class to salmon. 1-NN follows one single, possibly noisy, sample; k-NN takes a majority vote.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>One neighbour says sea bass, three say salmon</h4></div>
+        <p class="fig-lede">The circle around x grows until it holds k samples. With k = 1 it reaches only B1. With k = 3 it also takes in S2 and S3, and the salmon win the vote.</p>
+        <div data-viz="nn-steps"></div>
+        <p class="step-note" data-role="nn-note" aria-live="polite"></p>
+        <div data-viz="nn"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>salmon</span>
+          <span><i class="sw-sec"></i>sea bass</span>
+          <span><i class="sw-ter"></i>new fish x = [5, 5]</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Input → sensing → segmentation → feature extraction → classification → post-processing → decision; costs and context enter post-processing, missing features and context enter classification. 1-NN gives sea bass, 3-NN gives salmon.</p>
+    <p class="source">Source: L12 p.17-19 PR system stages · L12 p.18 flow chart · L12 p.41 nearest neighbour, extendable to k-NN · L12 p.4-13 fish example (lightness, width) · Notes: Lecture 12 › 4. Pattern recognition system flowchart · Lecture 12 › 11. Nearest neighbor and k nearest neighbors</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w5" data-sample="4" data-part="w" data-num="5" data-topic="Shannon-Fano, RLE">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · 10 pts · Lecture 4, Shannon-Fano and run-length coding</p>
+    <h3 class="q-title">Compression: Shannon-Fano and run-length coding</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>A source emitted 32 symbols with these counts:</span></li>
+    </ol>
+    <div class="scroll">
+      <table class="tbl">
+        <thead><tr><th class="l">Symbol</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+        <tbody><tr><td class="l">Count</td><td>10</td><td>9</td><td>6</td><td>4</td><td>3</td></tr></tbody>
+      </table>
+    </div>
+    <p>Build the Shannon-Fano code (top-down splits, left branch = 0, right branch = 1). Give each codeword and the total number of bits, and compare with a fixed-length code. <span class="pts">(6 pts)</span></p>
+    <ol class="subq">
+      <li><span class="tag">(b)</span><span>Run-length encode string X = <code>KKKKKKKMMMNNNNNNNNNPKKKKSSSSSS</code> (count, then symbol) and give the compression ratio in symbols. Then encode string Y = <code>PQRST</code> and comment on the result. <span class="pts">(4 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Shannon-Fano</h4>
+      <ul>
+        <li>Shannon-Fano is a top-down approach: 1. sort the symbols by count; 2. recursively divide them into two parts with approximately the same counts until each part has one symbol. Left = 0, right = 1.</li>
+        <li>Sorted: A 10, B 9, C 6, D 4, E 3 (total 32).</li>
+      </ul>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Split</th><th class="l">Options (left / right: counts)</th><th class="l">Chosen</th></tr></thead>
+          <tbody>
+            <tr><td class="l">1: {A,B,C,D,E}</td><td class="l">{A} / {B,C,D,E}: 10 vs 22 (diff 12); <strong>{A,B} / {C,D,E}: 19 vs 13 (diff 6)</strong>; {A,B,C} / {D,E}: 25 vs 7 (diff 18)</td><td class="l">{A,B} = 0, {C,D,E} = 1</td></tr>
+            <tr><td class="l">2: {A,B}</td><td class="l">{A} / {B}: 10 vs 9</td><td class="l">A = 00, B = 01</td></tr>
+            <tr><td class="l">3: {C,D,E}</td><td class="l"><strong>{C} / {D,E}: 6 vs 7 (diff 1)</strong>; {C,D} / {E}: 10 vs 3 (diff 7)</td><td class="l">C = 10, {D,E} = 11</td></tr>
+            <tr><td class="l">4: {D,E}</td><td class="l">{D} / {E}: 4 vs 3</td><td class="l">D = 110, E = 111</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Cut the sorted counts where the two halves are closest</h4></div>
+        <p class="fig-lede">The bar holds all 32 symbols, sorted. At each split the candidate cuts are marked with the difference between the two sides. The smallest difference wins, the left part gets 0 and the right part gets 1.</p>
+        <div data-viz="sf-steps"></div>
+        <p class="step-note" data-role="sf-note" aria-live="polite"></p>
+        <div data-viz="sf"></div>
+      </figure>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Symbol</th><th>Count</th><th class="l">Code</th><th>Length</th><th>Bits used</th></tr></thead>
+          <tbody>
+            <tr><td class="l">A</td><td>10</td><td class="l">00</td><td>2</td><td>20</td></tr>
+            <tr><td class="l">B</td><td>9</td><td class="l">01</td><td>2</td><td>18</td></tr>
+            <tr><td class="l">C</td><td>6</td><td class="l">10</td><td>2</td><td>12</td></tr>
+            <tr><td class="l">D</td><td>4</td><td class="l">110</td><td>3</td><td>12</td></tr>
+            <tr><td class="l">E</td><td>3</td><td class="l">111</td><td>3</td><td>9</td></tr>
+            <tr class="on"><td class="l"></td><td>32</td><td class="l"></td><td>TOTAL</td><td class="hl">71</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Total = 71 bits, average 71/32 = 2.22 bits/symbol.</strong></li>
+        <li><strong>Fixed-length:</strong> 5 symbols need ⌈log₂ 5⌉ = 3 bits, so 32 × 3 = <strong>96 bits</strong>. Shannon-Fano saves 25 bits; <strong>compression ratio B0/B1 = 96/71 = 1.35</strong>.</li>
+        <li>Entropy η = Σ p<sub>i</sub> log₂(1/p<sub>i</sub>) = 0.5244 + 0.5147 + 0.4528 + 0.3750 + 0.3202 = <strong>2.187 bits/symbol</strong> (lower bound 32 × 2.187 = 69.99 bits). Efficiency = 2.187 / 2.219 = <strong>98.6%</strong>. Huffman gives the same code lengths here, also 71 bits.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Where the 25 saved bits come from</h4></div>
+        <p class="fig-lede">Each block is one symbol's bits, count × code length. The fixed-length code pays 3 bits for every symbol. Shannon-Fano gives A, B and C 2 bits, which saves 10 + 9 + 6 = 25 bits, and lands 1 bit above the entropy bound.</p>
+        <div data-viz="bits"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Run-length coding</h4>
+      <ul>
+        <li>RLE codes each run as count, then symbol.</li>
+        <li>X = KKKKKKK MMM NNNNNNNNN P KKKK SSSSSS has the runs 7K, 3M, 9N, 1P, 4K, 6S, so <strong>X → <code>7K3M9N1P4K6S</code></strong>: 30 symbols → 12 symbols, <strong>compression ratio = 30/12 = 2.5</strong>.</li>
+        <li><strong>Y → <code>1P1Q1R1S1T</code></strong>: 5 symbols → 10 symbols, <strong>ratio 0.5, so the "compressed" output is twice as long</strong>. There are no runs: each single symbol still costs two entries (count + symbol, like the <code>1D</code> on the slide).</li>
+        <li>RLE only pays off when the source has memory, i.e. symbols form continuous groups.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Long runs shrink, single symbols double</h4></div>
+        <p class="fig-lede">Every run becomes two cells, the count and the symbol. All cells have the same width, so the row lengths compare directly. X has 6 runs in 30 symbols. Y has 5 runs in 5 symbols.</p>
+        <div data-viz="rle"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Shannon-Fano: sort, then recursively split into two parts with about the same counts; left 0, right 1. Here 71 bits against 96 fixed, ratio 1.35. RLE codes count then symbol: X → 7K3M9N1P4K6S (ratio 2.5), Y → 1P1Q1R1S1T (ratio 0.5).</p>
+    <p class="source">Source: L4 p.19-23 Shannon-Fano (top-down, sort then split) · L4 p.12-13 entropy · L4 p.11 compression ratio B0/B1 · L4 p.24 fixed-length coding · L4 p.14-15 run-length coding · Notes: Lecture 4 › 7. Shannon Fano algorithm · Lecture 4 › 6. Run length coding</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w6" data-sample="4" data-part="w" data-num="6" data-topic="MIDI">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · 10 pts · Lecture 3, MIDI</p>
+    <h3 class="q-title">MIDI</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is MIDI? Why is a MIDI file much smaller than a WAV file of the same song? Support your answer by computing the size of 3 minutes of CD-quality WAV audio (44.1 kHz, 16 bits, stereo) and comparing it with about 3 kB of MIDI. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>A keyboard sends a Note On message on channel n = 5 (channels numbered 0-15), key number 67, velocity 90.</span></li>
+      <li><span class="tag">(i)</span><span>Write the three bytes in hex and in binary, and explain the bits of the status byte. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(ii)</span><span>MIDI runs at 31.25 kbps with 10-bit bytes. How long does this one message take to send? How long does a 5-note chord take (Note On messages only), and how long with the 5 Note Off messages added? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What MIDI is, and why it is small</h4>
+      <ul>
+        <li>MIDI (Musical Instrument Digital Interface, early 1980s) is a protocol adopted by the electronic music industry. It lets computers, synthesizers, keyboards and other musical devices communicate.</li>
+        <li>MIDI is a scripting language: it codes <strong>events</strong> (which note, its volume, which instrument), not the sound itself. A WAV file stores every audio sample, so MIDI files are generally very small.</li>
+      </ul>
+      <pre class="calc">44,100 samples/s × 16 bits × 2 channels = 1,411,200 bit/s
+1,411,200 / 8                           = 176,400 bytes/s
+176,400 × 180 s                         = 31,752,000 bytes ≈ 31.75 MB
+31,752,000 / 3,000                      ≈ 10,584</pre>
+      <ul>
+        <li>MIDI: about 3 kB, so <strong>about 10,000 times smaller</strong>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The same 3 minutes as areas</h4></div>
+        <p class="fig-lede">Area is proportional to file size. The WAV square holds every sample of both channels. The MIDI square is the dot in the circle: about 10,584 of them fill the WAV square.</p>
+        <div data-viz="size"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(i) The three bytes</h4>
+      <ul>
+        <li>Table 6.3: Note On = status &amp;H9n, then key number, then velocity. Status byte layout: <code>1&nbsp;t&nbsp;t&nbsp;t&nbsp;n&nbsp;n&nbsp;n&nbsp;n</code>.</li>
+        <li>Status (Note On, n = 5): 144 + 5 = 149 = <strong>&amp;H95 = 1001 0101</strong>.</li>
+        <li>Data 1 (key number): 67 = <strong>&amp;H43 = 0100 0011</strong>.</li>
+        <li>Data 2 (velocity): 90 = <strong>&amp;H5A = 0101 1010</strong>.</li>
+        <li>Status byte 1001 0101: MSB = 1 marks a status byte (status bytes are 128-255). The next three bits, 001, give the message type, Note On. The four low-order bits, 0101, give channel 5.</li>
+        <li>The data bytes have MSB = 0 (values 0-127).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Bit fields of the Note On message</h4></div>
+        <p class="fig-lede">Move the channel. Only the four low-order bits of the status byte change, so the second hex digit is the channel number.</p>
+        <div data-viz="chan"></div>
+        <div data-viz="bytes"></div>
+      </figure>
+      <p>Result: <span class="result">Message = 95 43 5A (hex) = 10010101 01000011 01011010.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(ii) Time on the wire</h4>
+      <ul>
+        <li>Each MIDI byte is 10 bits: 8 bits plus a start and a stop bit.</li>
+      </ul>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Case</th><th>Bits</th><th>Time at 31,250 bit/s</th></tr></thead>
+          <tbody>
+            <tr><td class="l">One Note On message</td><td>3 × 10 = 30</td><td class="hl">30 / 31,250 = 0.00096 s = 0.96 ms</td></tr>
+            <tr><td class="l">5-note chord, Note On only</td><td>5 × 30 = 150</td><td class="hl">0.0048 s = 4.8 ms</td></tr>
+            <tr><td class="l">plus 5 Note Off messages (status &amp;H85)</td><td>150 + 150 = 300</td><td class="hl">0.0096 s = 9.6 ms</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Messages queue up on one serial line</h4></div>
+        <p class="fig-lede">Top: one message, three 10-bit frames. Bottom: messages go one after another at 31,250 bit/s, so a chord is never sent at one instant.</p>
+        <div data-viz="wire-steps"></div>
+        <p class="step-note" data-role="wire-note" aria-live="polite"></p>
+        <div data-viz="wire"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MIDI codes events, not samples, so 3 minutes ≈ 3 kB against 31.75 MB of WAV. Status byte 1ttt&nbsp;nnnn: Note On channel 5 = &amp;H95. One 3-byte message = 30 bits = 0.96 ms at 31.25 kbps.</p>
+    <p class="source">Source: L3 p.15-16 MIDI definition, scripting language, small files · L3 p.21 3 min MIDI ≈ 3 kB, WAV 1 min ≈ 10 MB · L3 p.25 status bytes 128-255, data bytes 0-127, 10-bit bytes · L3 p.35 channel message structure · L3 p.37 Table 6.3 · L3 p.31, 34 31.25 kbps and timing example · Notes: Lecture 3 › 7. MIDI basics · Lecture 3 › 10. Structure of MIDI messages · Lecture 3 › 9. Hardware aspects of MIDI</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w7" data-sample="4" data-part="w" data-num="7" data-topic="Visual perception">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · 10 pts · Lecture 6, Image basics and perception</p>
+    <h3 class="q-title">Human visual perception and image formation</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compare rods and cones: where they are, what they respond to, and which one dominates in scotopic and in photopic vision. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>In a brightness discrimination experiment the just noticeable difference is ΔI_c = 4 on a background of I = 80, and ΔI_c = 0.5 on a dim background of I = 2. Compute both Weber ratios. In which case is brightness discrimination better, and which receptor dominates in the other case? <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>With the image formation model f(x,y) = i(x,y) · r(x,y), compute f for a white page (r = 0.75) and for black ink (r = 0.05) under office light (i = 1,000 lm/m²) and on a cloudy day (i = 10,000 lm/m²). What is the page-to-ink ratio in each case, and what does it show? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>Define dynamic range. A camera sensor saturates at 12,000 and its noise level is 8 (same units as f). Compute its dynamic range. Can it record all four values from (c) without clipping and without losing the darkest one in noise? <span class="pts">(2 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Rods and cones</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l"></th><th class="l">Cones</th><th class="l">Rods</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Where</td><td class="l">in the fovea</td><td class="l">spread over the retina; give a general overall picture of the view</td></tr>
+            <tr><td class="l">Respond to</td><td class="l">highly sensitive to color</td><td class="l">insensitive to color; sensitive to low levels of illumination</td></tr>
+            <tr><td class="l">Vision</td><td class="l">photopic (good light): gives color</td><td class="l">scotopic (low light): objects visible but black and white</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Weber ratio</h4>
+      <ul>
+        <li>Weber ratio = ΔI<sub>c</sub> / I.</li>
+        <li>Bright background: 4 / 80 = <strong>0.05</strong>. Dim background: 0.5 / 2 = <strong>0.25</strong>.</li>
+        <li><strong>A small ratio means good discrimination, so the bright background (0.05) is better.</strong> On the dim background the large ratio (0.25) means poor discrimination; <strong>rods</strong> dominate there, while cones dominate at high intensity.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The just noticeable step as a share of the background</h4></div>
+        <p class="fig-lede">Each background I is drawn at the same length, so the extra piece ΔI<sub>c</sub> shows the Weber ratio directly. In bright light a 5% step is visible. In dim light the step must be 25%.</p>
+        <div data-viz="weber"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Image formation f = i · r</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Illumination</th><th>Page (r = 0.75)</th><th>Ink (r = 0.05)</th><th>Page / ink</th></tr></thead>
+          <tbody>
+            <tr><td class="l">Office, i = 1,000</td><td>750</td><td>50</td><td class="hl">15</td></tr>
+            <tr><td class="l">Cloudy day, i = 10,000</td><td>7,500</td><td>500</td><td class="hl">15</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>The ratio is 15 in both cases (= 0.75 / 0.05).</strong> Illumination (the source) only scales every value; the contrast between the objects comes from the reflectance (the object).</li>
+        <li>Since 0 &lt; r &lt; 1, f is always below i.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Ten times the light moves page and ink up by the same step</h4></div>
+        <p class="fig-lede">On a log scale a ratio is a fixed distance. Page and ink stay the same distance apart, × 15, under both lights. Each dashed line is the illumination i, and both values sit below it.</p>
+        <div data-viz="formation"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>white page, r = 0.75</span>
+          <span><i class="sw-sec"></i>black ink, r = 0.05</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Dynamic range</h4>
+      <ul>
+        <li>Dynamic range = the ratio of the maximum detectable intensity (saturation) to the minimum detectable intensity (noise): DR = I<sub>max</sub> / I<sub>min</sub> = 12,000 / 8 = <strong>1,500 (1,500 : 1)</strong>.</li>
+        <li><strong>Yes, the sensor records all four values.</strong> The brightest, 7,500, is below 12,000, so nothing clips. The darkest, 50, is above the noise level of 8.</li>
+        <li>The scene ratio, 7,500 / 50 = 150, is far below 1,500.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>All four values fit inside the sensor's range</h4></div>
+        <p class="fig-lede">The shaded band runs from the noise level 8 to saturation at 12,000, a ratio of 1,500. The scene spans 50 to 7,500, a ratio of 150, and sits inside the band with room on both sides.</p>
+        <div data-viz="range"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Cones: fovea, color, photopic. Rods: low light, no color, scotopic. Weber ratio ΔI<sub>c</sub> / I: small = good discrimination. f = i · r, 0 &lt; r &lt; 1, so illumination scales and reflectance sets the contrast. Dynamic range = saturation / noise.</p>
+    <p class="source">Source: L6 p.4-5 rods and cones, scotopic and photopic vision · L6 p.6-7 Weber ratio · L6 p.23 image formation model f = i · r · L6 p.26 dynamic range · Notes: Lecture 6 › 1. Human eye structure · Lecture 6 › 2. Brightness adaptation and Weber ratio · Lecture 6 › 7. Image sensing and the 2D image model · Lecture 6 › 8. Dynamic range</p>
+  </div>
+</article>
+
+<article class="q" id="s4-w8" data-sample="4" data-part="w" data-num="8" data-topic="Edge detection">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · 10 pts · Lecture 11, Edge detection</p>
+    <h3 class="q-title">Edge detection</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compare first-order and second-order derivative edge operators. Then compare the Roberts, Prewitt and Sobel operators. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Two 3x3 neighbourhoods; the pixel of interest is the centre one. Apply a mask by multiplying each pixel by the mask weight in the same position and adding (no flipping).</span></li>
+      <li><span class="tag">(i)</span><span>At the centre of W1 compute H_r, H_c, the gradient magnitude (both the square-root form and the |H_r| + |H_c| form) and the direction θ = tan⁻¹(H_c / H_r). <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(ii)</span><span>Apply the Laplacian at the centre of W1 and of W2. Use the same mask as the point detection mask with threshold T = 400: is a point detected in W1? In W2? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) First order against second order</h4>
+      <ul>
+        <li><strong>First order</strong> (gradient based: Roberts, Prewitt, Sobel): one spike per edge. Gives the magnitude H = √(H<sub>r</sub>² + H<sub>c</sub>²) (or |H<sub>r</sub>| + |H<sub>c</sub>|) and the direction θ = tan⁻¹(H<sub>c</sub> / H<sub>r</sub>).</li>
+        <li><strong>Second order</strong> (Laplacian; LoG): a +/− pair per edge. The sign change (zero crossing) marks the edge centre, so "better edge localization". But "unacceptably sensitive to noise", "produce double edges", "unable to detect edge direction".</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>One spike against a +/− pair, and what noise does to each</h4></div>
+        <p class="fig-lede">A blurred step edge and its two derivatives. The first derivative peaks once at the edge. The second derivative swings up, then down, and crosses zero at the edge centre. Add a little noise and the second derivative fills up with false zero crossings.</p>
+        <div data-viz="deriv-steps"></div>
+        <p class="step-note" data-role="deriv-note" aria-live="polite"></p>
+        <div data-viz="deriv"></div>
+      </figure>
+      <ul>
+        <li><strong>Roberts:</strong> "smaller effective area than the other masks" (diagonal differences); "more susceptible to noise".</li>
+        <li><strong>Prewitt:</strong> weights 1 1 1; "more sensitive to vertical and horizontal edges than diagonal edges".</li>
+        <li><strong>Sobel:</strong> weights 1 2 1 (the centre row or column is weighted, which smooths); "more sensitive to diagonal edges than vertical and horizontal edges".</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Three mask pairs, side by side</h4></div>
+        <p class="fig-lede">Masks as printed on slide 37. Roberts uses only two pixels per mask, so it has the smallest area and the least averaging. Sobel doubles the middle row or column, which smooths across the edge.</p>
+        <div data-viz="masks"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>positive weight</span>
+          <span><i class="sw-sec-soft"></i>negative weight</span>
+          <span><i class="sw-seg"></i>zero</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(i) Prewitt gradient at the centre of W1</h4>
+      <pre class="calc">H<sub>r</sub> = left column − right column = (50+70+90) − (10+20+30) = 210 − 60 = 150
+H<sub>c</sub> = bottom row − top row       = (90+60+30) − (50+30+10) = 180 − 90 = 90
+√(150² + 90²) = √(22,500 + 8,100) = √30,600 = 174.93
+|150| + |90|  = 240
+θ = tan⁻¹(90 / 150) = tan⁻¹(0.6) = 30.96°</pre>
+      <ul>
+        <li>Intensity falls from left to right and rises downward: a diagonal edge with the bright side at the bottom-left.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Two mask responses become one gradient vector</h4></div>
+        <p class="fig-lede">Each row multiplies W1 by a Prewitt mask cell by cell and adds the products. The two sums are the legs of a right triangle: the hypotenuse is the square-root magnitude, the path along the legs is the |H<sub>r</sub>| + |H<sub>c</sub>| form, and the angle is θ.</p>
+        <div data-viz="prewitt"></div>
+        <div data-viz="vector"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(ii) Laplacian and point detection</h4>
+      <ul>
+        <li>Laplacian / point mask: R = 8 · z<sub>centre</sub> − (sum of the 8 neighbours). A point is detected where |R| &gt; T.</li>
+        <li>W1: neighbours 50+30+10+70+20+90+60+30 = 360, R = 8(40) − 360 = <strong>−40</strong>. |R| = 40 ≤ 400: <strong>no</strong>, a smooth ramp/edge, not a point.</li>
+        <li>W2: neighbours 30+32+30+28+30+30+30+34 = 244, R = 8(110) − 244 = <strong>636</strong>. |R| = 636 &gt; 400: <strong>isolated point detected</strong>.</li>
+        <li>The Laplacian is small on W1, where the intensity changes almost linearly, so a large first derivative comes with a near-zero second derivative. W2 has one bright pixel on a nearly constant background, so the response is large.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>A ramp barely moves the Laplacian; a lone bright pixel does</h4></div>
+        <p class="fig-lede">The centre pixel is outlined. W1 is a ramp, so the centre is close to the mean of its neighbours. W2's centre is far above its flat background, and its response clears T = 400.</p>
+        <div data-viz="laplace"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>First order: one spike, gives magnitude √(H<sub>r</sub>² + H<sub>c</sub>²) or |H<sub>r</sub>| + |H<sub>c</sub>| and direction tan⁻¹(H<sub>c</sub> / H<sub>r</sub>). Laplacian: zero crossing, better localization, but noise sensitive, double edges, no direction. Point detected where |R| &gt; T.</p>
+    <p class="source">Source: L11 p.29-30 derivatives at an edge · L11 p.37 Prewitt masks, magnitude and direction · L11 p.38 Roberts / Prewitt / Sobel properties · L11 p.45 Laplacian and its disadvantages · L11 p.27-28 point detection |R| &gt; T · Notes: Lecture 11 › 8. First order derivative operators · Lecture 11 › 10. Second order operators · Lecture 11 › 6. Point and line detection</p>
+  </div>
+</article>

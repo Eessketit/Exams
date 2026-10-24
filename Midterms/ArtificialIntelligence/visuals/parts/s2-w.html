@@ -1,0 +1,523 @@
+<article class="q" id="s2-w1" data-part="w" data-num="1" data-topic="Classification metrics">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Open question · Lecture 3.1, Evaluating learning algorithms</p>
+    <h3 class="q-title">Classification metrics</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the confusion matrix of a binary classifier and define TP, FP, FN and TN.</span></li>
+      <li><span class="tag">(b)</span><span>Give the formulas of accuracy, precision, recall and F1-score, and the question that precision and recall each answer.</span></li>
+      <li><span class="tag">(c)</span><span>Which metric should a spam filter prioritise, and which one a cancer screening test? Why can accuracy be misleading?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Draw (slide 14 layout: columns = actual, rows = predicted)</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The confusion matrix, and the cells each metric reads</h4></div>
+        <p class="fig-lede">The slide 14 layout, filled with the example counts from the notes (100 cases). Pick a metric to see which cells it uses. Dimmed cells play no part in it, and the outlined cells form the numerator.</p>
+        <div data-viz="cm-steps"></div>
+        <p class="step-note" data-role="cm-note" aria-live="polite"></p>
+        <div data-viz="cm"></div>
+        <div class="legend">
+          <span><i class="sw-ok"></i>correct prediction (TP)</span>
+          <span><i class="sw-seg"></i>correct prediction (TN)</span>
+          <span><i class="sw-ter"></i>false alarm (FP)</span>
+          <span><i class="sw-bad"></i>miss (FN)</span>
+        </div>
+      </figure>
+      <ul>
+        <li><b>TP</b>: predicted positive, actually positive. <b>TN</b>: predicted negative, actually negative.</li>
+        <li><b>FP</b>: predicted positive, actually negative (a false alarm). <b>FN</b>: predicted negative, actually positive (a miss).</li>
+        <li>Read the name as: second word = what the model predicted, first word = whether that prediction was right. On the exam, always check which axis is "Actual" before reading off FP and FN.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Formulas</h4>
+      <ul>
+        <li><b>Accuracy</b> = (TP + TN)/(TP + TN + FP + FN) · 100%. The share of all predictions that are correct.</li>
+        <li><b>Precision</b> = TP/(TP + FP). "Of all the alarms the model raised, how many were real?" It looks only at the positive predictions.</li>
+        <li><b>Recall</b> (sensitivity) = TP/(TP + FN). "Of all the real positives out there, how many did the model actually catch?" It looks only at the actual positives.</li>
+        <li><b>F1</b> = 2 · Precision · Recall / (Precision + Recall). The harmonic mean, one number that balances both.</li>
+      </ul>
+      <pre class="calc">TP = 30, FP = 10, FN = 20, TN = 40   (100 cases)
+accuracy  = (30 + 40) / 100              = 70%
+precision = 30 / (30 + 10) = 30 / 40     = 0.75
+recall    = 30 / (30 + 20) = 30 / 50     = 0.60
+F1        = 2 · 0.75 · 0.60 / 1.35       = 0.667</pre>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li><b>Spam filter: precision.</b> An FP puts a real email (a job offer) into spam, and users stop trusting the filter.</li>
+        <li><b>Cancer screening: recall.</b> An FN (a missed cancer) can be fatal, while a false alarm only costs an extra test. Airport weapon detection is the same case.</li>
+        <li><b>Accuracy misleads on imbalanced data.</b> With 95 negatives and 5 positives, a model that always says "negative" has 95% accuracy and recall 0. It never finds a positive. Use precision, recall and F1 instead.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>One threshold trades false alarms against misses</h4></div>
+        <p class="fig-lede">Twenty cases with a classifier score. Circles are actually positive (spam, or cancer), squares actually negative. Every case at or above the threshold is predicted positive. Raise the threshold and false alarms disappear, so precision rises, but more positives are missed. Lower it and nothing is missed, so recall reaches 1, at the price of false alarms.</p>
+        <div data-viz="t-slider"></div>
+        <p class="verdict" data-role="t-verdict"></p>
+        <div data-viz="thr"></div>
+        <div class="legend">
+          <span><i class="sw-ok"></i>TP</span>
+          <span><i class="sw-seg"></i>TN</span>
+          <span><i class="sw-ter"></i>FP, false alarm</span>
+          <span><i class="sw-bad"></i>FN, miss</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>95% accuracy that finds nothing</h4></div>
+        <p class="fig-lede">100 people, 5 of them with the disease. Each square is one person. A model that always says "negative" is right 95 times and misses every patient. A real screening model is right less often, 93 times, yet it catches 4 of the 5.</p>
+        <div data-viz="acc-steps"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Accuracy</span><span class="v" data-role="acc">95%</span><span class="sub">(TP + TN) / 100</span></div>
+          <div class="stat"><span class="label">Recall</span><span class="v ok" data-role="rec">0</span><span class="sub">TP / 5 actual positives</span></div>
+          <div class="stat"><span class="label">Precision</span><span class="v" data-role="prec">0/0</span><span class="sub">TP / predicted positives</span></div>
+        </div>
+        <p class="step-note" data-role="acc-note" aria-live="polite"></p>
+        <div data-viz="acc"></div>
+        <div class="legend">
+          <span><i class="sw-ok"></i>TP, patient found</span>
+          <span><i class="sw-bad"></i>FN, patient missed</span>
+          <span><i class="sw-ter"></i>FP, healthy but flagged</span>
+          <span><i class="sw-seg"></i>TN</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Slide 14 layout: columns = actual, rows = predicted, TP top left, FP top right. Precision = TP/(TP + FP), "of all the alarms the model raised, how many were real?". Recall = TP/(TP + FN), "of all the real positives, how many did the model catch?". F1 = 2 · P · R/(P + R). Spam filter: precision. Cancer screening: recall. Accuracy misleads when the classes are imbalanced.</p>
+    <p class="source">Source: L3.1 p.14 confusion matrix layout · L3.1 p.20 accuracy · L3.1 p.21-22 precision, spam detection · L3.1 p.23-24 recall, cancer screening and airport security · L3.1 p.25 F1 · Notes: L3.1 › Confusion matrix and axis layout · L3.1 › Accuracy, precision, recall, F1</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w2" data-part="w" data-num="2" data-topic="Random forest">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Open question · Lecture 4.1, Random forest</p>
+    <h3 class="q-title">Random forest</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is a random forest?</span></li>
+      <li><span class="tag">(b)</span><span>Describe the steps used to build a random forest and to make a prediction with it.</span></li>
+      <li><span class="tag">(c)</span><span>Why does a random forest overfit less than a single decision tree? List its key features.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>A random forest is an <b>ensemble of many decision trees</b>. Each tree sees a random part of the data, and the predictions are combined: <b>majority voting</b> for classification, <b>averaging</b> for regression.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Steps</h4>
+      <ul>
+        <li><b>1. Bootstrap.</b> Build many trees, each on a <b>bootstrapped dataset</b>: rows sampled from the original <b>with replacement</b>, same size as the original. Some rows appear twice, others are left out.</li>
+        <li><b>2. Random features.</b> At each split, look at only a <b>few random features</b>, not all of them (e.g. one tree on Outlook, Humidity, Wind; another on Outlook, Temp, Humidity).</li>
+        <li><b>3. Predict.</b> Each tree makes its own prediction for the new example.</li>
+        <li><b>4. Combine.</b> Majority vote (classification) or average (regression). In the slide 46 example all three trees say No, so the forest says <b>No</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Three bootstrapped datasets from one table</h4></div>
+        <p class="fig-lede">Slides 42-45 build three trees from the 14-row PlayTennis table. Each set draws 14 rows with replacement, so a few rows come twice (ochre outline) and a few are left out. Each tree also uses only some of the features. Pick a set to see what changed.</p>
+        <div data-viz="boot-steps"></div>
+        <p class="step-note" data-role="boot-note" aria-live="polite"></p>
+        <div data-viz="boot"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>PlayTennis = Yes</span>
+          <span><i class="sw-sec"></i>PlayTennis = No</span>
+          <span><i class="sw-ter"></i>extra copy of a row, drawn with replacement</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Each tree votes, the majority decides</h4></div>
+        <p class="fig-lede">The three trees of slides 42-46, drawn down to the path the test day takes. Faded branches are not taken. Slide 46 asks about x = {Sunny, Cool, High, Strong}, and all three trees say No. The second example, from the notes, splits the vote 2 to 1.</p>
+        <div data-viz="vote-steps"></div>
+        <p class="step-note" data-role="vote-note" aria-live="polite"></p>
+        <div data-viz="vote"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>leaf Yes</span>
+          <span><i class="sw-sec"></i>leaf No</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) What to write</h4>
+      <ul>
+        <li>A single deep tree learns the noise in its training data (overfitting). The trees of a forest are built on different rows and different features, so they make different errors. The vote averages those errors out. The slide's assumption: "diverse predictions improve accuracy".</li>
+        <li>Key features (slide 48): handles missing data, gives feature importance, works with big and complex data, and does both classification and regression.</li>
+        <li>Assumptions (slide 50): trees decide independently, they are built on random rows and features, and there must be enough data for the trees to differ.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Different mistakes cancel in the vote</h4></div>
+        <p class="fig-lede">An illustration with 5 trees and 10 test cases. Each tree is right on 7 of the 10. The five different trees make their mistakes on different cases, so every column still has at least 3 right votes and the forest gets all 10. Five copies of one tree make the same mistakes, and the vote is no better than one tree.</p>
+        <div data-viz="div-steps"></div>
+        <p class="step-note" data-role="div-note" aria-live="polite"></p>
+        <div data-viz="div"></div>
+        <p class="fig-lede">The same idea in numbers. If each tree is right with probability 0.7 and the trees err independently, a majority of 5 trees is right with probability 0.837 and a majority of 25 trees with 0.983. Identical trees stay at 0.7. Real trees are partly correlated, so a forest lands between the two curves. That is why it randomizes both rows and features.</p>
+        <div data-viz="curve"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>independent trees</span>
+          <span><i class="sw-sec"></i>identical trees</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>A random forest is an ensemble of many decision trees. Each tree is built on a bootstrapped dataset (rows sampled with replacement) and looks at only a few random features at each split. The trees vote (classification) or are averaged (regression). Different rows and features make different errors, and the vote cancels them, so the forest overfits less than one tree.</p>
+    <p class="source">Source: L4.1 p.37 definition · L4.1 p.39-40 algorithm · L4.1 p.42-46 three bootstrapped trees and the vote · L4.1 p.48 key features · L4.1 p.50 assumptions · L4.1 p.19 single trees overfit · Notes: L4.1 › Random forest · L4.1 › Stopping, overfitting and pruning</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w3" data-part="w" data-num="3" data-topic="PCA concepts">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Open question · Lecture 6.2, Principal component analysis</p>
+    <h3 class="q-title">Principal component analysis</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is PCA, and why do we use it?</span></li>
+      <li><span class="tag">(b)</span><span>What are principal components? Explain how the first and second principal components are constructed.</span></li>
+      <li><span class="tag">(c)</span><span>List the five steps of PCA, with their formulas.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>PCA is a <b>dimensionality reduction</b> method. It transforms a large set of variables into a smaller one that still contains most of the information.</li>
+        <li>Why: smaller data sets are easier to explore and visualize, and faster for ML algorithms. We trade a little accuracy for simplicity. The idea is to reduce the number of variables while preserving as much information as possible.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <ul>
+        <li>Principal components are <b>new variables built as linear combinations</b> of the initial variables. They are <b>uncorrelated</b>, and most of the information is squeezed into the first ones. p variables give p components.</li>
+        <li>Geometrically they are the <b>directions of maximal variance</b>. More variance along a line means more spread, which means more information.</li>
+        <li><b>PC1</b>: the line through the centred data on which the projected points are the most spread out, i.e. that maximizes the variance of the projections.</li>
+        <li><b>PC2</b>: computed the same way, with the condition that it is <b>uncorrelated with (perpendicular to) PC1</b> and carries the next highest variance. This continues until all p components are found.</li>
+        <li>The components have no real meaning (they are less interpretable), because each one mixes all the original variables.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>PC1 is the line where the projections spread the most</h4></div>
+        <p class="fig-lede">Twelve centred points. Turn the line through the origin. Each point drops perpendicular onto the line (blue dots), and the variance of those projections is the information the line keeps. The maximum, at 27.7°, is PC1. The minimum, exactly 90° further, is PC2.</p>
+        <div data-viz="ang"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Variance on the line</span><span class="v pri" data-role="var">5.85</span><span class="sub">of the 12 projections</span></div>
+          <div class="stat"><span class="label">Share of the total</span><span class="v" data-role="share">74.1%</span><span class="sub">total variance 7.90</span></div>
+        </div>
+        <p class="verdict" data-role="ang-verdict"></p>
+        <div data-viz="rot"></div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>In PC coordinates the variables are uncorrelated</h4></div>
+        <p class="fig-lede">The same twelve points twice. In the original axes X₁ and X₂ move together, so their covariance is 2.76. Rotated onto PC1 and PC2, the covariance is 0 and the variances are the two eigenvalues, 7.30 and 0.59. PC1 alone keeps 92.5% of the variance, so dropping PC2 turns 2 numbers per point into 1 with little loss.</p>
+        <div data-viz="unc"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Steps</h4>
+      <ul>
+        <li><b>1.</b> Mean of each variable: X̄ = Σxᵢ/m, then centre the data (subtract the mean).</li>
+        <li><b>2.</b> Covariance matrix S = [[Cov(X₁,X₁), Cov(X₁,X₂)], [Cov(X₂,X₁), Cov(X₂,X₂)]], with Cov(x, y) = (1/(n − 1)) Σ(xᵢ − x̄)(yᵢ − ȳ).</li>
+        <li><b>3.</b> Eigenvalues: solve det(S − λI) = 0.</li>
+        <li><b>4.</b> Eigenvectors: solve (S − λI)U = 0 and normalize. The eigenvector of the largest eigenvalue is u₁.</li>
+        <li><b>5.</b> First principal component: transformed data = X_centered · u₁.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The five steps on the slide 17 example</h4></div>
+        <p class="fig-lede">The data of slide 17, X₁ = 4, 8, 13, 7 and X₂ = 11, 4, 5, 14, pushed through the five steps. The right column shows what each step produces. Four points with 2 values each become four PC1 values.</p>
+        <div data-viz="pipe-steps"></div>
+        <p class="step-note" data-role="pipe-note" aria-live="polite"></p>
+        <div data-viz="pipe"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>PCA reduces the number of variables while preserving as much information as possible. Principal components are uncorrelated linear combinations of the variables, the directions of maximal variance. PC1 maximizes the variance of the projections, PC2 does the same perpendicular to PC1. Steps: mean, covariance (n − 1), det(S − λI) = 0, (S − λI)U = 0, X_centered · u₁.</p>
+    <p class="source">Source: L6.2 p.4-5 what PCA is · L6.2 p.6-7 principal components · L6.2 p.8 directions of maximal variance · L6.2 p.10-12 PC1 and PC2 · L6.2 p.14-16 the five steps · Notes: L6.2 › What PCA is · L6.2 › Principal components · L6.2 › Geometric view: directions of maximum variance · L6.2 › Step by step</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w4" data-part="w" data-num="4" data-topic="Naive Bayes">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Problem · Lecture 3.2, Naive Bayes</p>
+    <h3 class="q-title">Naive Bayes: the shopping dataset</h3>
+  </div>
+  <div class="prompt">
+    <p>The lecture's shopping dataset has 15 records, 10 Buy = Yes and 5 Buy = No. Frequency table:</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Build the likelihood table: P(value | Yes), P(value | No) and P(value), plus the priors.</span></li>
+      <li><span class="tag">(b)</span><span>A customer comes on a <b>Weekend</b>, with <b>Discount = Yes</b> and <b>Free Delivery = No</b>. Using the lecture's method, compute P(Buy | X) and P(No Buy | X), normalize them, and predict.</span></li>
+      <li><span class="tag">(c)</span><span>Using Bayes theorem with one feature only, compute P(No Buy | Weekend).</span></li>
+      <li><span class="tag">(d)</span><span>What is the zero-frequency problem of Naive Bayes, and how is it fixed?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Likelihood table</h4>
+      <ul>
+        <li>Divide each count by its class total (10 for Yes, 5 for No). P(value) = row total / 15.</li>
+      </ul>
+      <div data-viz="lik-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Where the two classes differ</h4></div>
+        <p class="fig-lede">Each row compares P(value | Yes) and P(value | No). The shaded rows are the three values of the customer in (b). Free Delivery = No is the row with the biggest gap, 1/10 against 3/5.</p>
+        <div data-viz="lik"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>P(value | Buy = Yes)</span>
+          <span><i class="sw-sec"></i>P(value | Buy = No)</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">X = (Weekend, Discount = Yes, Free Delivery = No)
+denominator = (4/15)(10/15)(4/15)            = 0.04741
+Buy:     (2/10)(8/10)(1/10)(10/15) = 0.01067  ÷ 0.04741 = 0.225
+No Buy:  (2/5)(2/5)(3/5)(5/15)     = 0.03200  ÷ 0.04741 = 0.675
+sum = 0.225 + 0.675 = 0.9, not 1  →  normalize
+Buy    = 0.225 / 0.9 = 25%
+No Buy = 0.675 / 0.9 = 75%</pre>
+      <ul>
+        <li><b>Prediction: the customer will not buy.</b> The single strongest factor is Free Delivery = No: P(FD = No | Yes) is only 1/10.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Each feature tilts the balance</h4></div>
+        <p class="fig-lede">Start from the priors and multiply in one likelihood at a time. Each bar shows how the two running products split. The denominator is the same for both classes, so it changes the numbers but never the split.</p>
+        <div data-viz="nb-steps"></div>
+        <p class="step-note" data-role="nb-note" aria-live="polite"></p>
+        <div data-viz="nb"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Buy</span>
+          <span><i class="sw-sec"></i>No Buy</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">P(Buy | X) = 25%, P(No Buy | X) = 75%, so No Buy.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <pre class="calc">P(No Buy | Weekend) = P(Weekend | No Buy) · P(No Buy) / P(Weekend)
+                    = (2/5)(5/15) / (4/15)
+                    = 0.1333 / 0.2667 = 0.5</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Bayes theorem as counting records</h4></div>
+        <p class="fig-lede">The 15 records of slide 14, grouped by day. Each fraction is a count of outlined tiles over a count of tiles in the group that stays bright. Bayes theorem turns P(Weekend | No Buy) = 2/5 into P(No Buy | Weekend) = 2/4.</p>
+        <div data-viz="bay-steps"></div>
+        <p class="step-note" data-role="bay-note" aria-live="polite"></p>
+        <div data-viz="bay"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Buy</span>
+          <span><i class="sw-sec"></i>No Buy</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">P(No Buy | Weekend) = 0.5.</span> On a weekend, buying and not buying are equally likely (2 of the 4 weekend visits were buys).</p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) What to write</h4>
+      <ul>
+        <li><b>Zero-frequency problem</b>: if a feature value never appears with a class in the training data, its likelihood is 0, and the whole product for that class becomes 0, whatever the other features say.</li>
+        <li><b>Fix: Laplace smoothing</b> (textbook context for the formula): add α = 1 to every count, P(v | c) = (count + 1)/(N<sub>c</sub> + K), where K = number of values of the feature. Applied to (b) it gives Buy 38.6%, No Buy 61.4%. The decision (No Buy) is the same.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>One zero wipes out the product, +1 repairs it</h4></div>
+        <p class="fig-lede">The products of (b) with the given counts and with Laplace smoothing (K = 3 for Day, 2 for the other features). The last two steps imagine that no buyer ever came without free delivery, so that count is 0 of 10.</p>
+        <div data-viz="lap-steps"></div>
+        <p class="step-note" data-role="lap-note" aria-live="polite"></p>
+        <div data-viz="lap"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Naive Bayes multiplies P(value | class) over the features and the prior, divides by the product of the P(value), and normalizes. For (Weekend, Discount Yes, Free Delivery No): Buy 25%, No Buy 75%. A zero count makes the whole product 0, and Laplace smoothing (+1 on every count) fixes it.</p>
+    <p class="source">Source: L3.2 p.14-15 dataset and frequency tables · L3.2 p.17, 21 likelihood tables · L3.2 p.18-20 one-feature example · L3.2 p.22-25 full query, divide and normalize · L3.2 p.28 zero-frequency problem and Laplace smoothing · Notes: L3.2 › Likelihood tables · L3.2 › Full query: Holiday, Discount Yes, Free Delivery Yes · L3.2 › Types of Naive Bayes and Laplace smoothing</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w5" data-part="w" data-num="5" data-topic="PCA by hand">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Problem · Lecture 6.2, Principal component analysis</p>
+    <h3 class="q-title">PCA by hand</h3>
+  </div>
+  <div class="prompt">
+    <p>Find the first principal component of the dataset below.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the mean of each variable and the centred data.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the covariance matrix S (divide by n − 1).</span></li>
+      <li><span class="tag">(c)</span><span>Compute the eigenvalues of S and the unit eigenvector of the largest eigenvalue.</span></li>
+      <li><span class="tag">(d)</span><span>Project the centred data on it to get PC1. What share of the total variance does PC1 keep?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">X̄₁ = (1 + 4 + 4 + 5) / 4 = 14 / 4 = 3.5
+X̄₂ = (2 + 2 + 5 + 5) / 4 = 14 / 4 = 3.5
+centred: (−2.5, −1.5), (0.5, −1.5), (0.5, 1.5), (1.5, 1.5)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Centring moves the mean to the origin</h4></div>
+        <p class="fig-lede">Left: the four points and their mean (3.5, 3.5). Right: the same points after subtracting the mean. The shape does not change, only the origin moves.</p>
+        <div data-viz="centre"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <div data-viz="cov-table"></div>
+      <pre class="calc">Cov(X₁, X₁) = (6.25 + 0.25 + 0.25 + 2.25) / 3 = 9 / 3 = 3
+Cov(X₂, X₂) = (2.25 + 2.25 + 2.25 + 2.25) / 3 = 9 / 3 = 3
+Cov(X₁, X₂) = (3.75 − 0.75 + 0.75 + 2.25) / 3 = 6 / 3 = 2
+
+S = [ 3  2 ]
+    [ 2  3 ]</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The covariance adds signed rectangles</h4></div>
+        <p class="fig-lede">Each product x̃₁ · x̃₂ is the area of the rectangle from the origin to the centred point. Points in the top-right and bottom-left quarters give positive areas (blue), the others negative (plum). The positive areas win, 6 in total, so Cov(X₁, X₂) = 6/3 = 2 and the variables rise together.</p>
+        <div data-viz="rect"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>positive product</span>
+          <span><i class="sw-sec-soft"></i>negative product</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <pre class="calc">det(S − λI) = (3 − λ)² − 2 · 2 = 0
+(3 − λ)² = 4  →  3 − λ = ±2  →  λ₁ = 5,  λ₂ = 1
+λ₁ = 5:  (3 − 5)u₁ + 2u₂ = 0  →  u₂ = u₁
+normalize: u₁ = (1, 1)/√2 = (0.7071, 0.7071)
+check: S·(1, 1) = (3 + 2, 2 + 3) = 5·(1, 1)
+λ₂ = 1:  eigenvector (0.7071, −0.7071), perpendicular to u₁</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The eigenvalues are the roots of det(S − λI)</h4></div>
+        <p class="fig-lede">det(S − λI) = (3 − λ)² − 4 = λ² − 6λ + 5 is a parabola in λ. It crosses zero at λ = 1 and λ = 5. The roots add up to the trace of S (3 + 3 = 6) and multiply to its determinant (9 − 4 = 5), a quick check.</p>
+        <div data-viz="poly"></div>
+      </figure>
+      <p>Result: <span class="result">λ₁ = 5, λ₂ = 1, u₁ = (0.7071, 0.7071).</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Worked solution</h4>
+      <p class="formula">PC1 = centred row · u₁ = (x̃₁ + x̃₂)/√2</p>
+      <div data-viz="pc-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Projecting on u<sub>1</sub> keeps 5 of the 6 units of variance</h4></div>
+        <p class="fig-lede">Each centred point drops perpendicular onto the chosen direction. Right: the projected values on one number line. Along u₁ they spread with variance 5 = λ₁. Along u₂ only 1 = λ₂ is left.</p>
+        <div data-viz="proj-steps"></div>
+        <p class="step-note" data-role="proj-note" aria-live="polite"></p>
+        <div data-viz="proj"></div>
+      </figure>
+      <ul>
+        <li>Check: the variance of the PC1 values is (8 + 0.5 + 2 + 4.5)/3 = 5 = λ₁.</li>
+        <li>PC1 keeps λ₁/(λ₁ + λ₂) = 5/6 = <b>83.3%</b> of the total variance, so the 2D data can be reduced to 1D with little loss.</li>
+      </ul>
+      <p>Result: <span class="result">PC1 = −2.828, −0.707, 1.414, 2.121; it keeps 83.3% of the variance.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Mean, centre, S with n − 1, det(S − λI) = 0, (S − λI)U = 0 and normalize, then PC1 = X_centered · u₁. Here S = [[3, 2], [2, 3]], λ = 5 and 1, u₁ = (0.7071, 0.7071), PC1 keeps 5/6 = 83.3%.</p>
+    <p class="source">Source: L6.2 p.14 mean and covariance (n − 1) · L6.2 p.15 det(S − λI) = 0 and (S − λI)U = 0 · L6.2 p.16 transformed data = X_centered · u₁ · L6.2 p.17 worked example · Notes: L6.2 › Step by step · L6.2 › Worked example · L6.2 › Exam focus</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w6" data-part="w" data-num="6" data-topic="Decision tree">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Problem · Lecture 4.1, Decision tree</p>
+    <h3 class="q-title">Decision tree with ID3</h3>
+  </div>
+  <div class="prompt">
+    <p>Should the bank approve the loan?</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compute the entropy of the dataset.</span></li>
+      <li><span class="tag">(b)</span><span>Compute the information gain of Income, Credit and Employed, and choose the root.</span></li>
+      <li><span class="tag">(c)</span><span>Build the complete tree. Show the information gains used at the second level.</span></li>
+      <li><span class="tag">(d)</span><span>Predict Approve for {Low, Good, No} and for {Medium, Bad, Yes}.</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <pre class="calc">8 Yes, 4 No
+E(S) = −(8/12) log₂(8/12) − (4/12) log₂(4/12)
+     = 0.390 + 0.528 = 0.918</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Entropy is 0 for a pure node and 1 for a 50/50 node</h4></div>
+        <p class="fig-lede">Binary entropy against the share of Yes in a node, with log₂. The whole dataset (8 of 12 Yes) sits at 0.918. The children of the splits in (b) are marked too: the pure High node at 0, the 2/2 nodes at the top, the 5/1 nodes at 0.650.</p>
+        <div data-viz="ent"></div>
+      </figure>
+      <p>Result: <span class="result">E(S) = 0.918.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Root</h4>
+      <p class="formula">IG(S, a) = E(S) − Σ<sub>v</sub> |S<sub>v</sub>|/|S| · E(S<sub>v</sub>)</p>
+      <div data-viz="ig-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Income splits off a pure group, so it wins</h4></div>
+        <p class="fig-lede">The 12 rows, split by each attribute. Each tile is one row, labelled with its number. Income puts rows 1, 2, 3 and 12 into a pure Yes group, which lowers the weighted entropy the most. Credit and Employed both leave a 3/3 group and gain only 0.093.</p>
+        <div data-viz="ig"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Approve = Yes</span>
+          <span><i class="sw-sec"></i>Approve = No</span>
+        </div>
+      </figure>
+      <ul>
+        <li><b>Income</b> wins and becomes the root. Income = High is pure (4/0), so it is a <b>Yes leaf</b>.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Second level</h4>
+      <ul>
+        <li><b>Income = Medium</b> (rows 4-7, 2 Yes / 2 No, E = 1): Credit gives Good 2/0 and Bad 0/2, IG = <b>1.0</b>. Employed gives Yes 1/1 and No 1/1, IG = 0. Split on <b>Credit</b>.</li>
+        <li><b>Income = Low</b> (rows 8-11, 2 Yes / 2 No, E = 1): Employed gives No 0/2 and Yes 2/0, IG = <b>1.0</b>. Credit gives Good 1/1 and Bad 1/1, IG = 0. Split on <b>Employed</b>.</li>
+        <li>Each branch asks a different second question. ID3 picks the attribute separately in every subset.</li>
+      </ul>
+      <pre class="calc">Income [Yes=8, No=4]
+|- High   -> Yes [4/0]
+|- Medium -> Credit [Yes=2, No=2]
+|              |- Good -> Yes [2/0]
+|              |- Bad  -> No  [0/2]
+|- Low    -> Employed [Yes=2, No=2]
+               |- Yes -> Yes [2/0]
+               |- No  -> No  [0/2]</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Building the tree one node at a time</h4></div>
+        <p class="fig-lede">The finished tree first. Step through to see each choice ID3 makes. Under the tree, the rows that reach the node are split by every candidate attribute, and the higher information gain wins.</p>
+        <div data-viz="tree-steps"></div>
+        <p class="step-note" data-role="tree-note" aria-live="polite"></p>
+        <div data-viz="tree"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>Yes, leaf or row</span>
+          <span><i class="sw-sec"></i>No, leaf or row</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(d) Worked solution</h4>
+      <ul>
+        <li>{Low, Good, No}: Income = Low, then Employed = No, so <b>No</b>.</li>
+        <li>{Medium, Bad, Yes}: Income = Medium, then Credit = Bad, so <b>No</b>.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Follow the branches from the root to a leaf</h4></div>
+        <p class="fig-lede">Pick a customer. The path asks only the questions on its branch: the Low customer is never asked about Credit, and the Medium customer is never asked about Employed.</p>
+        <div data-viz="pred-steps"></div>
+        <p class="step-note" data-role="pred-note" aria-live="polite"></p>
+        <div data-viz="pred"></div>
+      </figure>
+      <p>Result: <span class="result">{Low, Good, No} → No; {Medium, Bad, Yes} → No.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋, 0 for a pure node and 1 for 50/50. IG(S, a) = E(S) − Σ |S<sub>v</sub>|/|S| · E(S<sub>v</sub>), and the highest IG becomes the node. Here Income (IG 0.252) is the root, Medium splits on Credit and Low on Employed (IG 1.0 each), and a pure node becomes a leaf.</p>
+    <p class="source">Source: L4.1 p.15 how the tree is built · L4.1 p.22 entropy · L4.1 p.25-28 pure node = leaf · L4.1 p.29-31 information gain · L4.1 p.32-34 PlayTennis worked example · Notes: L4.1 › Entropy · L4.1 › Information gain · L4.1 › Worked example: PlayTennis tree built with ID3</p>
+  </div>
+</article>

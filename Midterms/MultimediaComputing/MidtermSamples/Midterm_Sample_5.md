@@ -12,7 +12,8 @@ d) 5.88 ms
 
 > **Answer: b)** λ = v/f = vT = 340/170 = 2 m. a) is f/v, c) is v x f, d) is the period 1/f (a time, not a length).  
 > **Source:** L2 p.25 wavelength and period · L2 p.26 λ = vT  
-> **Notes:** [Lecture 2 › Sine wave parameters](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)
+> **Notes:** [Lecture 2 › Sine wave parameters](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)  
+> **Visual:** [Sample 5 › Part 1 Q1](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc1)
 
 **2.** In MIDI, the value of a status byte lies in the range:  
 a) 0 to 127  
@@ -22,7 +23,8 @@ d) 0 to 255
 
 > **Answer: c)** "The data in a MIDI status byte is between 128 and 255; each of the data bytes is between 0 and 127." The status byte has its MSB = 1. b) 0-15 is the channel nibble.  
 > **Source:** L3 p.25 status bytes 128-255, data bytes 0-127 · L3 p.35 status byte MSB = 1, channel in the four low bits  
-> **Notes:** [Lecture 3 › MIDI bytes](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#8-midi-bytes-envelope-and-sequencers-slides-22-25-30) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)
+> **Notes:** [Lecture 3 › MIDI bytes](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#8-midi-bytes-envelope-and-sequencers-slides-22-25-30) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)  
+> **Visual:** [Sample 5 › Part 1 Q2](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc2)
 
 **3.** Which statement about Shannon-Fano and Huffman coding is correct?  
 a) Shannon-Fano is top-down (sort, then recursively split into two parts with about equal counts); Huffman is bottom-up (repeatedly merge the two least probable nodes)  
@@ -32,7 +34,8 @@ d) Both build a dictionary of variable-length strings and send fixed-length code
 
 > **Answer: a)** Slide titles: "Shannon-Fano Algorithm, a top-down approach" and "Huffman Coding Algorithm, a bottom-up approach". b) swaps them. d) describes LZW.  
 > **Source:** L4 p.19 Shannon-Fano, top-down · L4 p.27 Algorithm 7.1 Huffman, bottom-up  
-> **Notes:** [Lecture 4 › Shannon Fano algorithm](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#7-shannon-fano-algorithm-slides-19-23) · [Lecture 4 › Huffman coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29)
+> **Notes:** [Lecture 4 › Shannon Fano algorithm](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#7-shannon-fano-algorithm-slides-19-23) · [Lecture 4 › Huffman coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29)  
+> **Visual:** [Sample 5 › Part 1 Q3](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc3)
 
 **4.** On the MPEG-1 Audio encoding characteristics slide, which bit-rate range and target belong to Layer 3 (MP3)?  
 a) 32-448 kbps, target 192 kbps  
@@ -42,7 +45,8 @@ d) 32-320 kbps, target 320 kbps
 
 > **Answer: c)** "Layer 3: 32-320 kbps, target 64 kbps". a) is Layer 1 and b) is Layer 2. (The "128 kbps" on slide 25 is the stereo goal, 64 kbps per channel.)  
 > **Source:** L5 p.23 MPEG-1 layers, bit rates and targets  
-> **Notes:** [Lecture 5 › MPEG audio history and MPEG1 layers](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#9-mpeg-audio-history-and-mpeg1-layers-i-ii-iii-slides-21-28-42)
+> **Notes:** [Lecture 5 › MPEG audio history and MPEG1 layers](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#9-mpeg-audio-history-and-mpeg1-layers-i-ii-iii-slides-21-28-42)  
+> **Visual:** [Sample 5 › Part 1 Q4](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc4)
 
 **5.** Which image interpolation method gives the sharpest images and preserves fine details, but is slow?  
 a) Nearest neighbor  
@@ -52,7 +56,8 @@ d) Bicubic
 
 > **Answer: d)** Bicubic: "Images are sharpest; fine details are preserved; slow". Nearest neighbor is fast and simple, with loss of sharpness and checkerboard artifacts.  
 > **Source:** L6 p.36 nearest neighbor, bilinear and bicubic trade-offs  
-> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)
+> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)  
+> **Visual:** [Sample 5 › Part 1 Q5](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc5)
 
 **6.** How many pixels are in N4(p) for p = (3, 5), and which are they?  
 a) 4: (2,5), (4,5), (3,4), (3,6)  
@@ -62,7 +67,8 @@ d) 4: (1,5), (5,5), (3,3), (3,7)
 
 > **Answer: a)** N4(p) = (x+1,y), (x−1,y), (x,y+1), (x,y−1), which is 4 pixels. b) is N_D (the diagonals), c) is N8, d) are pixels at distance 2.  
 > **Source:** L7 p.21 N4, ND and N8  
-> **Notes:** [Lecture 7 › Neighbors of a pixel](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#4-neighbors-of-a-pixel-slide-21)
+> **Notes:** [Lecture 7 › Neighbors of a pixel](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#4-neighbors-of-a-pixel-slide-21)  
+> **Visual:** [Sample 5 › Part 1 Q6](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc6)
 
 **7.** Which statement about the XOR operation on images is correct?  
 a) XOR sets bits that are the same in both operands to 1 and bits that differ to 0  
@@ -72,7 +78,8 @@ d) XOR is used to adjust the contrast of an image, like multiplication
 
 > **Answer: b)** XOR sets equal bits to 0 and different bits to 1, so p XOR v = 0 only when p = v ("sets the pixels that are specified to black"). a) is reversed. c) XOR 255 = NOT = 255 − p. d) is multiplication.  
 > **Source:** L9 p.56 XOR operation and its use  
-> **Notes:** [Lecture 9 › Logic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#11-logic-operations-slides-54-59)
+> **Notes:** [Lecture 9 › Logic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#11-logic-operations-slides-54-59)  
+> **Visual:** [Sample 5 › Part 1 Q7](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc7)
 
 **8.** The hit-or-miss transform A ⊛ B = (A ⊖ X) ∩ [A^c ⊖ (W − X)] gives:  
 a) the boundary of A, that is A − (A ⊖ B)  
@@ -82,7 +89,8 @@ d) the points where the shape X fits in A and, at the same time, its local backg
 
 > **Answer: d)** Hit-or-miss finds the location of shape X: B1 = X must hit A and B2 = W − X must hit A^c at the same time. a) is boundary extraction, b) region filling, c) opening.  
 > **Source:** L10 p.36-37 hit-or-miss transform  
-> **Notes:** [Lecture 10 › Hit or miss transform](../notes/10_Week5_Morphology.md#6-hit-or-miss-transform-slides-36-37)
+> **Notes:** [Lecture 10 › Hit or miss transform](../notes/10_Week5_Morphology.md#6-hit-or-miss-transform-slides-36-37)  
+> **Visual:** [Sample 5 › Part 1 Q8](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc8)
 
 **9.** Which is a disadvantage of the Laplacian edge detector?  
 a) It is sensitive to noise, produces double edges and cannot detect edge direction  
@@ -92,7 +100,8 @@ d) It is a first order operator, so it gives one thick spike per edge
 
 > **Answer: a)** Laplacian disadvantages: "sensitive to noise", "produce double edges", "unable to detect edge direction". It has better localization through zero crossings (c is wrong). b) describes the compass operators.  
 > **Source:** L11 p.45 Laplacian: zero crossing and disadvantages  
-> **Notes:** [Lecture 11 › Second order operators](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47)
+> **Notes:** [Lecture 11 › Second order operators](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47)  
+> **Visual:** [Sample 5 › Part 1 Q9](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc9)
 
 **10.** How does a nearest neighbor classifier assign a class to a feature vector?  
 a) It computes the mean of each class and chooses the closest mean, rejecting the vector if it is too far  
@@ -102,7 +111,8 @@ d) It converts the pattern into a grammar and parses it
 
 > **Answer: c)** "Keep all the training samples ... find the nearest neighbor ... assign the class of the neighbor. Can be extended to K nearest neighbors." a) is nearest class mean, b) unsupervised learning, d) structural PR.  
 > **Source:** L12 p.41 nearest neighbor classification  
-> **Notes:** [Lecture 12 › Nearest neighbor and k nearest neighbors](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)
+> **Notes:** [Lecture 12 › Nearest neighbor and k nearest neighbors](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)  
+> **Visual:** [Sample 5 › Part 1 Q10](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-mc10)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -135,7 +145,8 @@ B2 (3 x 3):   1  1  1
 **Answer**
 
 **Source:** L10 p.20 dilation definition · L10 p.12-13 dilation = local maximum, bright regions grow · L10 p.23 erosion definition · L10 p.15, p.18 erosion = local minimum, foreground shrinks · L10 p.22 broken segments joined · L10 p.38 boundary extraction  
-**Notes:** [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Boundary extraction](../notes/10_Week5_Morphology.md#7-boundary-extraction-slides-38-39)
+**Notes:** [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Boundary extraction](../notes/10_Week5_Morphology.md#7-boundary-extraction-slides-38-39)  
+**Visual:** [Sample 5 › Part 2 Q1 Morphology: dilation, erosion and boundary extraction](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w1)
 
 **(a) Write (4 pts)**
 - Morphology is a collection of non-linear operations related to the shape of features in an image. The structuring element B is a small binary matrix with an origin.
@@ -184,7 +195,8 @@ Apply a 3-point average filter and a 3-point median filter to p1 to p8 (p0 and p
 **Answer**
 
 **Source:** L11 p.21 unsharp masking and high-boost formula · L11 p.24-26 effect of α · L11 p.16 average (blurring) mask · L11 p.15 border handling · L11 p.53-55 median filtering · L11 p.60 min/max filtering  
-**Notes:** [Lecture 11 › Sharpening and high boost](../notes/11_Week6_Spatial_Filtering_Edges.md#5-sharpening-high-pass-unsharp-masking-high-boost-slides-20-26) · [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19) · [Lecture 11 › Median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Min and max filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)
+**Notes:** [Lecture 11 › Sharpening and high boost](../notes/11_Week6_Spatial_Filtering_Edges.md#5-sharpening-high-pass-unsharp-masking-high-boost-slides-20-26) · [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19) · [Lecture 11 › Median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Min and max filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)  
+**Visual:** [Sample 5 › Part 2 Q2 Filtering: high boost and median vs average](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w2)
 
 **(a) Write (4 pts)**
 - Unsharp masking: "subtract a lowpass filtered image from its original" (another method of highpass filtering).
@@ -245,7 +257,8 @@ A 4 x 4 image with 8 gray levels (3 bits, levels 0 to 7):
 **Answer**
 
 **Source:** L9 p.14 histogram · L9 p.20 equalization steps · L9 p.21, p.27-28 mapping T(r) with factor (L−1)/N² · L9 p.29-31 worked example (round to nearest) · L9 p.26 output histogram not flat · L9 p.9-11 lookup tables · L9 p.13 contrast stretching curve  
-**Notes:** [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31) · [Lecture 9 › Lookup tables](../notes/09_Week5_Intensity_Transforms_Histogram.md#3-lookup-tables-slides-9-12)
+**Notes:** [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31) · [Lecture 9 › Lookup tables](../notes/09_Week5_Intensity_Transforms_Histogram.md#3-lookup-tables-slides-9-12)  
+**Visual:** [Sample 5 › Part 2 Q3 Histogram equalization and lookup table](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w3)
 
 **(a) Write and work (5 pts).** The steps are: 1) compute the histogram, 2) calculate the normalized sum of the histogram, 3) transform the input image to the output image. The convention follows the slide: L = 8 and N² = 16, so the normalized sum is the running sum × (L−1)/N² = × 7/16, rounded to the nearest integer.
 
@@ -301,7 +314,8 @@ Classify the new fish x = [5, 18] with the nearest neighbor rule (k = 1) and wit
 **Answer**
 
 **Source:** L12 p.17-19 PR system stages · L12 p.18 flowchart · L12 p.4-6 fish problem and preprocessing · L12 p.8-11 length, lightness, decision boundary and cost · L12 p.12-15 lightness + width, best boundary, generalization · L12 p.41 nearest neighbor and k-NN  
-**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Choosing features, decision boundary and cost](../notes/12_Week7_Pattern_Recognition.md#3-choosing-features-decision-boundary-and-cost-slides-8-16) · [Lecture 12 › Nearest neighbor and k-NN](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)
+**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Choosing features, decision boundary and cost](../notes/12_Week7_Pattern_Recognition.md#3-choosing-features-decision-boundary-and-cost-slides-8-16) · [Lecture 12 › Nearest neighbor and k-NN](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)  
+**Visual:** [Sample 5 › Part 2 Q4 Pattern recognition](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w4)
 
 **(a) Draw (5 pts).** Read the chart bottom to top. Solid `^` = data flow (black on the slide). Dotted `: v` = arrows back down to the stage below (gray on the slide).
 
@@ -385,7 +399,8 @@ Compute the entropy. Why can no lossless code have an average length below it? (
 **Answer**
 
 **Source:** L4 p.12-13 entropy and self-information · L4 p.30 η ≤ l̄ < η + 1 · L4 p.6 transformation stage: predict, send the prediction error (DPCM tables are textbook context, Li and Drew 6.3.5-6.3.6) · L4 p.10-11 lossless vs lossy, compression ratio B0/B1 · L5 p.11-13 lossy compression, rate distortion, quantization · class remark: JPG lossy, PNG lossless  
-**Notes:** [Lecture 4 › Entropy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13) · [Lecture 4 › Differential coding and DPCM](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#3-differential-coding-predictive-coding-and-dpcm-slides-2-6) · [Lecture 4 › Compression ratio](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#4-compression-lossless-vs-lossy-compression-ratio-slides-10-11) · [Lecture 5 › Lossy compression and rate distortion](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#6-lossy-compression-rate-distortion-and-quantization-slides-11-13)
+**Notes:** [Lecture 4 › Entropy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13) · [Lecture 4 › Differential coding and DPCM](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#3-differential-coding-predictive-coding-and-dpcm-slides-2-6) · [Lecture 4 › Compression ratio](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#4-compression-lossless-vs-lossy-compression-ratio-slides-10-11) · [Lecture 5 › Lossy compression and rate distortion](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#6-lossy-compression-rate-distortion-and-quantization-slides-11-13)  
+**Visual:** [Sample 5 › Part 2 Q5 Compression: entropy, DPCM and compression ratio](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w5)
 
 **(a) Entropy (3 pts):** η = Σ p_i log2(1/p_i)
 
@@ -433,7 +448,8 @@ A signal x(t) = 5 sin(2π·250t + π/2) volts.
 **Answer**
 
 **Source:** L2 p.16 amplitude, frequency, period, phase · L2 p.21 f = 1/T · L2 p.24 phase 90° = π/2 = T/4 shift · L2 p.25-26 wavelength · L2 p.47-48 Nyquist f_s > 2 f_max · L2 p.51 aliasing (alias formula: textbook context) · L2 p.19, p.34-35 sampling rate and bit rate  
-**Notes:** [Lecture 2 › Sine wave parameters](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26) · [Lecture 2 › Sampling theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50) · [Lecture 2 › Aliasing](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#14-aliasing-undersampling-spatial-and-temporal-slides-51-55) · [Lecture 2 › Halving the sample rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#15-halving-the-sample-rate-homework-link-slides-19-34-47-51)
+**Notes:** [Lecture 2 › Sine wave parameters](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26) · [Lecture 2 › Sampling theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50) · [Lecture 2 › Aliasing](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#14-aliasing-undersampling-spatial-and-temporal-slides-51-55) · [Lecture 2 › Halving the sample rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#15-halving-the-sample-rate-homework-link-slides-19-34-47-51)  
+**Visual:** [Sample 5 › Part 2 Q6 Sound and sampling](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w6)
 
 **(a) Read off A sin(2πft + φ) (4 pts)**
 - **Peak amplitude A = 5 V** (the maximum strength of the signal).
@@ -479,7 +495,8 @@ G:
 **Answer**
 
 **Source:** L9 p.46-50 arithmetic operations: brightness vs contrast · L9 p.52 clamping · L9 p.55 NOT = 255 − pixel · L9 p.56 XOR · L9 p.58 AND · L9 p.59 OR · L7 p.35-36 same-size images, pixel by pixel · L6 p.44-45 image negative  
-**Notes:** [Lecture 9 › Arithmetic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#10-arithmetic-operations-slides-46-53) · [Lecture 9 › Logic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#11-logic-operations-slides-54-59) · [Lecture 7 › Arithmetic and logical operations](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#8-arithmetic-and-logical-operations-slides-35-36) · [Lecture 6 › Intensity transformations (negative)](../notes/06_Week3_Image_Basics_Perception_Resampling.md#14-intensity-transformations-and-gamma-slides-44-57)
+**Notes:** [Lecture 9 › Arithmetic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#10-arithmetic-operations-slides-46-53) · [Lecture 9 › Logic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#11-logic-operations-slides-54-59) · [Lecture 7 › Arithmetic and logical operations](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#8-arithmetic-and-logical-operations-slides-35-36) · [Lecture 6 › Intensity transformations (negative)](../notes/06_Week3_Image_Basics_Perception_Resampling.md#14-intensity-transformations-and-gamma-slides-44-57)  
+**Visual:** [Sample 5 › Part 2 Q7 Image arithmetic and logic](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w7)
 
 **(a) Clamping (3 pts).** Results below 0 become 0, and results above 255 become 255.
 
@@ -523,7 +540,8 @@ G:
 **Answer**
 
 **Source:** L7 p.38 Munsell (value 0-10, chroma 0-20) · L7 p.39 hue, value, saturation · L7 p.66 color description · L7 p.58 CIE standard illuminants · L7 p.54 chromaticity coordinates · L7 p.61 dominant wavelength · L7 p.63-65 purity  
-**Notes:** [Lecture 7 › Color dimensions and Munsell](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#9-color-image-munsell-and-color-dimensions-slides-37-41-66-68) · [Lecture 7 › Chromaticity diagram and illuminants](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60) · [Lecture 7 › Dominant wavelength and purity](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#12-chromaticity-in-polar-coordinates-dominant-wavelength-and-purity-slides-61-65)
+**Notes:** [Lecture 7 › Color dimensions and Munsell](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#9-color-image-munsell-and-color-dimensions-slides-37-41-66-68) · [Lecture 7 › Chromaticity diagram and illuminants](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60) · [Lecture 7 › Dominant wavelength and purity](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#12-chromaticity-in-polar-coordinates-dominant-wavelength-and-purity-slides-61-65)  
+**Visual:** [Sample 5 › Part 2 Q8 Color: dimensions, illuminants, chromaticity and purity](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s5-w8)
 
 **(a) Write (3 pts)**
 - **Hue:** what color it is (red, green, yellow, blue). It is the angle around the gray (black-white) axis of the color solid.

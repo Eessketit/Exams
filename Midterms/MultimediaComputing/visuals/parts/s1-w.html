@@ -1,0 +1,580 @@
+<article class="q" id="s1-w1" data-sample="1" data-part="w" data-num="1" data-topic="Morphology">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · 10 pts · Lecture 10, Morphology</p>
+    <h3 class="q-title">Morphology</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is image morphology? Define the dilation operation. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Apply dilation on image A using the structuring element B. Pixels outside the image are 0. Give the result on the same 7 x 7 grid. <span class="pts">(5 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>"Morphological image processing is a collection of <b>non-linear</b> operations related to the shape or morphology of features in an image." It uses only the relative ordering of pixel values, so it suits binary images. The two basic operations are <b>erosion and dilation</b>. Opening and closing are built from them.</li>
+        <li>The operations use a <b>structuring element (SE)</b>: "a small binary image, i.e. a small matrix of pixels, each with a value of zero or one". Its matrix size is its size, its pattern of 1s is its shape, and its origin is usually the centre. It plays the role of a convolution kernel.</li>
+        <li><b>Dilation</b>: A ⊕ B = { z | (B̂)<sub>z</sub> ∩ A ≠ ∅ }, "the set of all displacements z such that B̂ and A overlap by at least one element".</li>
+        <li>In words, every pixel takes the <b>maximum</b> over the SE neighbourhood. Bright (foreground) regions grow and small gaps are joined.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Dilation takes the maximum under the structuring element</h4></div>
+        <p class="fig-lede">One row of gray pixels and a 3-pixel structuring element. Each output pixel is the largest value inside the window centred on it. Move the window: the bright run grows by one pixel on each side, and the dark gap at position 5 disappears.</p>
+        <div data-viz="max-slider"></div>
+        <div data-viz="max"></div>
+        <p class="step-note" data-role="max-note" aria-live="polite"></p>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>The cross is symmetric, so B̂ = B.</li>
+        <li>An output pixel is 1 if the cross centred on it hits at least one 1 of A. That means the pixel itself or one of its 4-neighbours (up, down, left, right) is 1.</li>
+        <li>Equivalently, stamp a cross on every 1 of A. A has 8 ones, and no stamp reaches past the 7 x 7 grid.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Stamping the cross on each 1 of A</h4></div>
+        <p class="fig-lede">Pick a stamp to see the cross placed on one foreground pixel of A and the pixels it switches on. "All" shows the finished result: 8 pixels from A plus 20 added by the dilation.</p>
+        <div data-viz="stamp-steps"></div>
+        <p class="step-note" data-role="stamp-note" aria-live="polite"></p>
+        <div data-viz="stamp"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1 already in A</span>
+          <span><i class="sw-ok"></i>1 added by the dilation</span>
+          <span><i class="sw-seg"></i>0</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">A ⊕ B has 28 ones.</span></p>
+      <div class="given" data-viz="result"></div>
+      <ul>
+        <li>Check (row, col from 0): (3,4) gets a 1 from (3,5), and (4,4) gets one from (4,3). The outlined pixels join the vertical bar and the bottom shape into one region ("broken segments were joined", slide 22).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Dilation: A ⊕ B = { z | (B̂)<sub>z</sub> ∩ A ≠ ∅ }, "the set of all displacements z such that B̂ and A overlap by at least one element". Each pixel takes the maximum over the structuring element, so bright regions grow.</p>
+    <p class="source">Source: L10 p.3 definition · L10 p.4-5 structuring element · L10 p.10-11 binary images, erosion and dilation · L10 p.12-13 dilation = local maximum · L10 p.20 set definition of dilation · L10 p.22 cross SE example · Notes: Lecture 10 › Basic Concepts and Structuring Element · Lecture 10 › Dilation</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w2" data-sample="1" data-part="w" data-num="2" data-topic="Filtering">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · 10 pts · Lecture 11, Spatial filtering</p>
+    <h3 class="q-title">Filtering</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Compare blurring (low-pass averaging) and median filtering. Which kind of noise does each one handle better, and what happens to edges? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>The 5 x 5 gray image below contains one salt-noise pixel (255). Rows and columns are numbered from 0, so the noisy pixel is (2, 2). At pixel (2, 2) apply (i) the 3 x 3 average (blurring) mask with all coefficients 1/9 and (ii) the 3 x 3 median filter. Round to the nearest integer and say which output is better. <span class="pts">(6 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><b>Blurring</b> = low-pass spatial filtering. It "removes the finer details of an image" and is done by convolution. In the common blurring mask "all convolution coefficients are equal" (3 x 3: 1/9 each), and "the bigger the mask, the greater the blurring effect".</li>
+        <li>Blurring is linear: the output is the mean of the window. A low-pass filter is "suited for removing <b>Gaussian noise</b>, but not impulse noise", and it also blurs edges.</li>
+        <li><b>Median filter</b>: sort the pixels in the window and replace the centre with the middle value. It is non-linear. It is "an effective method for removing <b>impulse noise</b>" (salt and pepper) and it "preserves sharp edges and detail".</li>
+        <li>"Median filter is superior to lowpass filter when dealing with edges." Use averaging for Gaussian noise. Use the median for salt and pepper noise or when edges must stay sharp.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Each filter wins on its own kind of noise</h4></div>
+        <p class="fig-lede">A 1-D row of 40 pixels with a step edge at pixel 20, filtered with a 3-pixel average and a 3-pixel median. Switch the noise type and compare how much noise each filter leaves in the flat parts, and what each does to the step.</p>
+        <div data-viz="noise-steps"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Average leaves</span><span class="v sec" data-role="rms-avg">0</span><span class="sub">RMS error in the flat parts</span></div>
+          <div class="stat"><span class="label">Median leaves</span><span class="v pri" data-role="rms-med">0</span><span class="sub">RMS error in the flat parts</span></div>
+        </div>
+        <p class="verdict" data-role="noise-verdict"></p>
+        <div data-viz="noise"></div>
+        <div class="legend">
+          <span>○ noisy input</span>
+          <span>dashed: clean signal</span>
+          <span><i class="sw-sec"></i>3-pixel average</span>
+          <span><i class="sw-pri"></i>3-pixel median</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <p>(2, 2) is an interior pixel, so the full 3 x 3 window is available and no border rule is needed.</p>
+      <pre class="calc">window   57  59  62
+         58 255  63
+         60  62  65
+
+(i)  57 + 59 + 62 + 58 + 255 + 63 + 60 + 62 + 65 = 741
+     741 / 9 = 82.33  → 82
+(ii) sorted: 57 58 59 60 [62] 62 63 65 255
+     5th of 9 values  → 62</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Why the average stays too bright and the median does not</h4></div>
+        <p class="fig-lede">Left: the window around (2, 2). Right, top: the nine values sorted, the median is the 5th. Right, bottom: the average split into the share of the 8 clean pixels and the share of the 255. The salt pixel alone adds 28.3 to the mean.</p>
+        <div data-viz="window"></div>
+      </figure>
+      <ul>
+        <li>The 8 clean neighbours are about 61 (mean 60.75). The median (62) removes the salt pixel completely.</li>
+        <li>The average (82) is still about 21 too bright, because the 255 alone contributes 255 / 9 = 28.3 to the mean. The noise is smeared, not removed.</li>
+      </ul>
+      <p>Result: <span class="result">average 82, median 62. The median filter is better here.</span></p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The average spreads the salt pixel over its neighbours</h4></div>
+        <p class="fig-lede">Both filters applied at all nine interior pixels (rows and columns 1 to 3). The 255 sits inside every one of these windows, so every averaged pixel comes out about 20 levels too bright. The median output stays close to the clean values.</p>
+        <div data-viz="spread"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Low-pass (average) filter: "suited for removing Gaussian noise, but not impulse noise", and it blurs edges. Median filter: "an effective method for removing impulse noise" that "preserves sharp edges and detail".</p>
+    <p class="source">Source: L11 p.14 applying a mask (weighted sum at the centre) · L11 p.16 blurring, 1/9 mask · L11 p.53 median vs low-pass filter · L11 p.55 median method · Notes: Lecture 11 › Blurring: Average and Gaussian Masks · Lecture 11 › Median and Color Median Filtering</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w3" data-sample="1" data-part="w" data-num="3" data-topic="Histogram equalization">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · 10 pts · Lecture 9, Histogram equalization</p>
+    <h3 class="q-title">Histogram equalization</h3>
+  </div>
+  <div class="prompt">
+    <p>A 3-bit image (L = 8, gray levels 0 to 7) of size 4 x 4:</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Calculate the histogram n_k for k = 0, ..., 7. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Calculate the cumulative sum and the normalized sum of the histogram. <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Perform histogram equalization: give the mapping r_k -&gt; s_k, the output image and the output histogram. <span class="pts">(4 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>What to write</h4>
+      <ul>
+        <li>A histogram is "a simple bar graph that stands for pixel intensities": intensity on the x-axis and number of occurrences on the y-axis.</li>
+        <li>HE steps: 1. compute the histogram; 2. calculate the normalized sum of the histogram; 3. transform the input image to the output image (LUT).</li>
+        <li>Professor's convention: s<sub>k</sub> = round( (L − 1) / N² × Σ<sub>j=0..k</sub> n<sub>j</sub> ) = round(cumulative sum × 7/16), rounded to the <b>nearest</b> integer. Here L − 1 = 7 and N² = 16.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(a) Histogram</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Counting the 16 pixels into 8 bins</h4></div>
+        <p class="fig-lede">Scan the image row by row and add one to the bin of each pixel's gray level. Pick a row to see what it adds.</p>
+        <div data-viz="count-steps"></div>
+        <p class="step-note" data-role="count-note" aria-live="polite"></p>
+        <div data-viz="count"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>counted in earlier rows</span>
+          <span><i class="sw-sec"></i>added by the selected row</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">n<sub>k</sub> = 0, 3, 6, 5, 1, 0, 1, 0</span> (they add up to 16 pixels).</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Cumulative and normalized sum, (c) mapping</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>From cumulative sum to the new gray level</h4></div>
+        <p class="fig-lede">Bars are the cumulative sum. The right axis reads the same height as cum × 7/16, so each bar top is the normalized sum. The green tick is that value rounded to the nearest level s<sub>k</sub>. Step through the levels.</p>
+        <div data-viz="cdf-steps"></div>
+        <p class="step-note" data-role="cdf-note" aria-live="polite"></p>
+        <div data-viz="cdf"></div>
+        <div data-viz="cdf-table"></div>
+      </figure>
+      <p>Result: <span class="result">LUT for r = 0 to 7: 0 1 4 6 7 7 7 7</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Output image and output histogram</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Where each input level goes</h4></div>
+        <p class="fig-lede">Top: the input histogram. Bottom: the output histogram, drawn downward. Each line maps r<sub>k</sub> to s<sub>k</sub>, and its width is the number of pixels it carries. Levels 2 and 3 move apart (to 4 and 6), and levels 4 and 6 merge into 7.</p>
+        <div data-viz="map"></div>
+        <div data-viz="images"></div>
+      </figure>
+      <ul>
+        <li>Output histogram: <span class="result">n<sub>1</sub> = 3, n<sub>4</sub> = 6, n<sub>6</sub> = 5, n<sub>7</sub> = 2</span> (all other levels 0).</li>
+        <li>The peak levels 2 and 3 move apart, so contrast is stretched near the histogram maxima. Input levels 4 and 6 both map to 7.</li>
+        <li>The result is not flat (slide 26). With discrete levels HE can only move levels apart or merge them. It never splits one level into several.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>HE in 3 steps: compute the histogram, calculate the normalized sum of the histogram, transform the input image with it. s<sub>k</sub> = round((L − 1)/N² × cumulative sum).</p>
+    <p class="source">Source: L9 p.14 histogram definition · L9 p.20 goal and the 3 steps · L9 p.26 the result is not flat · L9 p.27-28 T(r) = (M/N^2) x integral of h · L9 p.29-31 worked example (factor 7/16, round to nearest) · Notes: Lecture 9 › Histogram · Lecture 9 › Histogram Equalization, Theory · Lecture 9 › Histogram Equalization, Worked Example</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w4" data-sample="1" data-part="w" data-num="4" data-topic="Pattern recognition">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · 10 pts · Lecture 12, Pattern recognition</p>
+    <h3 class="q-title">Pattern recognition system</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the flow chart of a pattern recognition system, from the input to the decision. <span class="pts">(6 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Explain each stage of the system in one line. <span class="pts">(4 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Draw (slide 18, read bottom to top)</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The pattern recognition system, input to decision</h4></div>
+        <p class="fig-lede">Five stages from input at the bottom to the decision at the top. Solid arrows carry the data up. Dashed arrows point down from each stage to the stage below it. Side inputs enter on the right. Pick a stage for its one-line explanation; the labels on the left follow one fish through the system.</p>
+        <div data-viz="flow-steps"></div>
+        <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+        <div data-viz="flow"></div>
+      </figure>
+      <ul>
+        <li>The solid arrows (black on the slide) are the data flowing up. The dashed arrows (gray on the slide) point down from each stage to the stage below it.</li>
+        <li>Side inputs: <b>costs</b> go into post-processing; <b>adjustments for context</b> go into post-processing and classification; <b>adjustments for missing features</b> go into classification.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) One line per stage (slide wording)</h4>
+      <ul>
+        <li><b>Sensing</b>: "use of a transducer (camera or microphone)". The system depends on the transducer's bandwidth, resolution, sensitivity and distortion.</li>
+        <li><b>Segmentation and grouping</b>: isolate each pattern from the others and from the background. "Patterns should be well separated and should not overlap".</li>
+        <li><b>Feature extraction</b>: measure "discriminative features" that are "invariant with respect to translation, rotation and scale" (fish example: length, lightness, width).</li>
+        <li><b>Classification</b>: "use a feature vector provided by a feature extractor to assign the object to a category".</li>
+        <li><b>Post-processing</b>: "exploit context input dependent information other than from the target pattern itself to improve performance". It uses the costs of errors and the context, and then outputs the decision.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Classification draws a boundary, costs move it</h4></div>
+        <p class="fig-lede">The fish example with one feature, lightness (sketch, slides 10-11). Fish darker than the threshold x* are labelled salmon. Drag x*: moving it toward smaller lightness puts fewer sea bass in the salmon cans, the costly error, and mislabels more salmon instead.</p>
+        <div data-viz="cost-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Sea bass → salmon</span><span class="v pri" data-role="err-bass">0</span><span class="sub">the costly error</span></div>
+          <div class="stat"><span class="label">Salmon → sea bass</span><span class="v sec" data-role="err-salmon">0</span><span class="sub">the cheaper error</span></div>
+        </div>
+        <div data-viz="cost"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>salmon</span>
+          <span><i class="sw-pri"></i>sea bass</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>If the question asks for the design cycle (slide 21)</h4>
+      <p>Collect data → choose features → choose model → train classifier → evaluate classifier. Evaluation feeds back to the earlier steps, and "prior knowledge (e.g., invariances)" feeds into choosing features and choosing the model.</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The design cycle is a loop, the system is a pipeline</h4></div>
+        <p class="fig-lede">Do not mix the two charts up. The design cycle is how you build a classifier. The flow chart in Figure 1 is how the finished system handles one input.</p>
+        <div data-viz="cycle"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Input → sensing → segmentation → feature extraction → classification → post-processing → decision. Costs and adjustments for context enter post-processing; adjustments for context and for missing features enter classification.</p>
+    <p class="source">Source: L12 p.17 sensing, segmentation and grouping · L12 p.18 flowchart · L12 p.19 feature extraction, classification, post-processing · L12 p.20-21 design cycle · Notes: Lecture 12 › Pattern Recognition System Flowchart · Lecture 12 › The Design Cycle</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w5" data-sample="1" data-part="w" data-num="5" data-topic="Huffman coding">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · 10 pts · Lecture 4, Huffman coding</p>
+    <h3 class="q-title">Huffman coding</h3>
+  </div>
+  <div class="prompt">
+    <p>A source emits 5 symbols with these probabilities:</p>
+    <div data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Build the Huffman tree and give the code of each symbol. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute the average code length. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Compute the entropy of the source. <span class="pts">(2 pts)</span></span></li>
+      <li><span class="tag">(d)</span><span>Compute the coding efficiency and compare it with a fixed-length code. <span class="pts">(2 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Tree and codes</h4>
+      <ul>
+        <li>Always merge the two smallest probabilities. This source has no ties.</li>
+        <li>Labelling rule: at each merge the smaller node goes left = 0 and the larger goes right = 1.</li>
+        <li>Any consistent 0/1 labelling gives the same code lengths, so it earns full marks.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Building the tree bottom-up, four merges</h4></div>
+        <p class="fig-lede">Each step takes the two smallest nodes in the list and joins them under a new node. Read a code from the root down to the leaf.</p>
+        <div data-viz="tree-steps"></div>
+        <p class="step-note" data-role="tree-note" aria-live="polite"></p>
+        <div data-viz="tree"></div>
+        <div data-viz="merge-table"></div>
+      </figure>
+      <div data-viz="codes"></div>
+      <ul>
+        <li>No code is a prefix of another. The two least frequent symbols (D, E) have the same length and differ only in the last bit.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Average length, (c) entropy, (d) efficiency</h4>
+      <pre class="calc">(b) l̄ = Σ p·l = 0.40(1) + 0.25(2) + 0.15(3) + 0.12(4) + 0.08(4)
+      = 0.40 + 0.50 + 0.45 + 0.48 + 0.32 = 2.15 bits/symbol
+
+(c) η = Σ p·log₂(1/p)        (log₂ x = log₁₀ x / 0.30103)
+      = 0.5288 + 0.5000 + 0.4105 + 0.3671 + 0.2915 = 2.0979 bits/symbol
+    check η ≤ l̄ &lt; η + 1:  2.098 ≤ 2.15 &lt; 3.098
+
+(d) efficiency = η / l̄ = 2.0979 / 2.15 = 0.9758  (97.6%)
+    fixed length: 5 symbols need 3 bits (2² = 4 &lt; 5 ≤ 8 = 2³)
+    efficiency = 2.0979 / 3 = 0.699  (69.9%)</pre>
+      <div data-viz="entropy-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Bits per symbol: Huffman, entropy, fixed length</h4></div>
+        <p class="fig-lede">Each bar adds up one term per symbol: p × code length for the two codes, p × log₂(1/p) for the entropy. The band marks η ≤ l̄ &lt; η + 1, where any Huffman code must land.</p>
+        <div class="stats">
+          <div class="stat"><span class="label">Average length</span><span class="v pri">2.15</span><span class="sub">bits per symbol, Huffman</span></div>
+          <div class="stat"><span class="label">Entropy</span><span class="v">2.098</span><span class="sub">bits per symbol, the limit</span></div>
+          <div class="stat"><span class="label">Efficiency</span><span class="v ok">97.6%</span><span class="sub">fixed 3-bit code: 69.9%</span></div>
+        </div>
+        <div data-viz="ledger"></div>
+      </figure>
+      <p>Result: <span class="result">l̄ = 2.15 bits/symbol, η = 2.098 bits/symbol, efficiency 97.6% against 69.9% for a 3-bit fixed-length code.</span> Huffman is 3 / 2.15 = 1.40 times shorter than the fixed-length code.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Huffman: repeatedly merge the two least probable nodes, bottom-up. Average length l̄ = Σ p<sub>i</sub>l<sub>i</sub>, entropy η = Σ p<sub>i</sub> log₂(1/p<sub>i</sub>), and η ≤ l̄ &lt; η + 1.</p>
+    <p class="source">Source: L4 p.24-27 Huffman outline and Algorithm 7.1 (bottom-up) · L4 p.12 entropy · L4 p.26 average length and efficiency table · L4 p.30 properties (η ≤ l̄ &lt; η + 1) · Notes: Lecture 4 › Huffman Coding · Lecture 4 › Entropy: Basics of Information Theory</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w6" data-sample="1" data-part="w" data-num="6" data-topic="Audio digitization">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · 10 pts · Lecture 2, Sampling and quantization</p>
+    <h3 class="q-title">Audio digitization</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Explain sampling and quantization. What is the difference between them? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>A stereo song is recorded at a sampling rate of 32 kHz with 16 bits per sample. It lasts 2 minutes.
+        <ol class="subq">
+          <li><span class="tag">i</span><span>Using the Nyquist theorem, what is the highest frequency this recording can represent? Is that enough for the full range of human hearing (up to 20 kHz)? <span class="pts">(2 pts)</span></span></li>
+          <li><span class="tag">ii</span><span>Compute the bit rate. <span class="pts">(2 pts)</span></span></li>
+          <li><span class="tag">iii</span><span>Compute the uncompressed file size in MB (1 MB = 10^6 bytes). <span class="pts">(2 pts)</span></span></li>
+        </ol>
+      </span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><b>Sampling</b>: "using measurements only at evenly spaced time intervals". The rate is the sampling frequency f<sub>s</sub> = 1/T, and the samples are x<sub>s</sub>(n) = x(nT). It digitizes the <b>time</b> axis.</li>
+        <li><b>Quantization</b>: "encoding the signal value at every sampled location with a predefined precision, defined by a number of levels". b bits give 2<sup>b</sup> levels with step δ = R/2<sup>b</sup>.</li>
+        <li>Q rounds each sample to the nearest level, so it always introduces an error (quantization noise, at most half a step). It digitizes the <b>amplitude</b> axis.</li>
+        <li>Difference: sampling makes the time axis discrete, quantization makes the amplitude axis discrete. A/D = sampling + quantization; D/A = interpolation.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Sampling cuts time, quantization cuts amplitude</h4></div>
+        <p class="fig-lede">Sampling keeps the value only at the times nT (vertical grid). Quantization rounds every value to the nearest of 2<sup>b</sup> levels (horizontal grid). A/D does both, so each sample lands on a grid crossing. Change b to see the step δ = R/2<sup>b</sup> and the error shrink.</p>
+        <div data-viz="ad-steps"></div>
+        <div data-viz="ad-slider"></div>
+        <p class="step-note" data-role="ad-note" aria-live="polite"></p>
+        <div data-viz="ad"></div>
+        <div class="legend">
+          <span>gray curve: analog signal x(t)</span>
+          <span><i class="sw-pri"></i>what is kept</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(i) Nyquist</h4>
+      <ul>
+        <li>Nyquist: f<sub>s</sub> &gt; 2f<sub>max</sub>, so f<sub>max</sub> &lt; f<sub>s</sub>/2 = 32/2 = <b>16 kHz</b>.</li>
+        <li>This is <b>not</b> enough for hearing up to 20 kHz, which needs f<sub>s</sub> &gt; 40 kHz (CD uses 44.1 kHz). Content above 16 kHz would alias.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>At 32 kHz, tones above 16 kHz come back as false tones</h4></div>
+        <p class="fig-lede">A pure tone sampled at f<sub>s</sub> = 32 kHz, shown over 0.5 ms (16 samples). D/A reconstruction draws the lowest-frequency wave through the samples. Below 16 kHz that is the original tone. Above 16 kHz the same samples fit a lower tone, 32 − f kHz, and the original is lost. Tones between 16 and 20 kHz are audible but cannot be recorded. The triangle on the frequency scale marks the tone.</p>
+        <div data-viz="alias-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Tone</span><span class="v" data-role="tone">18 kHz</span><span class="sub">input frequency</span></div>
+          <div class="stat"><span class="label">Limit</span><span class="v">16 kHz</span><span class="sub">f<sub>s</sub>/2 at f<sub>s</sub> = 32 kHz</span></div>
+          <div class="stat"><span class="label">Played back</span><span class="v" data-role="heard">14 kHz</span><span class="sub">after D/A</span></div>
+        </div>
+        <p class="verdict" data-role="alias-verdict"></p>
+        <div data-viz="alias"></div>
+        <div data-viz="band"></div>
+      </figure>
+      <p>Result: <span class="result">f<sub>max</sub> &lt; 16 kHz, not enough for 20 kHz hearing.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b)(ii) Bit rate, (iii) file size</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>One sampling period of a stereo recording holds 32 bits</h4></div>
+        <p class="fig-lede">Every T = 1/32,000 s = 31.25 µs the recorder stores one 16-bit word per channel. Stereo doubles the data rate (L3 p.11).</p>
+        <div data-viz="frame"></div>
+      </figure>
+      <pre class="calc">(ii)  bit rate = f_s × bits × channels
+            = 32,000 × 16 × 2 = 1,024,000 bit/s = 1,024 kbps  (about 1.02 Mbps)
+
+(iii) 2 min = 120 s
+      1,024,000 × 120 = 122,880,000 bits
+      122,880,000 / 8 = 15,360,000 bytes = 15.36 MB
+      (14.65 MiB if 1 MiB = 2^20 bytes)</pre>
+      <p>Result: <span class="result">1,024 kbps and 15.36 MB.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Sampling digitizes time, quantization digitizes amplitude (2<sup>b</sup> levels, δ = R/2<sup>b</sup>). Nyquist: f<sub>s</sub> &gt; 2f<sub>max</sub>. Bit rate = sampling rate × bits per sample × channels.</p>
+    <p class="source">Source: L2 p.12 sampling definition · L2 p.14 sampling (time) vs quantization (amplitude) · L2 p.15 A/D and D/A · L2 p.29 quantization, 2^b levels · L2 p.34-35 bit rate · L2 p.47-48 Nyquist · L3 p.11 stereo doubles the data rate · Notes: Lecture 2 › Building Complex Signals and the Digitization Process · Lecture 2 › Quantization · Lecture 2 › Bit Rate · Lecture 2 › Sampling Theorem and Nyquist</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w7" data-sample="1" data-part="w" data-num="7" data-topic="Image representation">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · 10 pts · Lecture 6, Image basics</p>
+    <h3 class="q-title">Digital image representation</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Define spatial resolution and intensity resolution. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>A gray scale image has 1024 x 768 pixels and 256 gray levels. How many bits per pixel (k) are needed, what is the range of gray values, and how much storage does the image need in bits and in bytes? <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>The same image is re-quantized to 16 gray levels. Give the new k and the storage in bytes. What artifact appears in smooth regions, and why? <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li><b>Spatial resolution</b> = the "smallest discernible detail" in an image. It is measured in line pairs per unit distance or dots (pixels) per unit distance, e.g. dpi. It is set by sampling (M x N). "Large image size itself does not mean high spatial resolution."</li>
+        <li><b>Intensity resolution</b> = the "smallest discernible change in intensity level". It is given by the number of intensity levels, L = 2<sup>k</sup>, so it is set by quantization.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Fewer samples lose detail, fewer levels lose shading</h4></div>
+        <p class="fig-lede">The same test image twice. Left: fewer samples per side (each sample becomes a bigger block) and the thin stripes at the bottom vanish. Right: the full sampling with fewer gray levels and the smooth ball breaks into flat bands.</p>
+        <p class="label">Spatial resolution, samples per side</p>
+        <div data-viz="sp-steps"></div>
+        <p class="label">Intensity resolution, gray levels L = 2<sup>k</sup></p>
+        <div data-viz="in-steps"></div>
+        <div data-viz="res"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) 256 gray levels</h4>
+      <pre class="calc">L = 2^k = 256        → k = log₂ 256 = 8 bits/pixel
+gray values          → 0 ≤ f ≤ L − 1 = 0 to 255
+b = M × N × k        = 1024 × 768 × 8 = 6,291,456 bits
+                     = 6,291,456 / 8  = 786,432 bytes  (768 KiB)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Storage is k bit planes of M × N bits</h4></div>
+        <p class="fig-lede">Each plane holds one bit of every pixel, 1024 × 768 = 786,432 bits = 98,304 bytes. One pixel is a column through all planes: the 8-bit value 200 is 11001000. Keeping only the top 4 bits gives 1100 = 12, one of 16 levels.</p>
+        <div data-viz="planes"></div>
+      </figure>
+      <p>Result: <span class="result">k = 8, gray values 0 to 255, 6,291,456 bits = 786,432 bytes.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) 16 gray levels</h4>
+      <pre class="calc">k = log₂ 16 = 4
+b = 1024 × 768 × 4 = 3,145,728 bits = 393,216 bytes  (half of the 8-bit image)</pre>
+      <ul>
+        <li>Artifact: <b>false contouring (banding)</b>. With only 16 levels, smooth gradual shading is forced into a few flat bands of constant gray, with visible false edges (contours) between them (slide 30, skull at 16 and 8 levels).</li>
+        <li>Spatial resolution is unchanged. Only intensity resolution drops.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>A smooth ramp becomes a staircase</h4></div>
+        <p class="fig-lede">One image row that brightens smoothly from 0 to 255 across 1024 pixels. With k bits each run of 256/2<sup>k</sup> input values collapses onto one level, so the row turns into flat bands with a jump between them. The eye sees each jump as an edge that is not in the scene.</p>
+        <div data-viz="ramp-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Levels</span><span class="v pri" data-role="levels">16</span><span class="sub">L = 2<sup>k</sup></span></div>
+          <div class="stat"><span class="label">Band width</span><span class="v" data-role="band">64 px</span><span class="sub">of the 1024-pixel row</span></div>
+          <div class="stat"><span class="label">Storage</span><span class="v" data-role="bytes">393,216</span><span class="sub">bytes for 1024 × 768</span></div>
+        </div>
+        <div data-viz="ramp"></div>
+      </figure>
+      <p>Result: <span class="result">k = 4, 393,216 bytes, false contouring.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Spatial resolution = smallest discernible detail (dpi, set by sampling). Intensity resolution = smallest discernible change in intensity level (L = 2<sup>k</sup>, set by quantization). Storage b = M × N × k bits. Too few levels give false contouring.</p>
+    <p class="source">Source: L6 p.24 sampling (coordinates) vs quantization (amplitude) · L6 p.26 0 ≤ f ≤ L − 1, L = 2^k · L6 p.27-28 b = M × N × k · L6 p.29 spatial resolution · L6 p.30 intensity resolution and false contouring · Notes: Lecture 6 › Sampling, Quantization and Dynamic Range · Lecture 6 › Representing and Storing a Digital Image · Lecture 6 › Spatial and Intensity Resolution, Isopreference Curves</p>
+  </div>
+</article>
+
+<article class="q" id="s1-w8" data-sample="1" data-part="w" data-num="8" data-topic="Edge detection">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · 10 pts · Lecture 11, Edge detection</p>
+    <h3 class="q-title">Edge detection</h3>
+  </div>
+  <div class="prompt">
+    <p>Sobel masks:</p>
+    <div class="given" data-viz="masks"></div>
+    <p>Image (5 x 5), rows and columns numbered from 0:</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Apply Mx and My at pixel (2, 2) to get Gx and Gy. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute the gradient magnitude in both forms (square root form and absolute sum form) and the gradient direction. <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>Why does the Sobel operator also smooth the image while it differentiates? <span class="pts">(2 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Apply the masks</h4>
+      <p>Rule (slide 14): place the mask on the 3 x 3 window centred on (2, 2), multiply the matching positions and add (no flip).</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Window × mask, then add the nine products</h4></div>
+        <p class="fig-lede">The window around (2, 2), the mask, and the products position by position. Mx compares the right column with the left one, My compares the bottom row with the top one. The middle row or column counts twice.</p>
+        <div data-viz="apply-steps"></div>
+        <p class="step-note" data-role="apply-note" aria-live="polite"></p>
+        <div data-viz="apply"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>positive weight</span>
+          <span><i class="sw-sec"></i>negative weight</span>
+        </div>
+      </figure>
+      <pre class="calc">Gx = (−10 + 40) + 2(−10 + 40) + (−40 + 90) = 30 + 60 + 50 = 140
+Gy = (40 + 2·40 + 90) − (10 + 2·40 + 40)     = 210 − 130    = 80</pre>
+      <p>Result: <span class="result">Gx = 140, Gy = 80.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Magnitude and direction</h4>
+      <pre class="calc">square root form   |G| = √(140² + 80²) = √(19600 + 6400) = √26000 = 161.25
+absolute sum form  |G| ≈ |Gx| + |Gy| = 140 + 80 = 220
+direction          θ = tan⁻¹(Gy / Gx) = tan⁻¹(80 / 140) = tan⁻¹(0.5714) = 29.74°</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The gradient points toward the bright corner</h4></div>
+        <p class="fig-lede">Left: the gradient at (2, 2), drawn with x to the right and y down the rows. It points down and right, toward the brighter pixels; the edge runs perpendicular to it. Right: the square root form is the straight line, the absolute sum form walks along both legs, so it always comes out larger.</p>
+        <div data-viz="vector"></div>
+      </figure>
+      <ul>
+        <li>θ = 29.74° is the gradient direction, pointing toward the brighter pixels (down and right). The edge runs perpendicular to it.</li>
+        <li>Sign check: with slide 37's H<sub>r</sub> = [1 0 −1; 2 0 −2; 1 0 −1], Gx = −140 and θ = −29.74°. With true (flipped) convolution both signs flip (Gx = −140, Gy = −80), so tan⁻¹(Gy/Gx) is again 29.74°. The magnitude does not change.</li>
+      </ul>
+      <p>Result: <span class="result">161.25 (square root form), 220 (absolute sum form), θ = 29.74°.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Why Sobel also smooths</h4>
+      <ul>
+        <li>(textbook context) Each Sobel mask is a smoothing filter times a difference filter: Mx = [1 2 1]ᵀ × [−1 0 1]. It takes a central difference across the edge, and at the same time a weighted average [1 2 1] of three rows along the edge, with the centre row weighted 2.</li>
+        <li>This built-in averaging (low-pass) reduces noise. The 2 x 2 Roberts operator has a "smaller effective area" and is "more susceptible to noise" (slide 38).</li>
+        <li>Sobel is still listed as "highly sensitive to noise" (slide 44) compared with detectors that smooth first, such as LoG.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Sobel = average along the edge × difference across it</h4></div>
+        <p class="fig-lede">The column [1 2 1]ᵀ averages three rows. The row [−1 0 1] takes the difference between the right and left neighbours. Their product is exactly Mx.</p>
+        <div data-viz="outer"></div>
+        <p class="fig-lede">The effect on a noisy vertical edge (3 rows, the step from 40 to 90 is between columns 7 and 8). The difference taken on one row alone jitters in the flat parts. Sobel averages the three row differences with weights 1, 2, 1 (divided by 4 here to keep the same scale) and the flat parts get calmer.</p>
+        <div class="stats">
+          <div class="stat"><span class="label">One row</span><span class="v sec" data-role="rms-row">0</span><span class="sub">RMS response in the flat parts</span></div>
+          <div class="stat"><span class="label">Sobel ÷ 4</span><span class="v pri" data-role="rms-sobel">0</span><span class="sub">RMS response in the flat parts</span></div>
+        </div>
+        <div data-viz="noise"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>difference of the middle row only</span>
+          <span><i class="sw-pri"></i>Sobel response ÷ 4</span>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Gx and Gy from the two Sobel masks; |G| = √(Gx² + Gy²) or |Gx| + |Gy|; θ = tan⁻¹(Gy/Gx). Sobel weights the centre row by 2, which smooths, so it is less noisy than Roberts.</p>
+    <p class="source">Source: L11 p.14 applying a mask · L11 p.43 Sobel definition and masks · L11 p.37 magnitude and direction formulas · L11 p.38 Roberts, Sobel and Prewitt properties · L11 p.44 Sobel advantages and limitations · Notes: Lecture 11 › First Order Derivative Operators: Roberts, Prewitt, Sobel, Frei Chen</p>
+  </div>
+</article>

@@ -1,0 +1,652 @@
+<article class="q" id="s1-mc1" data-part="mc" data-num="1" data-topic="Shape of X">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2.1, Normal equation</p>
+    <h3 class="q-title">A multivariate linear regression dataset has m = 5 examples and n = 3 features. After the dummy feature x0 = 1 is added, what is the shape of the matrix X used in the normal equation θ = (XᵀX)⁻¹Xᵀy?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>5 × 3</span>
+      <span class="why">No. That is the dataset before x₀ is added. It forgets the column of 1s.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>3 × 5</span>
+      <span class="why">No. Rows and columns are swapped, and the x₀ column is still missing.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>5 × 4</span>
+      <span class="why">Correct. m rows by n + 1 columns: 5 × (3 + 1) = 5 × 4.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>4 × 4</span>
+      <span class="why">No. 4 × 4 is the shape of XᵀX, the square matrix the normal equation inverts.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> X has one row per example and one column per parameter. There are m = 5 examples, and the parameters are θ₀ for the dummy feature x₀ = 1 plus θ₁, θ₂, θ₃ for the n = 3 features. So X is m × (n + 1) = 5 × 4.</p>
+    <p>XᵀX is (4 × 5)(5 × 4) = 4 × 4, which is option d. Option a is the feature table before the column of 1s goes in.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>X is the slide's dataset with a column of 1s in front</h4>
+    </div>
+    <p class="fig-lede">The slide 6 dataset: 5 examples, features x₁, x₂, x₃. The blue column is the dummy feature x₀ = 1 from slide 9. With θ from the normal equation (slide 41), h = Xθ gives back every y. Pick a row.</p>
+    <div data-viz="rows"></div>
+    <div data-viz="xmat"></div>
+    <p class="step-note" data-role="row-note" aria-live="polite"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The shapes inside θ = (XᵀX)⁻¹Xᵀy</h4>
+    </div>
+    <p class="fig-lede">Each block is drawn to scale, one square per entry. A product only works when the inner sizes match (green). Step through the normal equation, then see what goes wrong with a 5 × 3 X.</p>
+    <div data-viz="chain-steps"></div>
+    <div data-viz="chain"></div>
+    <p class="step-note" data-role="chain-note" aria-live="polite"></p>
+    <div data-viz="chain-mat"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Add the dummy feature x₀ = 1, then X is m × (n + 1), θ is (n + 1) × 1 and h = Xθ is m × 1. XᵀX is (n + 1) × (n + 1).</p>
+    <p class="source">Source: L2.1 p.9, p.10-11, p.40 · Notes: L2.1 › Notation for multiple variables · L2.1 › Normal equation</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc2" data-part="mc" data-num="2" data-topic="Sigmoid threshold">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2.2, Sigmoid hypothesis</p>
+    <h3 class="q-title">Logistic regression uses hθ(x) = g(z) with z = θᵀx and g(z) = 1 / (1 + e⁻ᶻ). When does it predict y = 1?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>When z ≥ 0</span>
+      <span class="why">Correct. g(0) = 0.5 and g increases, so h ≥ 0.5 exactly when z ≥ 0.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>When z ≥ 0.5</span>
+      <span class="why">No. The 0.5 threshold is on h, not on z. g(0.5) = 0.62.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>When hθ(x) ≥ 0</span>
+      <span class="why">No. h is always between 0 and 1, so this rule says y = 1 for every input.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>When z ≤ 0</span>
+      <span class="why">No. That is the y = 0 side, where h ≤ 0.5.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Logistic regression predicts y = 1 when hθ(x) ≥ 0.5. The sigmoid passes through g(0) = 0.5 and only goes up, so g(z) ≥ 0.5 if z ≥ 0 and g(z) &lt; 0.5 if z &lt; 0 (slide 12).</p>
+    <p>So "h ≥ 0.5" and "θᵀx ≥ 0" are the same rule. Option b puts the 0.5 on the wrong side of g.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>h crosses 0.5 exactly where z crosses 0</h4>
+    </div>
+    <p class="fig-lede">The sigmoid g(z). The green half is where h ≥ 0.5, the y = 1 side. The red strip 0 ≤ z &lt; 0.5 is where option b gets it wrong. Drag z and check each option's rule below.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Input</span><span class="v" data-role="z">0.3</span><span class="sub">z = θᵀx</span></div>
+      <div class="stat"><span class="label">Output</span><span class="v pri" data-role="h">0.574</span><span class="sub">h = g(z) = 1 / (1 + e⁻ᶻ)</span></div>
+      <div class="stat"><span class="label">Prediction</span><span class="v ok" data-role="y">y = 1</span><span class="sub">h ≥ 0.5</span></div>
+    </div>
+    <div data-viz="curve"></div>
+    <div data-viz="rules"></div>
+    <p class="verdict" data-role="verdict"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>z ≥ 0 is one side of the decision boundary</h4>
+    </div>
+    <p class="fig-lede">Slide 13: θ = [−3, 1, 1], so z = −3 + x₁ + x₂. The line z = 0 is the decision boundary, where h = 0.5. Every point on the green side has z ≥ 0 and is predicted y = 1.</p>
+    <div data-viz="plane"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>g(z) ≥ 0.5 if z ≥ 0, so predict y = 1 when θᵀx ≥ 0. The decision boundary is θᵀx = 0, where h = 0.5.</p>
+    <p class="source">Source: L2.2 p.10, p.12 · Notes: L2.2 › Hypothesis: the sigmoid function</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc3" data-part="mc" data-num="3" data-topic="Precision">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3.1, Precision and recall</p>
+    <h3 class="q-title">A spam filter must avoid moving real emails (for example a job offer) into the spam folder. Which metric should it prioritise?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Recall</span>
+      <span class="why">No. Recall punishes False Negatives, spam that reaches the inbox. It ignores FP.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>Precision</span>
+      <span class="why">Correct. Precision = TP / (TP + FP), and a real email in the spam folder is a FP.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Accuracy</span>
+      <span class="why">No. Accuracy counts a FP and a FN the same, so it cannot single out the costly error.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>MAE</span>
+      <span class="why">No. MAE is a regression metric. Spam filtering is classification.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Spam is the positive class. Moving a real email into the spam folder is a False Positive. Precision = TP / (TP + FP) answers "of all the alarms the model raised, how many were real?", so every FP lowers it.</p>
+    <p>The slide's own example for precision is spam detection (slide 22). Recall is for problems where a False Negative is the costly error, such as cancer screening.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Every real email in the spam folder lowers precision</h4>
+    </div>
+    <p class="fig-lede">20 made-up emails, placed by the model's spam score. Emails at or above the threshold go to the spam folder. A red ring marks a misfiled email. Drag the threshold until the job offer stays in the inbox.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Precision</span><span class="v pri" data-role="prec">0.875</span><span class="sub">TP / (TP + FP)</span></div>
+      <div class="stat"><span class="label">Recall</span><span class="v" data-role="rec">0.875</span><span class="sub">TP / (TP + FN)</span></div>
+      <div class="stat"><span class="label">Accuracy</span><span class="v" data-role="acc">0.90</span><span class="sub">(TP + TN) / 20</span></div>
+    </div>
+    <div data-viz="strip"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>spam (positive)</span>
+      <span><i class="sw-ter"></i>real email (negative)</span>
+      <span><i class="sw-bad"></i>ring: misfiled, FP or FN</span>
+    </div>
+    <p class="fig-lede">The same counts in a confusion matrix, laid out as on slide 14 (columns are the actual class). Precision reads the predicted-spam row. Recall reads the actual-spam column.</p>
+    <div data-viz="matrix"></div>
+    <p class="verdict" data-role="verdict"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Precision = TP / (TP + FP): prioritise it when a False Positive is expensive, as in spam detection. Recall = TP / (TP + FN): prioritise it when a False Negative is dangerous, as in cancer screening.</p>
+    <p class="source">Source: L3.1 p.21, p.22, p.23-24 · Notes: L3.1 › Accuracy, precision, recall, F1</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc4" data-part="mc" data-num="4" data-topic="Naive assumption">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 3.2, Naive Bayes</p>
+    <h3 class="q-title">Why is the Naive Bayes classifier called "naive"?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>It gives every class the same prior probability</span>
+      <span class="why">No. Priors come from the class counts: 10/15 for Buy and 5/15 for No Buy.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It uses only one feature to classify</span>
+      <span class="why">No. It multiplies one likelihood per feature, so it uses all of them.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>It works only on continuous data</span>
+      <span class="why">No. Slide 27 says it handles continuous and discrete data. The shopping example is all categories.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>It assumes the features are independent of each other given the class</span>
+      <span class="why">Correct. That lets it write P(x₁, ..., xₙ | class) as a product of one-feature terms.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Naive Bayes assumes the features are conditionally independent given the class. Then P(x₁, ..., xₙ | class) = P(x₁ | class) · ... · P(xₙ | class), and each factor is one easy count.</p>
+    <p>Slide 28 lists this assumption as the main disadvantage, because it is rarely true for real data. The slide's own shopping data already breaks it, as Figure 1 shows.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Independence means the same split in every column</h4>
+    </div>
+    <p class="fig-lede">Each square is one class from the slide 14 shopping data. Column width is the share with Discount = Yes or No. Inside each column, blue is the share with Free Delivery = Yes. If the two features were independent given the class, the blue share would be the same in both columns. Naive Bayes draws it that way.</p>
+    <div data-viz="steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Counted</span><span class="v" data-role="act">0.80</span><span class="sub" data-role="act-sub">P(Disc. Yes, Free Yes | Buy)</span></div>
+      <div class="stat"><span class="label">Naive product</span><span class="v pri" data-role="nai">0.72</span><span class="sub" data-role="nai-sub">8/10 × 9/10</span></div>
+    </div>
+    <div data-viz="mosaic"></div>
+    <div class="legend">
+      <span><i class="sw-pri-soft"></i>Free Delivery = Yes</span>
+      <span><i class="sw-sec-soft"></i>Free Delivery = No</span>
+    </div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <p class="fig-lede">The slide 22 query, Holiday + Discount Yes + Free Delivery Yes. The naive product P(Holiday | c) · P(Disc. Yes | c) · P(Free Yes | c) is close to the counted share for Buy. For No Buy it gives a non-zero value although no No Buy row has all three. Normalised, the scores give 90% buy and 10% no buy (slide 25).</p>
+    <div data-viz="query"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>Equal priors? No.</h5>
+        <p>The prior is the class share of the 15 rows.</p>
+        <div class="chips"><span>P(Buy) = 10/15</span><span>P(No Buy) = 5/15</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option b</span>
+        <h5>One feature? No.</h5>
+        <p>One likelihood per feature, all multiplied (slide 24).</p>
+        <div class="chips"><span>4/10</span><span class="arrow">×</span><span>8/10</span><span class="arrow">×</span><span>9/10</span><span class="arrow">×</span><span>10/15</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Only continuous? No.</h5>
+        <p>Day, Discount and Free Delivery are all categories, and slide 27 lists "handles continuous and discrete data" as an advantage.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>"Naive" = the features are assumed independent given the class, so P(B | A) = P(x₁ | A) · P(x₂ | A) · ... · P(xₙ | A). Slide 28: the independence assumption is rarely true for real data.</p>
+    <p class="source">Source: L3.2 p.23-24, p.27, p.28 · Notes: L3.2 › Naive Bayes classifier: the naive assumption</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc5" data-part="mc" data-num="5" data-topic="KNN with k = N">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 3.2, Choosing k</p>
+    <h3 class="q-title">In KNN classification, what does the model predict if k is set equal to N, the number of training points?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>The majority class of the whole training set, for every query</span>
+      <span class="why">Correct. Every point votes for every query, so the vote never changes.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The label of the single nearest point</span>
+      <span class="why">No. That is k = 1, the other end of the range.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>A random class</span>
+      <span class="why">No. KNN is deterministic. With k = N the vote is always the same.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The class whose mean is nearest to the query</span>
+      <span class="why">No. That is a nearest-centroid rule. KNN never computes class means.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> KNN takes the majority vote of the k nearest training points. With k = N every training point is a neighbour, whatever the query. The vote is then the same for every query: the most frequent class in the dataset.</p>
+    <p>Slide 46: k ranges from 1, only the closest point, to N, which always predicts the dataset's majority class. Small k overfits, large k smooths, and k = N ignores the query completely.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Raise k to N = 12 and the whole map votes Setosa</h4>
+    </div>
+    <p class="fig-lede">The 12 Iris points from slides 42-44 (5 Setosa, 3 Versicolor, 4 Virginica). Each background square is colored by the class KNN predicts there, so the map shows the answer for every possible query. Q1 is the slide's query. Drag k from 1 to N = 12.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Q1 (5.2, 3.1)</span><span class="v" data-role="p0">Setosa</span><span class="sub" data-role="v0"></span></div>
+      <div class="stat"><span class="label">Q2 (7.0, 2.9)</span><span class="v" data-role="p1">Virginica</span><span class="sub" data-role="v1"></span></div>
+      <div class="stat"><span class="label">Q3 (6.2, 2.5)</span><span class="v" data-role="p2">Versicolor</span><span class="sub" data-role="v2"></span></div>
+    </div>
+    <div data-viz="map"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Setosa</span>
+      <span><i class="sw-ter"></i>Versicolor</span>
+      <span><i class="sw-sec"></i>Virginica</span>
+      <span><i class="sw-pri-soft"></i><i class="sw-ter-soft"></i><i class="sw-sec-soft"></i>class predicted at that spot</span>
+    </div>
+    <p class="fig-lede">The 12 training points sorted from nearest to farthest for each query. The box holds the k neighbours that vote. A tie goes to the tied class with the nearer neighbour.</p>
+    <div data-viz="ranks"></div>
+    <p class="verdict" data-role="verdict"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>k ranges from 1 (only the closest point) to N (always predicts the dataset's majority class). Low k overfits, high k smooths.</p>
+    <p class="source">Source: L3.2 p.39, p.46, p.53 · Notes: L3.2 › Choosing k</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc6" data-part="mc" data-num="6" data-topic="Entropy">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 4.1, Entropy</p>
+    <h3 class="q-title">A decision-tree node holds 7 "Yes" and 7 "No" examples. Its entropy (log base 2) is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0</span>
+      <span class="why">No. 0 is a pure node, all Yes or all No.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0.5</span>
+      <span class="why">No. 0.5 is each class's probability, not the entropy.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>1</span>
+      <span class="why">Correct. −0.5 log₂ 0.5 − 0.5 log₂ 0.5 = 0.5 + 0.5 = 1.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.940</span>
+      <span class="why">No. 0.940 is the PlayTennis root, 9 Yes and 5 No.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Both classes have probability 7/14 = 0.5. E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋ = −0.5 × (−1) − 0.5 × (−1) = 0.5 + 0.5 = 1.</p>
+    <p>1 is the maximum for two classes: a 50/50 node is the least pure. "Higher entropy means lower purity and higher impurity."</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>A 50/50 node sits at the top of the entropy curve</h4>
+    </div>
+    <p class="fig-lede">A node with 14 examples. Left: the examples and the two entropy terms, −p log₂ p for each class. Right: entropy against the share of Yes. Drag the number of Yes examples.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Share of Yes</span><span class="v" data-role="p">0.5</span><span class="sub" data-role="pq">p₊ = 7/14, p₋ = 7/14</span></div>
+      <div class="stat"><span class="label">Entropy E</span><span class="v ok" data-role="e">1</span><span class="sub" data-role="terms">0.5 + 0.5</span></div>
+      <div class="stat"><span class="label">Node</span><span class="v" data-role="pure">least pure</span><span class="sub">for two classes</span></div>
+    </div>
+    <div data-viz="node"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>Yes</span>
+      <span><i class="sw-sec"></i>No</span>
+      <span><i class="sw-ok"></i>this node</span>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = −p₊ log₂ p₊ − p₋ log₂ p₋. A pure node has E = 0 and becomes a leaf; a 50/50 node has E = 1, the maximum for two classes.</p>
+    <p class="source">Source: L4.1 p.22, p.24-28 · Notes: L4.1 › Entropy</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc7" data-part="mc" data-num="7" data-topic="Support vectors">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 4.2, Support vectors</p>
+    <h3 class="q-title">Which training points determine the separating hyperplane of an SVM?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>All training points, each with equal weight</span>
+      <span class="why">No. That describes logistic regression, which is defined over all points (slide 11).</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The mean point of each class</span>
+      <span class="why">No. A line from the class means moves whenever any point moves. The SVM line does not.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>The points farthest from the hyperplane</span>
+      <span class="why">No. It is the opposite. The far points can move freely without changing anything.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>Only the support vectors, the points closest to the hyperplane</span>
+      <span class="why">Correct. "The SVM is defined only by the support vectors."</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Support vectors are the points closest to the hyperplane, the ones that sit on the margin lines. The maximum-margin hyperplane is fixed by them alone.</p>
+    <p>The other points can move, as long as they do not cross the margin, and the hyperplane does not change. Logistic regression, by contrast, is defined over all points (slide 11).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Move the other points and the SVM line stays put</h4>
+    </div>
+    <p class="fig-lede">12 made-up points, 6 per class. The blue line is the maximum-margin hyperplane, with its margin shaded. Ringed points are the support vectors. The red dashed line is built from the two class means, so every point has equal weight in it (options a and b). Step through the moves.</p>
+    <div data-viz="steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">SVM hyperplane</span><span class="v pri" data-role="eq">x₁ + x₂ = 7.5</span><span class="sub" data-role="eq-sub">from the 3 support vectors</span></div>
+      <div class="stat"><span class="label">Margin width</span><span class="v" data-role="d">2.121</span><span class="sub">d = 2 / ‖w‖</span></div>
+      <div class="stat"><span class="label">Class-mean line</span><span class="v" data-role="mean">start</span><span class="sub">uses every point</span></div>
+    </div>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-ter"></i>class +1</span>
+      <span><i class="sw-sec"></i>class −1</span>
+      <span><i class="sw-pri"></i>SVM hyperplane and margin</span>
+      <span><i class="sw-bad"></i>line from the class means</span>
+    </div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Support vectors are the points closest to the hyperplane. The SVM is defined only by the support vectors; logistic regression is defined over all points.</p>
+    <p class="source">Source: L4.2 p.8, p.11 · Notes: L4.2 › Important terms · L4.2 › How SVM works</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc8" data-part="mc" data-num="8" data-topic="MNAR">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 5.2, Missing values</p>
+    <h3 class="q-title">In a salary survey, high earners often leave the income question blank. This type of missing data is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>MCAR (Missing Completely At Random)</span>
+      <span class="why">No. MCAR is unrelated to any variable, like a sensor that briefly went offline.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>MNAR (Missing Not At Random)</span>
+      <span class="why">Correct. The value is missing because of the value itself: a high income.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>MAR (Missing At Random)</span>
+      <span class="why">No. MAR depends on another observed variable, like older respondents skipping income questions.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>A duplicate record</span>
+      <span class="why">No. A duplicate is an extra copy of a row, not a blank value.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Whether the income is missing depends on the income itself: the higher it is, the more likely the blank. That is MNAR, Missing Not At Random, the hardest case. High earners hiding their income is the slide's own MNAR example.</p>
+    <p>MNAR is hard because nothing in the observed data reveals it. The answers that remain look normal, but their average is too low.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The shape of the blanks tells the three types apart</h4>
+    </div>
+    <p class="fig-lede">A made-up survey of 30 people. Age is known for everyone. Hollow circles are incomes left blank, drawn where the true value would be. The analyst never sees them. Compare the mean of the answers that remain with the true mean.</p>
+    <div data-viz="steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Left blank</span><span class="v" data-role="n">6 of 30</span><span class="sub">hollow circles</span></div>
+      <div class="stat"><span class="label">Mean of the answers</span><span class="v pri" data-role="om">50.6k</span><span class="sub">what the analyst sees</span></div>
+      <div class="stat"><span class="label">Error</span><span class="v" data-role="gap">−10.2k</span><span class="sub">true mean 60.8k</span></div>
+    </div>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>income answered</span>
+      <span><i class="sw-seg"></i>hollow: income left blank</span>
+      <span><i class="sw-ter-soft"></i>where the blanks are</span>
+    </div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MCAR: not related to any variable (a sensor briefly went offline). MAR: related to other observed variables (older respondents skip income questions). MNAR: depends on the missing value itself (high earners hide their income), the hardest case.</p>
+    <p class="source">Source: L5.2 p.10 · Notes: L5.2 › Missing values</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc9" data-part="mc" data-num="9" data-topic="Update centroids">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 6.1, K-Means steps</p>
+    <h3 class="q-title">In the K-Means algorithm, what happens in the "update centroids" step?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Each point moves to the nearest centroid</span>
+      <span class="why">No. Points never move. Joining the nearest centroid's cluster is the assignment step.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>A new centroid is picked at random from the data</span>
+      <span class="why">No. Random picks happen only once, at initialization.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>Each centroid becomes the mean of all points assigned to its cluster</span>
+      <span class="why">Correct. μₖ = (1/|Cₖ|) Σ xᵢ over the points in cluster k.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The centroid with the most points is split in two</span>
+      <span class="why">No. K is fixed in advance. Splitting clusters belongs to other methods.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Step 3 of K-Means recomputes every centroid as the mean of the points assigned to it, μₖ = (1/|Cₖ|) Σ xᵢ over xᵢ ∈ Cₖ. The points stay where they are. Only the centroids move.</p>
+    <p>Step 2, the assignment, gives each point to its nearest centroid. Steps 2 and 3 repeat until the centroids stop changing.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Each star jumps to the mean of its colored points</h4>
+    </div>
+    <p class="fig-lede">12 made-up points, K = 3. Initialization picks A, B and F as centroids (stars), two of them in the same corner. Each assign step colors the points by their nearest star. Each update step moves every star to the mean of its points, shown by the arrow. Step through to convergence.</p>
+    <div data-viz="steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Step</span><span class="v pri" data-role="step">Update 1</span><span class="sub" data-role="step-sub">centroids move</span></div>
+      <div class="stat"><span class="label">Objective J</span><span class="v" data-role="j">48.479</span><span class="sub">Σ squared distance to own centroid</span></div>
+    </div>
+    <div data-viz="plot"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="table"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Initialize K centroids from the data, assign each point to the closest centroid, update each centroid to the mean of its points, μₖ = (1/|Cₖ|) Σ xᵢ, and repeat until the centroids no longer change.</p>
+    <p class="source">Source: L6.1 p.7, p.8, p.9 · Notes: L6.1 › The algorithm in five steps · L6.1 › Objective J and the centroid formula</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc10" data-part="mc" data-num="10" data-topic="PC1">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 6.2, Principal components</p>
+    <h3 class="q-title">The first principal component of a dataset is the direction that:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>maximizes the variance of the data projected onto it</span>
+      <span class="why">Correct. PC1 is the line on which the projections are the most spread out.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>minimizes the variance of the data projected onto it</span>
+      <span class="why">No. In 2D that is the last component, PC2, which keeps the least information.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>is always parallel to the x1 axis</span>
+      <span class="why">No. PC1 can point in any direction. It follows the data, not the axes.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>passes through the point farthest from the origin</span>
+      <span class="why">No. One point does not set the direction. All points count through their variance.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> PC1 is "the line in which the projection of the points is the most spread out", the line that maximizes the variance. Larger variance means more information along that line.</p>
+    <p>PC2 is perpendicular to PC1 and carries the next highest variance. On the slide 17 data, PC1 keeps 30.38 of the total variance 37, or 82.1%.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Turn the line and watch the projections spread</h4>
+    </div>
+    <p class="fig-lede">The four points from slide 17, centred on their mean (8, 8.5). Each point drops onto the line at angle θ (plum dots, like slide 11). The variance of those dots changes with θ. Drag θ and find the largest spread.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Direction</span><span class="v" data-role="th">124°</span><span class="sub">θ, from the x₁ axis</span></div>
+      <div class="stat"><span class="label">Variance on the line</span><span class="v pri" data-role="var">30.38</span><span class="sub">Σ (projection)² / (n − 1)</span></div>
+      <div class="stat"><span class="label">Share of the total 37</span><span class="v" data-role="share">82.1%</span><span class="sub">14 + 23 = 37</span></div>
+    </div>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-ter"></i>data point, centred</span>
+      <span><i class="sw-sec"></i>its projection on the line</span>
+      <span><i class="sw-pri"></i>variance against θ</span>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <p class="fig-lede">The four options as directions on this data. Only PC1 reaches the maximum; PC2, the minimum, is 90° away from it.</p>
+    <div data-viz="opts"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Principal components are the directions of maximal variance. PC1 is the line on which the projections of the points are most spread out; PC2 is perpendicular to PC1 and carries the next highest variance.</p>
+    <p class="source">Source: L6.2 p.8, p.11, p.12 · Notes: L6.2 › Geometric view: directions of maximum variance</p>
+  </div>
+</article>

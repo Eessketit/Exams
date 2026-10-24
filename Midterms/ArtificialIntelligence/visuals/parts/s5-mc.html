@@ -1,0 +1,715 @@
+<article class="q" id="s5-mc1" data-part="mc" data-num="1" data-topic="Polynomial features">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2.1, Polynomial regression</p>
+    <h3 class="q-title">The model h = w₁x + w₂x² + w₃x³ + b is called polynomial regression. Why can it still be trained exactly like linear regression?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Because x³ is small enough to ignore</span>
+      <span class="why">No. x³ grows fastest of the three features. It stays in the model as its own column.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Because gradient descent works for any function</span>
+      <span class="why">No. Gradient descent alone gives no normal equation. Both methods apply here because h is linear in w.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>Because the model is linear in the parameters w; only the features x, x², x³ are non-linear</span>
+      <span class="why">Correct. Slide 46 constructs new features x², x³ and trains a standard linear regression on them.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Because polynomial regression always has exactly one feature</span>
+      <span class="why">No. There is one input x, but the model uses three features x, x², x³.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The core trick on slide 46 is to construct new features x² and x³ from the input x and train a standard linear regression on them. h is a weighted sum of the columns of X = [1, x, x², x³], so it is still linear with respect to the parameters w and b.</p>
+    <p>That is why the gradient descent update and the normal equation θ = (XᵀX)⁻¹Xᵀy apply unchanged. The word polynomial describes only the shape of the features in x.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>x becomes three feature columns, and h is the product Xθ</h4>
+    </div>
+    <p class="fig-lede">Five inputs x go through the feature step. Each row of X is [1, x, x², x³], and the prediction is X times θ = [b, w₁, w₂, w₃], the same product as multivariate linear regression with three features. Here b = 1, w₁ = −1, w₂ = 0.5, w₃ = 0.5. Pick a row.</p>
+    <div data-viz="rows"></div>
+    <div data-viz="matrix"></div>
+    <p class="step-note" data-role="row-note" aria-live="polite"></p>
+    <p class="formula">GD: θ := θ − α · (1/m) · Xᵀ(Xθ − y)<br>Normal equation: θ = (XᵀX)⁻¹ · Xᵀy</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Curved in x, straight in w</h4>
+    </div>
+    <p class="fig-lede">Left: h(x) = 1 − x + w₂x² + 0.5x³ as a function of the input. It bends. Right: the prediction at three fixed inputs as a function of the weight w₂. Each one is a straight line, and its slope is the feature value x². Drag w₂.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Weight</span><span class="v pri" data-role="w2">w₂ = 0.5</span><span class="sub">the parameter being changed</span></div>
+      <div class="stat"><span class="label">h(2)</span><span class="v" data-role="h2">5</span><span class="sub">3 + 4 · w₂</span></div>
+      <div class="stat"><span class="label">Slope of h(2) in w₂</span><span class="v ok">4</span><span class="sub">x² = 2² at every w₂</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="dual"></div>
+    <div class="legend">
+      <span><i class="sw-ter"></i>x = 0, slope 0</span>
+      <span><i class="sw-sec"></i>x = 1, slope 1</span>
+      <span><i class="sw-pri"></i>x = 2, slope 4</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Polynomial regression constructs new features x², x³ from x and trains a standard linear regression on them. The model is still linear with respect to the parameters w, so the GD update and the normal equation apply with X columns [1, x, x², x³].</p>
+    <p class="source">Source: L2.1 p.45, p.46, p.47 · Notes: Lecture 2.1 › 9. Polynomial regression</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc2" data-part="mc" data-num="2" data-topic="Decision boundary">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2.2, Decision boundary</p>
+    <h3 class="q-title">Logistic regression has hθ(x) = g(θ₀ + θ₁x₁ + θ₂x₂) with θ = [−3, 1, 1]ᵀ. What is its decision boundary?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>The line x₁ + x₂ = 3</span>
+      <span class="why">Correct. −3 + x₁ + x₂ = 0 gives x₁ + x₂ = 3. On this line h = g(0) = 0.5.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The line x₁ + x₂ = 0.5</span>
+      <span class="why">No. This puts the 0.5 threshold on x₁ + x₂. The 0.5 belongs to h. On x₁ + x₂ = 0.5, z = −2.5 and h = 0.076.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>The line x₁ + x₂ = −3</span>
+      <span class="why">No. That flips the sign of θ₀. On x₁ + x₂ = −3, z = −6 and h = 0.0025.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The circle x₁² + x₂² = 3</span>
+      <span class="why">No. A circle needs the features x₁² and x₂². With only x₁ and x₂, θᵀx = 0 is always a straight line.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> g(z) ≥ 0.5 exactly when z ≥ 0 (slide 12). So the model predicts y = 1 when −3 + x₁ + x₂ ≥ 0, which is x₁ + x₂ ≥ 3. The boundary is θᵀx = 0, the line x₁ + x₂ = 3, and on it h = 0.5.</p>
+    <p>Option b confuses the threshold on h with the threshold on θᵀx. Option d would need the polynomial features x₁² and x₂² of slide 42.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Every line x₁ + x₂ = c is a contour of h, and only c = 3 has h = 0.5</h4>
+    </div>
+    <p class="fig-lede">Left: the sigmoid h = g(z). Right: the x₁–x₂ plane with training points like slide 13 (circles y = 1, crosses y = 0) and the four options. The blue dashed line is the set of points with the z you pick, x₁ + x₂ = 3 + z. Drag z and watch h.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">z = θᵀx</span><span class="v pri" data-role="z">0</span><span class="sub">−3 + x₁ + x₂</span></div>
+      <div class="stat"><span class="label">h = g(z)</span><span class="v" data-role="h">0.5</span><span class="sub">1 / (1 + e<sup>−z</sup>)</span></div>
+      <div class="stat"><span class="label">Contour</span><span class="v" data-role="line">x₁ + x₂ = 3</span><span class="sub">the points with this z</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="contour"></div>
+    <div class="legend">
+      <span><i class="sw-pri-soft"></i>predict y = 1 (θᵀx ≥ 0)</span>
+      <span><i class="sw-ok"></i>boundary, option a</span>
+      <span><i class="sw-bad"></i>options b, c, d</span>
+      <span><i class="sw-pri"></i>contour for your z</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Linear features give a line, squared features give a circle</h4>
+    </div>
+    <p class="fig-lede">The color is h at each point. With features [1, x₁, x₂], z changes at the same rate in one direction, so the h = 0.5 edge is straight. Adding x₁² and x₂² (slide 42) lets z = 0 be a circle, which is what option d would need.</p>
+    <div data-viz="circle"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>h ≥ 0.5, predict 1 (darker = closer to 1)</span>
+      <span><i class="sw-sec"></i>h &lt; 0.5, predict 0 (darker = closer to 0)</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Predict y = 1 when θᵀx ≥ 0, because g(z) ≥ 0.5 exactly when z ≥ 0. The decision boundary is θᵀx = 0. For θ = [−3, 1, 1]ᵀ it is the line x₁ + x₂ = 3, where h = 0.5.</p>
+    <p class="source">Source: L2.2 p.12, p.13, p.42 · Notes: Lecture 2.2 › 6. Decision boundary, linear and non linear</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc3" data-part="mc" data-num="3" data-topic="Recall">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3.1, Precision and recall</p>
+    <h3 class="q-title">A cancer screening test is evaluated. Which error is the most dangerous, and which metric should be prioritised?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>False positive; precision</span>
+      <span class="why">No. A false positive is a false alarm that costs an extra test. Precision is the metric for costly false positives, as in spam detection.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>True negative; accuracy</span>
+      <span class="why">No. A true negative is a correct result, a healthy patient cleared. Accuracy also hides missed cancers when most patients are healthy.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>False positive; accuracy</span>
+      <span class="why">No. The false alarm is the cheaper error here, and accuracy counts both errors the same.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>False negative; recall</span>
+      <span class="why">Correct. A missed cancer can be fatal. Recall = TP/(TP + FN) counts how many real cancers were caught.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> A false negative tells a patient who has cancer that they are healthy. That missed cancer can be fatal, while a false positive only costs an extra test.</p>
+    <p>Recall = TP / (TP + FN) answers the slide question "Of all the real positives out there, how many did the model actually catch?" It is the metric to prioritise when a false negative is dangerous, so doctors accept lower precision for higher recall.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Recall reads the actual-cancer row, precision reads the alarm column</h4>
+    </div>
+    <p class="fig-lede">The confusion matrix of a screening test. The false negative is the deadly cell. Only recall has it in the denominator, so only recall drops when cancers are missed.</p>
+    <div data-viz="pick"></div>
+    <div data-viz="matrix"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Lowering the alarm threshold trades precision for recall</h4>
+    </div>
+    <p class="fig-lede">36 patients with a test score: 10 with cancer, 26 healthy. Everyone at or above the threshold is sent for a biopsy. Drag the threshold left until no cancer is missed, and watch precision fall.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Missed cancers</span><span class="v" data-role="fn">4</span><span class="sub">false negatives, FN</span></div>
+      <div class="stat"><span class="label">False alarms</span><span class="v ter" data-role="fp">5</span><span class="sub">false positives, FP</span></div>
+      <div class="stat"><span class="label">Recall</span><span class="v pri" data-role="rec">0.6</span><span class="sub">TP / (TP + FN)</span></div>
+      <div class="stat"><span class="label">Precision</span><span class="v sec" data-role="prec">0.545</span><span class="sub">TP / (TP + FP)</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="strip"></div>
+    <div class="legend">
+      <span><i class="sw-ok"></i>TP, cancer found</span>
+      <span><i class="sw-bad"></i>FN, cancer missed</span>
+      <span><i class="sw-ter"></i>FP, false alarm</span>
+      <span><i class="sw-seg"></i>TN, healthy and cleared</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Recall (sensitivity) = TP / (TP + FN) answers how many of the real positives the model caught. Prioritise it when a false negative is dangerous, as in cancer screening and airport security. Prioritise precision when a false positive is costly, as in spam detection.</p>
+    <p class="source">Source: L3.1 p.23, p.24 · Notes: Lecture 3.1 › 8. Accuracy, precision, recall, F1</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc4" data-part="mc" data-num="4" data-topic="Feature scaling">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 3.2 and 5.2, KNN and feature scaling</p>
+    <h3 class="q-title">A KNN classifier uses two raw features: age (20 to 60 years) and salary (40,000 to 80,000). What goes wrong without feature scaling?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>KNN cannot compute distances on integers</span>
+      <span class="why">No. Euclidean distance works on any numbers, integers included.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>The distances are dominated by salary, so age has almost no influence on which neighbours are nearest</span>
+      <span class="why">Correct. A salary gap of 1,000 outweighs an age gap of 20 years.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>The value of k must then be larger than the number of points</span>
+      <span class="why">No. k can never exceed the number of training points. Scaling changes the distances and leaves k alone.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Nothing; KNN is scale-invariant like a decision tree</span>
+      <span class="why">No. Decision trees are scale-invariant. KNN predicts from distances, and distances depend on the units.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> KNN ranks neighbours by the Euclidean distance √(Δage² + Δsalary²). A difference of 1,000 in salary outweighs a difference of 20 years in age, so the salary term decides which neighbours are nearest.</p>
+    <p>Features on very different ranges are implicitly weighted unequally. Scale first. Slide 19 lists Min-Max as best for neural networks, KNN and SVM.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Raw distances pick neighbours by salary alone</h4>
+    </div>
+    <p class="fig-lede">A is the query. Points A, B and C are from the notes, five more points are added, and k = 3. Both views use the same plot. Only the distance changes. In raw units the set of points within the third-neighbour distance is a flat band, because a gap of 2,000 dollars counts as much as a gap of 2,000 years.</p>
+    <div data-viz="mode"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">3 nearest</span><span class="v pri" data-role="nn">B, D, E</span><span class="sub">by Euclidean distance</span></div>
+      <div class="stat"><span class="label">Vote</span><span class="v" data-role="vote">0 Yes : 3 No</span><span class="sub">majority wins</span></div>
+      <div class="stat"><span class="label">Prediction for A</span><span class="v" data-role="pred">No</span><span class="sub">age 25, salary 50,000</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>class Yes</span>
+      <span><i class="sw-sec"></i>class No</span>
+      <span><i class="sw-pri-soft"></i>points within the third-neighbour distance of A</span>
+    </div>
+    <div data-viz="table"></div>
+    <p class="formula">Min-Max: x′ = (x − min) / (max − min)<br>age′ = (age − 20) / 40 &nbsp;&nbsp; salary′ = (salary − 40,000) / 40,000</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>How much of d² comes from age</h4>
+    </div>
+    <p class="fig-lede">Each bar splits the squared distance d² = Δage² + Δsalary² into its two terms. In raw units age gives 0.04% of d²(A, B), so the 20-year gap between A and B barely counts. After Min-Max scaling the same gap gives 99.75%.</p>
+    <div data-viz="share"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>age term Δage²</span>
+      <span><i class="sw-sec"></i>salary term Δsalary²</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Features on very different ranges (age in years vs income in dollars) get implicitly weighted unequally, and the large-range feature dominates the distance. Scale before KNN. Min-Max is best for neural networks, KNN and SVM. Decision trees are scale-invariant.</p>
+    <p class="source">Source: L5.2 p.18, p.19 · L3.2 p.35 · Notes: Lecture 3.2 › 15. Ties and feature scaling · Lecture 5.2 › 7. Feature scaling</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc5" data-part="mc" data-num="5" data-topic="Entropy">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 4.1, Entropy</p>
+    <h3 class="q-title">A decision-tree node holds 3 "Yes" and 1 "No" examples. Its entropy (log base 2) is approximately:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.25</span>
+      <span class="why">No. 0.25 is p(No) = 1/4 itself, without the log.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0.5</span>
+      <span class="why">No. 0.5 is only the No term, −(1/4) log₂(1/4). The Yes term 0.311 is missing.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>0.811</span>
+      <span class="why">Correct. 0.311 + 0.5 = 0.811.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>1.0</span>
+      <span class="why">No. 1.0 is the entropy of a 50/50 node, such as 2 Yes and 2 No.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The node has p(Yes) = 3/4 and p(No) = 1/4. E = −(3/4) log₂(3/4) − (1/4) log₂(1/4) = 0.311 + 0.5 = 0.811.</p>
+    <p>A pure node has entropy 0 and a 50/50 node has entropy 1, so a 3:1 node lies in between. Lower entropy means a purer node.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Entropy against the share of Yes in a node</h4>
+    </div>
+    <p class="fig-lede">The curve is E(p) = −p log₂ p − (1 − p) log₂(1 − p). It is 0 for a pure node and peaks at 1 for a 50/50 node. Pick a node, including the two from slides 26 and 27.</p>
+    <div data-viz="nodes"></div>
+    <div data-viz="curve"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>0.811 is the sum of two terms</h4>
+    </div>
+    <p class="fig-lede">The bar adds the Yes term and the No term on a 0 to 1 scale. Below it are the four options. Option b stops after the No term, and option a uses p(No) without the log.</p>
+    <div data-viz="terms"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>E(S) = −p₍₊₎ log₂ p₍₊₎ − p₍₋₎ log₂ p₍₋₎. A pure node has E = 0 and a 50/50 node has E = 1. A 3 Yes / 1 No node has E = 0.311 + 0.5 = 0.811. Higher entropy means lower purity.</p>
+    <p class="source">Source: L4.1 p.22, p.26-27, p.28 · Notes: Lecture 4.1 › 5. Entropy</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc6" data-part="mc" data-num="6" data-topic="Soft margin slack">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 4.2, Soft margin</p>
+    <h3 class="q-title">In a soft-margin SVM, a training point has y = +1 and w·x + b = 0.5. What is its slack ζ = max(0, 1 − y(w·x + b))?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>0.5</span>
+      <span class="why">Correct. ζ = max(0, 1 − 1 × 0.5) = 0.5. The point is on the correct side but inside the margin.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0</span>
+      <span class="why">No. ζ = 0 needs y(w·x + b) ≥ 1, a point on or beyond its margin line.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>1.5</span>
+      <span class="why">No. ζ = 1.5 belongs to a misclassified point with y(w·x + b) = −0.5.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>−0.5</span>
+      <span class="why">No. The max with 0 means ζ is never negative.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> ζ = max(0, 1 − y(w·x + b)) = max(0, 1 − 1 × 0.5) = 0.5.</p>
+    <p>w·x + b = 0.5 is positive, so the point is on the correct side of the hyperplane. It has not reached its margin line w·x + b = 1, so it sits inside the margin, where 0 &lt; ζ ≤ 1. ζ = 0 is for a point on or beyond its margin line, and ζ &gt; 1 means misclassified.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>ζ is how far the point falls short of its own margin line</h4>
+    </div>
+    <p class="fig-lede">L is the hyperplane w·x + b = 0, L1 and L2 are the margin lines at +1 and −1. Here ‖w‖ = 1, so one unit of w·x + b is one unit of distance. The ringed point has y = +1. Drag its w·x + b.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Margin value</span><span class="v pri" data-role="m">0.5</span><span class="sub">y(w·x + b) with y = +1</span></div>
+      <div class="stat"><span class="label">Slack</span><span class="v ok" data-role="zeta">0.5</span><span class="sub">ζ = max(0, 1 − y(w·x + b))</span></div>
+      <div class="stat"><span class="label">Where it is</span><span class="v" data-role="zone">inside margin</span><span class="sub">relative to L and L1</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="plane"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>y = +1</span>
+      <span><i class="sw-sec"></i>y = −1</span>
+      <span><i class="sw-seg"></i>the margin between L2 and L1</span>
+      <span><i class="sw-bad"></i>the slack ζ</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The slack term max(0, 1 − y(w·x + b)) and the four options</h4>
+    </div>
+    <p class="fig-lede">The slack is a hinge. It is 0 from the margin line onward, rises to 1 at the hyperplane, and keeps rising for misclassified points. It never goes below 0. The ringed dot follows the slider in Figure 1.</p>
+    <div data-viz="hinge"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>ζ = max(0, 1 − y(wᵀx + b)). ζ = 0 on or beyond the own margin line, 0 &lt; ζ ≤ 1 inside the margin on the correct side, ζ &gt; 1 misclassified. ζ is never negative.</p>
+    <p class="source">Source: L4.2 p.40, p.42 · Notes: Lecture 4.2 › 9. Soft margin: slack zeta, C and hinge loss</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc7" data-part="mc" data-num="7" data-topic="Z-score">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 5.2, Outliers and standardization</p>
+    <h3 class="q-title">A feature has mean μ = 50 and standard deviation σ = 10. What is the z-score of x = 70, and is it an outlier by the |z| &gt; 3 rule?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.2; no</span>
+      <span class="why">No. 0.2 = 20/100 divides by the variance σ² = 100 instead of σ = 10.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>20; yes</span>
+      <span class="why">No. 20 is only x − μ. It still has to be divided by σ.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>3.5; yes</span>
+      <span class="why">No. z = 3.5 belongs to x = 85, which would be flagged.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>2; no</span>
+      <span class="why">Correct. z = (70 − 50)/10 = 2, and |2| is below the cutoff 3.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> z = (x − μ)/σ = (70 − 50)/10 = 2, so the value is 2 standard deviations above the mean. The rule flags |z| &gt; 3, and 2 is below the cutoff, so x = 70 is not an outlier.</p>
+    <p>The same formula is the standardization scaler, which gives the feature mean 0 and std 1.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>x = 70 sits at z = 2, inside the ±3σ fence</h4>
+    </div>
+    <p class="fig-lede">A normal curve with μ = 50 and σ = 10. Each x has a z-score on the row below the x axis. The red bands are |z| &gt; 3, where the rule flags a value. Drag x.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Above the mean</span><span class="v" data-role="dx">20</span><span class="sub">x − μ</span></div>
+      <div class="stat"><span class="label">z</span><span class="v pri" data-role="z">2</span><span class="sub">(x − μ) / σ</span></div>
+      <div class="stat"><span class="label">Outlier?</span><span class="v ok" data-role="flag">no</span><span class="sub">flag if |z| &gt; 3</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="bell"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Standardizing relabels the axis in units of σ</h4>
+    </div>
+    <p class="fig-lede">Three number lines for the same feature. Subtracting μ moves 0 to the mean, and dividing by σ counts in standard deviations. The point never moves relative to the data. Option b stops after the first step, and the tags on the z line show where options a and c sit.</p>
+    <div data-viz="map"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>z = (x − μ)/σ, and |z| &gt; 3 is the common outlier cutoff. For μ = 50, σ = 10, x = 70 gives z = 2, not an outlier. Standardization uses the same formula and gives mean 0, std 1.</p>
+    <p class="source">Source: L5.2 p.14, p.18-19 · Notes: Lecture 5.2 › 5. Outliers: IQR, Z score, ML detectors</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc8" data-part="mc" data-num="8" data-topic="K-Means++">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 6.1, K-Means initialization</p>
+    <h3 class="q-title">Running K-Means several times on the same data gives different clusters each time. What causes this, and what does the lecture suggest?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The data has missing values; impute them</span>
+      <span class="why">No. Missing values are a data-cleaning problem. They do not make one run differ from the next.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>The initial centroids are chosen at random; use K-Means++ to choose them</span>
+      <span class="why">Correct. Slide 19 names random initialization and suggests K-Means++.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>K is too large; always use K = 2</span>
+      <span class="why">No. K is chosen with the elbow method. With any fixed K, random starts can still differ.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The distance is Euclidean; use Manhattan</span>
+      <span class="why">No. Changing the distance keeps the random start, so runs still differ.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> K-Means starts from K random centroids and then only improves them step by step, so a bad start can end in a bad local minimum. Slide 19 says random initialization "is also potentially problematic because we might get different clusters every time" and suggests K-Means++.</p>
+    <p>K-Means++ picks the first centroid at random and every next one with probability proportional to D(x)², which spreads the starting centroids. In the course notebook, random seed 42 ends at cost 8979.85, while K-Means++ reaches 611.62 on the same data.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Same data, same K = 3, three different starts</h4>
+    </div>
+    <p class="fig-lede">24 points in three groups. Rings are the starting centroids, arrows show how each centroid moves per iteration, and diamonds are where they stop. Start 2 puts two centroids in the top group. K-Means then splits that group and merges the two bottom groups, and it never recovers.</p>
+    <div data-viz="runs-steps"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Start</span><span class="v" data-role="start">random</span><span class="sub">initial centroids</span></div>
+      <div class="stat"><span class="label">Iterations</span><span class="v" data-role="iters">2</span><span class="sub">centroid updates until stable</span></div>
+      <div class="stat"><span class="label">Final cost</span><span class="v ok" data-role="cost">19.60</span><span class="sub">sum of squared distances</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="runs"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>K-Means++ makes far points likely picks (slides 22 and 23)</h4>
+    </div>
+    <p class="fig-lede">Points A(1, 2), B(2, 1), C(5, 4), D(6, 5), E(9, 8), with A as the random first centroid. Each next centroid is drawn with probability D(x)² / ΣD², where D(x) is the distance to the nearest centroid already chosen.</p>
+    <div data-viz="dsq-steps"></div>
+    <div data-viz="dsq"></div>
+    <p class="step-note" data-role="dsq-note" aria-live="polite"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Random initialization is potentially problematic because we might get different clusters every time. K-Means++ chooses the first centroid at random and each next one with probability proportional to D(x)², which gives better clusters and faster convergence.</p>
+    <p class="source">Source: L6.1 p.19, p.21, p.26 · Notes: Lecture 6.1 › 6. Solutions · Lecture 6.1 › 9. Code from the course notebook (K-Means)</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc9" data-part="mc" data-num="9" data-topic="Class imbalance">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 5.2, Class imbalance</p>
+    <h3 class="q-title">A fraud dataset has 9,980 normal and 20 fraud transactions. A model that always predicts "Normal" has:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>accuracy 0.2% and recall 100%</span>
+      <span class="why">No. 0.2% is the share of fraud in the data. A model that never says fraud has recall 0.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>accuracy 50% and recall 50%</span>
+      <span class="why">No. The model is right on every one of the 9,980 normal transactions.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>accuracy 99.8% and fraud recall 0</span>
+      <span class="why">Correct. 9,980/10,000 = 99.8%, and 0 of the 20 frauds are caught.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>accuracy 99.8% and fraud recall 99.8%</span>
+      <span class="why">No. 99.8% is the accuracy. Recall looks only at the 20 frauds, and none are caught.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The model is right on all 9,980 normal transactions and wrong on all 20 frauds. Accuracy = 9,980 / 10,000 = 99.8%. Fraud recall = TP / (TP + FN) = 0 / 20 = 0.</p>
+    <p>On imbalanced data accuracy is misleading. Use precision, recall, F1 or PR-AUC, a stratified split, and SMOTE or class weights on the training data.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>10,000 transactions, and the 20 frauds the model never flags</h4>
+    </div>
+    <p class="fig-lede">One square per transaction, and the 20 frauds are ringed. The always-Normal model labels every square Normal. Switch to an example detector that flags 40 transactions and catches 16 frauds. Its accuracy is lower, yet it is the useful model.</p>
+    <div data-viz="model"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Accuracy</span><span class="v" data-role="acc">99.8%</span><span class="sub">(TP + TN) / 10,000</span></div>
+      <div class="stat"><span class="label">Fraud recall</span><span class="v pri" data-role="rec">0</span><span class="sub" data-role="rec-sub">0 / 20 frauds caught</span></div>
+      <div class="stat"><span class="label">Fraud precision</span><span class="v sec" data-role="prec">undefined</span><span class="sub" data-role="prec-sub">0 / 0, no fraud predicted</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="grid"></div>
+    <div class="legend">
+      <span><i class="sw-bad"></i>fraud missed, FN</span>
+      <span><i class="sw-ok"></i>fraud caught, TP</span>
+      <span><i class="sw-ter"></i>normal flagged, FP</span>
+      <span><i class="sw-seg"></i>normal passed, TN</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Accuracy ranks the useless model first</h4>
+    </div>
+    <p class="fig-lede">The four metrics for both models. Accuracy barely moves because 99.8% of the data is normal. Recall, precision and F1 only look at the fraud class, and they show which model does the job.</p>
+    <div data-viz="bars"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>always "Normal"</span>
+      <span><i class="sw-pri"></i>example detector</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>On imbalanced data accuracy is misleading. Always predicting Normal on 9,980 normal and 20 fraud gives accuracy 99.8% and fraud recall 0/20 = 0. Evaluate with precision, recall, F1 or PR-AUC, and apply SMOTE only to the training data.</p>
+    <p class="source">Source: L5.2 p.24, p.25 · Notes: Lecture 5.2 › 9. Big data and class imbalance</p>
+  </div>
+</article>
+
+<article class="q" id="s5-mc10" data-part="mc" data-num="10" data-topic="Explained variance">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 6.2, PCA</p>
+    <h3 class="q-title">A 2D dataset has covariance-matrix eigenvalues λ₁ = 30.38 and λ₂ = 6.62. What share of the total variance does the first principal component keep?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>About 82%</span>
+      <span class="why">Correct. 30.38 / (30.38 + 6.62) = 30.38 / 37 = 0.821.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>About 18%</span>
+      <span class="why">No. 18% is 6.62 / 37, the share of PC2.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>50%</span>
+      <span class="why">No. 50% would need λ₁ = λ₂. Here λ₁ is more than four times λ₂.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>100%</span>
+      <span class="why">No. 100% means keeping both components. Dropping PC2 loses its 6.62.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Each eigenvalue is the variance of the data along its principal direction. The total is λ₁ + λ₂ = 30.38 + 6.62 = 37, so PC1 keeps 30.38 / 37 = 0.821, about 82%.</p>
+    <p>These are the eigenvalues of the slide 17 example, where Cov(X₁, X₁) = 14 and Cov(X₂, X₂) = 23 also add up to 37. Reducing that dataset to PC1 keeps about 82% of the information, and PC2 holds the other 18%.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The variance along a direction peaks at λ₁ on PC1</h4>
+    </div>
+    <p class="fig-lede">Left: the four centred points of slide 17 and a line through the origin at angle θ, with each point projected onto it. Right: the variance of those projections for every θ. Its maximum is λ₁ = 30.38 on PC1 and its minimum is λ₂ = 6.62 on PC2. Drag θ.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Variance on the line</span><span class="v pri" data-role="var">30.38</span><span class="sub">uᵀSu, divisor n − 1</span></div>
+      <div class="stat"><span class="label">Share of total</span><span class="v" data-role="share">82.1%</span><span class="sub">of 14 + 23 = 37</span></div>
+      <div class="stat"><span class="label">Largest possible</span><span class="v ok">30.38</span><span class="sub">λ₁, on PC1</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="proj"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>your direction and the projections on it</span>
+      <span><i class="sw-ok"></i>PC1</span>
+      <span><i class="sw-sec"></i>PC2</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>PCA moves the same 37 units of variance onto PC1</h4>
+    </div>
+    <p class="fig-lede">Top: the variance on the original axes. Bottom: the variance on the principal axes. Both bars are 37 long, because the total variance does not change. The scale below gives the four options as shares of 37.</p>
+    <div data-viz="share"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Each eigenvalue of the covariance matrix is the variance along its principal direction. PC1 keeps λ₁ / (λ₁ + λ₂) = 30.38 / 37 = 82% of the variance, and most of the information is squeezed into the first components.</p>
+    <p class="source">Source: L6.2 p.6-7, p.15, p.17 · Notes: Lecture 6.2 › 4. Step by step · Lecture 6.2 › 5. Worked example</p>
+  </div>
+</article>

@@ -1,0 +1,625 @@
+<article class="q" id="s4-mc1" data-part="mc" data-num="1" data-topic="Loss function">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2.1, Loss and gradient descent</p>
+    <h3 class="q-title">Linear regression with the loss J(θ) = (1/2m) Σ(hθ(x) − y)² is trained on x = [1, 2, 3], y = [2, 4, 6]. What is J at the initial θ = [0, 0]?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>9.333</span>
+      <span class="why">Correct. 56/(2 × 3) = 56/6 = 9.333.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>18.667</span>
+      <span class="why">No. 56/3 is the MSE with 1/m. This loss has the extra ½.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>56</span>
+      <span class="why">No. 56 is the sum of squared errors before the division by 2m.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>4.667</span>
+      <span class="why">No. 56/12 divides by 4m, twice too much.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> With θ = [0, 0] the hypothesis hθ(x) = θ₀ + θ₁x is 0 for every x. The errors are −2, −4 and −6, and their squares add up to 4 + 16 + 36 = 56. With m = 3 examples, J = 56/(2 × 3) = 9.333.</p>
+    <p>18.667 = 56/3 is the mean squared error with 1/m. The loss in this lecture has the extra ½, so the sum is divided by 2m = 6.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>At θ = 0 every error is the whole of y</h4>
+    </div>
+    <p class="fig-lede">Left: the three training points and the line h(x) = θ₁x, with θ₀ = 0. Red bars are the errors h − y. Right: J against θ₁, with the 1/m version (MSE) dashed. Start at θ₁ = 0, the question's θ, and drag to 2, where the line passes through every point.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Sum of squares</span><span class="v" data-role="sum">56</span><span class="sub">Σ(h − y)²</span></div>
+      <div class="stat"><span class="label">Loss J</span><span class="v ok" data-role="j">9.333</span><span class="sub">Σ / 2m = Σ / 6</span></div>
+      <div class="stat"><span class="label">MSE</span><span class="v sec" data-role="mse">18.667</span><span class="sub">Σ / m = Σ / 3</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="fit"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>J = (1/2m)Σ(h − y)², the lecture's loss</span>
+      <span><i class="sw-sec"></i>MSE = (1/m)Σ(h − y)²</span>
+      <span><i class="sw-bad"></i>errors h − y</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Squared errors add up to 56, and the divisor picks the option</h4>
+    </div>
+    <p class="fig-lede">Each error at θ = 0 is drawn as a square with that side, so its area is the squared error. The areas add up to 56. The four options are 56 divided by 1, 3, 6 and 12. Only 2m = 6 matches the ½ · 1/m in the loss.</p>
+    <div data-viz="squares"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>J(θ) = (1/2m) Σ (hθ(x⁽ⁱ⁾) − y⁽ⁱ⁾)², with the ½. At θ = 0 every prediction is 0, so J = Σy² / 2m = 56/6 = 9.333.</p>
+    <p class="source">Source: L2.1 p.7 loss J(θ) = (1/2m)Σ(h − y)² · L2.1 p.19 loss computed at θ = 0 · Notes: L2.1 › Loss and the vectorised gradient descent update</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc2" data-part="mc" data-num="2" data-topic="Regularization">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2.2, Regularization</p>
+    <h3 class="q-title">In regularized logistic regression, the penalty is (λ/2m) Σⱼ θⱼ². Which parameter is NOT regularized?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>θ₁</span>
+      <span class="why">No. θ₁ is the first term of the penalty sum, j = 1.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The parameter of the largest feature</span>
+      <span class="why">No. The penalty treats every θ<sub>j</sub> with j ≥ 1 the same way, whatever its feature.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>All parameters are regularized equally</span>
+      <span class="why">No. The sum starts at j = 1, so θ₀ is left out.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>θ₀, the bias</span>
+      <span class="why">Correct. The penalty sum runs from j = 1 to n.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The penalty sum runs from j = 1 to n, so θ₀ keeps the plain update θ₀ := θ₀ − α(1/m)Σ(h − y)x₀. For j ≥ 1 the gradient gets the extra term (λ/m)θ<sub>j</sub>, which pulls θ<sub>j</sub> toward 0.</p>
+    <p>θ₀ only shifts the decision boundary. It does not make the model more complex, so there is no reason to shrink it.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The penalty bracket starts at θ₁</h4>
+    </div>
+    <p class="fig-lede">The regularized cost from slide 46. The log loss uses every parameter through h = g(θᵀx). The penalty adds θ<sub>j</sub>² only for j = 1 to n, so θ₀ never enters it. That is why the two update rules below differ by one term.</p>
+    <div data-viz="penalty"></div>
+    <p class="formula">θ₀ := θ₀ − α · (1/m) Σ (hθ(x⁽ⁱ⁾) − y⁽ⁱ⁾) · x₀⁽ⁱ⁾</p>
+    <p class="formula">θⱼ := θⱼ − α · [ (1/m) Σ (hθ(x⁽ⁱ⁾) − y⁽ⁱ⁾) · xⱼ⁽ⁱ⁾ + (λ/m) · θⱼ ] &nbsp;&nbsp; for j = 1 … n</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>θ₀ moves the boundary, θ₁ sets how steep the curve is</h4>
+    </div>
+    <p class="fig-lede">One feature, h = g(θ₀ + θ₁x). Left: θ₁ = 1 and three values of θ₀. The same S-curve slides along x, and the boundary x = −θ₀/θ₁ (dot at h = 0.5) moves with it. Right: θ₀ = 0 and three values of θ₁. A larger θ₁ gives a steeper, more confident curve. The penalty keeps θ₁ … θₙ small, and θ₀ is free to put the boundary where the data needs it.</p>
+    <div data-viz="sigmoids"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Regularization adds (λ/2m) Σ<sub>j=1</sub><sup>n</sup> θ<sub>j</sub>² to the cost, so only θ₁ … θₙ are penalized. θ₀ keeps the plain update θ₀ := θ₀ − α(1/m)Σ(h − y)x₀, and every other θ<sub>j</sub> gets the extra (λ/m)θ<sub>j</sub>.</p>
+    <p class="source">Source: L2.2 p.44 L1 and L2 penalties · L2.2 p.45-46 regularized cost and gradient descent, θ₀ updated separately · Notes: L2.2 › Regularisation, L1 and L2</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc3" data-part="mc" data-num="3" data-topic="Recall">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3.1, Precision and recall</p>
+    <h3 class="q-title">A classifier has TP = 30, FP = 10, FN = 20, TN = 40. What is its recall?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.75</span>
+      <span class="why">No. 30/40 = 0.75 is precision, TP/(TP + FP).</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>0.70</span>
+      <span class="why">No. (30 + 40)/100 = 0.70 is accuracy.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>0.60</span>
+      <span class="why">Correct. TP/(TP + FN) = 30/50 = 0.60.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.667</span>
+      <span class="why">No. 0.667 is F1, the harmonic mean of 0.75 and 0.60.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Recall = TP/(TP + FN) = 30/(30 + 20) = 0.60. It answers the slide's question "Of all the real positives out there, how many did the model actually catch?" There are 30 + 20 = 50 actual positives, and the model caught 30 of them.</p>
+    <p>The other options are the other metrics of the same matrix. Precision = 30/40 = 0.75, accuracy = 70/100 = 0.70 and F1 = 0.667. Recall looks only at the actual positives.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Each metric divides by a different part of the matrix</h4>
+    </div>
+    <p class="fig-lede">Left: the confusion matrix in the slide-14 layout, columns = actual, rows = predicted. Right: the same 100 cases, one square each. Faded cells are outside the metric's denominator, and the green outline marks the numerator. Pick a metric.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="matrix"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>TP, caught positives</span>
+      <span><i class="sw-pri-soft"></i>FN, missed positives</span>
+      <span><i class="sw-sec"></i>FP, false alarms</span>
+      <span><i class="sw-sec-soft"></i>TN, correct negatives</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Recall (Sensitivity) = TP/(TP + FN), the share of actual positives caught. Precision = TP/(TP + FP), the share of alarms that were real. Here recall = 0.60, precision = 0.75, accuracy = 0.70, F1 = 0.667.</p>
+    <p class="source">Source: L3.1 p.20 accuracy · L3.1 p.21 precision · L3.1 p.23 recall · L3.1 p.25 F1 · Notes: L3.1 › Accuracy, precision, recall, F1</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc4" data-part="mc" data-num="4" data-topic="Laplace smoothing">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 3.2, Naive Bayes</p>
+    <h3 class="q-title">In Naive Bayes, a feature value never appears together with one class in the training data, so the whole product for that class becomes 0. What fixes this zero-frequency problem?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Feature scaling</span>
+      <span class="why">No. Scaling changes distances. Naive Bayes multiplies counted probabilities, and a zero count stays zero.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>Laplace smoothing</span>
+      <span class="why">Correct. Adding 1 to every count leaves no likelihood at exactly 0.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Removing the class</span>
+      <span class="why">No. That throws away a real class to hide one missing count.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Using a larger k</span>
+      <span class="why">No. k is the number of neighbours in KNN. Naive Bayes has no k.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Naive Bayes multiplies P(class) by one likelihood P(value | class) per feature. If a value never appeared with a class, its likelihood is 0/N<sub>c</sub> = 0, and the product for that class is 0 whatever the other features say.</p>
+    <p>Laplace smoothing adds a small count (α = 1) to every value, so no likelihood is exactly 0: P(v | c) = (count + 1)/(N<sub>c</sub> + K), where K is the number of values the feature can take. Scaling and k belong to distance-based methods such as KNN.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One zero count vetoes three features of evidence</h4>
+    </div>
+    <p class="fig-lede">The 14 PlayTennis days from L4.1 (9 Yes, 5 No). Query: Outlook = Overcast, Temp = Hot, Humidity = High, Wind = Strong. Overcast never appears with No (0 of 5), while Hot, High and Strong all favour No. Each bar in a chip is the size of that factor. Switch between the raw counts and Laplace smoothing.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="counts"></div>
+    <div data-viz="chain"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Zero-frequency problem: an unseen value gets probability 0 and wipes out the whole product. Fix: Laplace smoothing, P(v | c) = (count + 1)/(N<sub>c</sub> + K).</p>
+    <p class="source">Source: L3.2 p.28 zero-frequency problem, fix: Laplace smoothing · Notes: L3.2 › Advantages and disadvantages of Naive Bayes · L3.2 › Types of Naive Bayes and Laplace smoothing</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc5" data-part="mc" data-num="5" data-topic="Random forest">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 4.1, Random forest</p>
+    <h3 class="q-title">How does a random forest make each of its trees different?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>Each tree is trained on a bootstrapped sample of the rows (with replacement) and considers only a random subset of the features; the trees then vote</span>
+      <span class="why">Correct. Random rows plus random features keep the trees different, and the majority vote combines them.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Each tree uses a different impurity measure</span>
+      <span class="why">No. All trees use the same split criterion. The randomness is in the rows and the features.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Each tree is trained on the same data with a different maximum depth</span>
+      <span class="why">No. Greedy splits on the same data give the same tree, and a depth limit only cuts it shorter.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Each tree is trained on the errors of the previous tree</span>
+      <span class="why">No. That is boosting, where trees are built one after another.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Each tree gets its own bootstrap sample, rows drawn at random with replacement, so some rows appear twice and others are left out. At the splits each tree looks at only a few random features. The final answer is the majority vote, or the average for regression.</p>
+    <p>Option d describes boosting, which is a different ensemble method and is not the random forest.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Three bootstrapped datasets give three different trees</h4>
+    </div>
+    <p class="fig-lede">The three sets from slides 42-45, each made from the 14 PlayTennis days. Plum cells are rows drawn twice. The rows they push out are out of bag. O, T, H, W are Outlook, Temp, Humidity and Wind, and a struck letter is the feature that set leaves out. The trees then vote on the slide-46 test day {Sunny, Cool, High, Strong}.</p>
+    <div data-viz="boot"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>A random forest builds its trees side by side; boosting chains them</h4>
+    </div>
+    <p class="fig-lede">Top: the random forest. Each tree sees its own random sample and never looks at the other trees. Bottom: boosting, option d. Each tree is fitted to the errors the trees before it left.</p>
+    <div data-viz="flow"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Random forest = many decision trees, each on a bootstrapped sample (rows drawn with replacement) and a few random features at the splits. Majority voting for classification, averaging for regression.</p>
+    <p class="source">Source: L4.1 p.37 definition · L4.1 p.39-40 algorithm · L4.1 p.42-45 three bootstrapped datasets · Notes: L4.1 › Random forest</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc6" data-part="mc" data-num="6" data-topic="SVM C">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 4.2, Soft margin</p>
+    <h3 class="q-title">What happens when the hyperparameter C of a soft-margin SVM is made very large?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The margin gets wider and more training errors are allowed</span>
+      <span class="why">No. That describes a small C, which risks underfitting.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The SVM ignores the support vectors</span>
+      <span class="why">No. The boundary is still set by the support vectors, the points on or inside the margin.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>The kernel becomes linear</span>
+      <span class="why">No. C does not change the kernel. The kernel is chosen separately.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>Margin violations are penalised strongly: the margin gets smaller, there are fewer training errors, and the model may overfit</span>
+      <span class="why">Correct. Every violation costs C × ζᵢ, so the SVM narrows the margin to avoid them.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The soft-margin cost is J = ½‖w‖² + C Σζᵢ. The first term is small when the margin 2/‖w‖ is wide. The second term charges C for every unit of slack ζᵢ, the amount by which a point violates its margin.</p>
+    <p>A very large C makes every violation expensive, so the SVM narrows the margin until it classifies the training points correctly. It then follows single odd points, with a risk of overfitting. A small C does the opposite (option a), with a risk of underfitting.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>As C grows, the margin shrinks to fit one outlier</h4>
+    </div>
+    <p class="fig-lede">Two classes plus one blue outlier near the plum class. Each position is the exact soft-margin SVM for that C, solved in Python. The solid line is the boundary w·x + b = 0, the dashed lines are the margin lines w·x + b = ±1, and ringed points are the support vectors. Red dashes show each violation's slack, the distance back to its own margin line. Drag C.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Margin width</span><span class="v pri" data-role="width">0.943</span><span class="sub">2/‖w‖</span></div>
+      <div class="stat"><span class="label">Total slack</span><span class="v" data-role="slack">0</span><span class="sub">Σζᵢ</span></div>
+      <div class="stat"><span class="label">Training errors</span><span class="v" data-role="errs">0</span><span class="sub">points on the wrong side</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="plot"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>class +1 (the outlier is one of them)</span>
+      <span><i class="sw-sec"></i>class −1</span>
+      <span><i class="sw-seg"></i>margin band</span>
+      <span><i class="sw-bad"></i>slack ζ of a violation</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>C trades margin width against total slack</h4>
+    </div>
+    <p class="fig-lede">The same data, solved for C from 0.03 to 100. A larger C buys less slack with a narrower margin. From C ≈ 2.25 on, the slack is 0 and the SVM acts like a hard margin. The vertical line follows the C picked above.</p>
+    <div data-viz="trade"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>margin width 2/‖w‖</span>
+      <span><i class="sw-ter"></i>total slack Σζᵢ</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>J = ½‖w‖² + C Σζᵢ. Large C: violations penalised strongly, smaller margin, fewer misclassifications, risk of overfitting. Small C: more violations allowed, wider margin, risk of underfitting.</p>
+    <p class="source">Source: L4.2 p.40 soft-margin cost with C · L4.2 p.41 large C vs small C · Notes: L4.2 › Soft margin: slack zeta, C and hinge loss</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc7" data-part="mc" data-num="7" data-topic="IQR outliers">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 5.2, Outliers</p>
+    <h3 class="q-title">For the data 2, 4, 4, 5, 6, 7, 8, 8, 30 we have Q1 = 4 and Q3 = 8. Which value is an outlier by the IQR rule?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>2</span>
+      <span class="why">No. 2 is above the lower bound −2.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>30</span>
+      <span class="why">Correct. 30 is above the upper bound 14.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>8</span>
+      <span class="why">No. 8 is Q3 itself, inside [−2, 14].</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>None of them</span>
+      <span class="why">No. 30 lies outside the bounds.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> IQR = Q3 − Q1 = 8 − 4 = 4. The bounds are Q1 − 1.5·IQR = 4 − 6 = −2 and Q3 + 1.5·IQR = 8 + 6 = 14. Only 30 lies outside [−2, 14].</p>
+    <p>The bounds come from the quartiles, so the extreme value does not drag them toward itself. The slide calls the rule robust and distribution-free.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The fences sit 1.5 IQR outside the box</h4>
+    </div>
+    <p class="fig-lede">Top: the sorted data, with Q1 and Q3 as the medians of the lower and upper halves. Bottom: the box plot on a number line. The green band is [−2, 14]. A value in the red zones is an outlier. Drag the largest value and watch when it crosses 14. The quartiles stay put.</p>
+    <div data-viz="slider"></div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="box"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>IQR = Q3 − Q1. A value is an outlier if it is below Q1 − 1.5·IQR or above Q3 + 1.5·IQR. Here IQR = 4, the bounds are −2 and 14, and 30 is the outlier.</p>
+    <p class="source">Source: L5.2 p.13 IQR rule, bounds Q1 − 1.5·IQR and Q3 + 1.5·IQR · Notes: L5.2 › Outliers: IQR, Z score, ML detectors</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc8" data-part="mc" data-num="8" data-topic="SMOTE">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 5.2, Class imbalance</p>
+    <h3 class="q-title">A fraud dataset is heavily imbalanced, and SMOTE is used to create synthetic fraud examples. Where should SMOTE be applied?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>On the whole dataset before splitting</span>
+      <span class="why">No. Synthetic points built from test rows leak into training, and synthetic points land in the test set.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>On the test set only</span>
+      <span class="why">No. The model still trains on 0.2% fraud, and the test set loses the real class balance.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>On the training data only</span>
+      <span class="why">Correct. "SMOTE only on TRAINING data. Never resample the test set."</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>On both the training and the test set</span>
+      <span class="why">No. Slide 36 lists applying SMOTE to the test set as a common mistake.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> "SMOTE only on TRAINING data. Never resample the test set." The test set must keep the real class balance, or the scores are inflated by synthetic points. That is data leakage.</p>
+    <p>SMOTE creates a new fraud point by interpolating between a fraud point and one of its k nearest fraud neighbours. If test rows take part, their information ends up in the training data.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Only one place for SMOTE keeps the test set real</h4>
+    </div>
+    <p class="fig-lede">The slide-24 fraud data, 9,980 normal and 20 fraud, split 80/20 with stratification. Each option puts SMOTE in a different place. Pick one.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="pipe"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>SMOTE draws a new fraud point between two real ones</h4>
+    </div>
+    <p class="fig-lede">Gray dots are normal cases and blue dots are fraud cases. SMOTE picks a fraud point xᵢ, finds its k = 3 nearest fraud neighbours (ringed), picks one of them, x<sub>nn</sub>, and places the new point on the segment between them. Drag λ.</p>
+    <div data-viz="slider"></div>
+    <p class="formula" data-role="formula">x<sub>new</sub> = xᵢ + λ · (x<sub>nn</sub> − xᵢ)</p>
+    <div data-viz="smote"></div>
+    <div class="legend">
+      <span><i class="sw-seg"></i>normal</span>
+      <span><i class="sw-pri"></i>fraud (minority)</span>
+      <span><i class="sw-ter"></i>synthetic fraud point</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>SMOTE: pick a minority point, find its k nearest minority neighbours, interpolate a new point between them, add it to the training set. SMOTE only on TRAINING data. Never resample the test set.</p>
+    <p class="source">Source: L5.2 p.24 class imbalance, accuracy paradox · L5.2 p.25 SMOTE steps, training data only · L5.2 p.36 applying SMOTE to the test set is a common mistake · Notes: L5.2 › Big data and class imbalance</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc9" data-part="mc" data-num="9" data-topic="K-Means objective">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 6.1, K-Means</p>
+    <h3 class="q-title">What does the K-Means algorithm minimize?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>The sum of squared distances between each point and the centroid of its cluster</span>
+      <span class="why">Correct. J = Σₖ Σ ‖xᵢ − μₖ‖² over the points of each cluster.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The number of clusters K</span>
+      <span class="why">No. K is chosen beforehand. It is an input, and J keeps falling as K grows.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>The distance between the centroids of different clusters</span>
+      <span class="why">No. J measures each point against its own centroid only.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>The number of points in the largest cluster</span>
+      <span class="why">No. Cluster sizes do not appear in J.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> J = Σₖ Σ<sub>xᵢ ∈ Cₖ</sub> ‖xᵢ − μₖ‖². Points inside a cluster should be similar, so K-Means makes the distance from each point to its own centroid small.</p>
+    <p>Both steps of the algorithm lower J. The assignment step moves each point to its nearest centroid, and the update step moves each centroid to the mean of its points. K is chosen beforehand and is not minimized.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Every K-Means step lowers J</h4>
+    </div>
+    <p class="fig-lede">Ten points, K = 3. Diamonds are the centroids and each line joins a point to its centroid. J is the sum of the squared lengths of those lines. The bars on the right track J after every step. Step through from the random start.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="km"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>J falls with every extra cluster, down to 0 at K = n</h4>
+    </div>
+    <p class="fig-lede">The lowest J each K can reach on the same ten points, found by trying every grouping. With K = 10 every point is its own centroid and J = 0, which is why K is fixed beforehand (with the elbow, here K = 3) and never minimized.</p>
+    <div data-viz="elbow"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>K-Means minimizes J = Σₖ Σ<sub>xᵢ ∈ Cₖ</sub> ‖xᵢ − μₖ‖², the sum of squared distances between the objects and their cluster centroid. K is predefined.</p>
+    <p class="source">Source: L6.1 p.5 main objective · L6.1 p.7 J formula · L6.1 p.10 objective of K-Means · Notes: L6.1 › Objective J and the centroid formula</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc10" data-part="mc" data-num="10" data-topic="Principal components">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 6.2, Principal components</p>
+    <h3 class="q-title">Which statement about principal components is correct?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>They are a subset of the original variables</span>
+      <span class="why">No. Choosing a subset of the original variables is feature selection.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Each one keeps the same amount of information</span>
+      <span class="why">No. PC1 holds the most information, PC2 the next most, and so on.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>They are always easy to interpret, like the original variables</span>
+      <span class="why">No. Each PC mixes all the variables, so it is less interpretable.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>They are new uncorrelated variables built as linear combinations of the original variables</span>
+      <span class="why">Correct. This is the slide-6 definition.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Principal components are new variables built as linear combinations (mixtures) of the initial variables. They are constructed to be uncorrelated, and most of the information is squeezed into the first ones.</p>
+    <p>Because each one mixes the variables, they are less interpretable and have no real meaning of their own. Choosing a subset of the original variables (a) is feature selection.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>PC1 is the direction where the projections spread the most</h4>
+    </div>
+    <p class="fig-lede">The slide-17 data, X₁ = 4, 8, 13, 7 and X₂ = 11, 4, 5, 14. The blue line runs through the mean (8, 8.5) at angle φ, and the points are projected onto it. Right: the variance of the projections for every angle. The maximum, 30.38, is PC1, and the minimum at 90° from it is PC2. Drag φ.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Direction</span><span class="v pri" data-role="phi">−56°</span><span class="sub">angle φ of the line</span></div>
+      <div class="stat"><span class="label">Variance along it</span><span class="v" data-role="var">30.38</span><span class="sub">Σ t² / (n − 1)</span></div>
+      <div class="stat"><span class="label">Share of the total</span><span class="v ok" data-role="share">82.1%</span><span class="sub">of 14 + 23 = 37</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="proj"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>In PC coordinates the correlation is gone</h4>
+    </div>
+    <p class="fig-lede">Left: the centred data. X₁ and X₂ are correlated, cov = −11. The arrows are the two eigenvectors. Right: the same four points in the new variables PC1 and PC2. Their covariance is 0, and PC1 carries 82.1% of the variance. Each new variable mixes both old ones.</p>
+    <div data-viz="pcs"></div>
+    <p class="formula">PC1 = 0.557 · (X₁ − 8) − 0.830 · (X₂ − 8.5) &nbsp;&nbsp; PC2 = 0.830 · (X₁ − 8) + 0.557 · (X₂ − 8.5)</p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Principal components are new variables constructed as linear combinations of the initial variables. They are uncorrelated, most information is in the first components, and they are less interpretable.</p>
+    <p class="source">Source: L6.2 p.6 PCs are uncorrelated linear combinations · L6.2 p.7 less interpretable, no real meaning · Notes: L6.2 › Principal components</p>
+  </div>
+</article>
