@@ -1,0 +1,709 @@
+<article class="q" id="s1-mc1" data-sample="1" data-part="mc" data-num="1" data-topic="Phase shift">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2, Sine wave parameters</p>
+    <h3 class="q-title">A 50 Hz sine wave is shifted by a phase of 90 degrees. By how much time is the wave shifted?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>2.5 ms</span>
+      <span class="why">No. 2.5 ms is T/8, a shift of 45°.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>5 ms</span>
+      <span class="why">Correct. 90° is a quarter of a cycle, and T/4 = 20 ms / 4 = 5 ms.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>10 ms</span>
+      <span class="why">No. 10 ms is T/2, a shift of 180°.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>20 ms</span>
+      <span class="why">No. 20 ms is a full period, 360°. The wave lands back on itself.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> The period is T = 1/f = 1/50 s = 20 ms. One full cycle is 360°, so a phase of 90° (π/2 rad) is a quarter of a cycle. The wave moves by a quarter of its period, 20 ms / 4 = 5 ms.</p>
+    <p>In general the time shift is Δt = (φ / 360°) × T.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>A phase of 90° moves the wave by a quarter period</h4>
+    </div>
+    <p class="fig-lede">Top: the 50 Hz wave at 0°. Bottom: the same wave with phase φ, as on slide 24. The circle shows φ as a share of one 360° turn, and the wave moves by the same share of its 20 ms period. Drag φ.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Phase φ</span><span class="v pri" data-role="phi">90°</span><span class="sub">of 360° per cycle</span></div>
+      <div class="stat"><span class="label">Share of a cycle</span><span class="v" data-role="frac">1/4</span><span class="sub">φ / 360°</span></div>
+      <div class="stat"><span class="label">Time shift Δt</span><span class="v ok" data-role="dt">5 ms</span><span class="sub">(φ / 360°) × 20 ms</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="wave"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>0° reference</span>
+      <span><i class="sw-pri"></i>the same wave with phase φ</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The four options as shares of one 20 ms period</h4>
+    </div>
+    <p class="fig-lede">Each bar is one period, T = 20 ms. The filled part is the option's time shift. Only 5 ms is the quarter period that matches 90°.</p>
+    <div data-viz="options"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>T = 1/f. A phase of 90° = π/2 rad shifts the wave by T/4, and 180° = π rad shifts it by T/2. For 50 Hz, T = 20 ms, so 90° is 5 ms.</p>
+    <p class="source">Source: L2 p.16, p.21, p.24 · Notes: Lecture 2 › 4. Sine Wave Parameters: Amplitude, Frequency, Period, Phase, Wavelength</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc2" data-sample="1" data-part="mc" data-num="2" data-topic="Nyquist rate">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 2, Sampling theorem and Nyquist</p>
+    <h3 class="q-title">An audio signal contains frequencies up to 12 kHz. What is the Nyquist sampling frequency for this signal (the frequency the sampling rate must be greater than)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>6 kHz</span>
+      <span class="why">No. That halves 12 kHz instead of doubling it, the f<sub>s</sub>/2 mix-up.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>12 kHz</span>
+      <span class="why">No. That is f<sub>max</sub> itself, one sample per cycle.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>24 kHz</span>
+      <span class="why">Correct. 2 × f<sub>max</sub> = 2 × 12 kHz = 24 kHz.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>48 kHz</span>
+      <span class="why">No. 48 kHz is a safe rate above 24 kHz, but it is 4 × f<sub>max</sub>, not the Nyquist sampling frequency.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The signal has to be sampled at a frequency greater than twice the maximal frequency occurring in it, f<sub>s</sub> &gt; 2 f<sub>max</sub>. Here 2 × 12 kHz = 24 kHz.</p>
+    <p>Slide 48 calls 2 f<sub>max</sub> the Nyquist sampling frequency. Its example is a 10 kHz signal that must be sampled above 20 kHz.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Below 24 kHz the samples fit a slower, wrong wave</h4>
+    </div>
+    <p class="fig-lede">The blue curve is a 12 kHz tone. The dots are samples taken at f<sub>s</sub>. The dashed curve is the slowest wave that passes through every sample, which is what the samples give back. Drag f<sub>s</sub> across 24 kHz.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Sampling rate</span><span class="v pri" data-role="fs">16 kHz</span><span class="sub">f<sub>s</sub></span></div>
+      <div class="stat"><span class="label">Samples per cycle</span><span class="v" data-role="per">1.33</span><span class="sub">f<sub>s</sub> / 12 kHz</span></div>
+      <div class="stat"><span class="label">Wave rebuilt</span><span class="v" data-role="fa">4 kHz</span><span class="sub">from the samples</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="wave"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>12 kHz tone</span>
+      <span><i class="sw-ok"></i>rebuilt wave, correct</span>
+      <span><i class="sw-bad"></i>rebuilt wave, aliased</span>
+    </div>
+    <p class="fig-lede">The rule on a frequency line, with the four options. The blue mark is the f<sub>s</sub> you picked.</p>
+    <div data-viz="rule"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Sample at a frequency greater than twice the maximal frequency in the signal, f<sub>s</sub> &gt; 2 f<sub>max</sub>. 2 f<sub>max</sub> is the Nyquist sampling frequency, so 12 kHz max gives 24 kHz.</p>
+    <p class="source">Source: L2 p.47, p.48 · Notes: Lecture 2 › 13. Sampling Theorem and Nyquist</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc3" data-sample="1" data-part="mc" data-num="3" data-topic="SNR in dB">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 3, Signal to noise ratio</p>
+    <h3 class="q-title">The signal voltage is 100 times the noise voltage. The SNR is:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>40 dB</span>
+      <span class="why">Correct. 20 log₁₀(100) = 20 × 2 = 40 dB.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>20 dB</span>
+      <span class="why">No. That is 10 log₁₀(100), the power form used on a voltage ratio.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>100 dB</span>
+      <span class="why">No. 100 is the plain voltage ratio, not a value in decibels.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>2 dB</span>
+      <span class="why">No. 2 is log₁₀(100) without the factor 20.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> The power in a signal is proportional to the square of the voltage. A voltage ratio of 100 is a power ratio of 100² = 10,000, and 10 log₁₀(10,000) = 40 dB.</p>
+    <p>The slide writes this as SNR = 10 log₁₀(V²<sub>signal</sub> / V²<sub>noise</sub>) = 20 log₁₀(V<sub>signal</sub> / V<sub>noise</sub>). Use 20 log₁₀ for voltage ratios and 10 log₁₀ for power ratios.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Voltage ratio 100 is power ratio 10,000</h4>
+    </div>
+    <p class="fig-lede">Power goes with the square of the voltage, so draw each voltage as the side of a square and its power as the area. The noise square has side 1. All three squares are to scale.</p>
+    <div data-viz="squares"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>From ratio to decibels</h4>
+    </div>
+    <p class="fig-lede">Three scales lined up. Every ×10 in voltage is ×100 in power and adds 20 dB. The four options sit on the dB scale, and the voltage ratio above each one shows what it would mean.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Voltage ratio</span><span class="v pri" data-role="v">100</span><span class="sub">V<sub>signal</sub> / V<sub>noise</sub></span></div>
+      <div class="stat"><span class="label">Power ratio</span><span class="v" data-role="p">10,000</span><span class="sub">(voltage ratio)²</span></div>
+      <div class="stat"><span class="label">SNR</span><span class="v ok" data-role="db">40 dB</span><span class="sub">20 log₁₀(voltage ratio)</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="ruler"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>SNR = 10 log₁₀(V²<sub>signal</sub> / V²<sub>noise</sub>) = 20 log₁₀(V<sub>signal</sub> / V<sub>noise</sub>), because power is proportional to the square of the voltage. 10 log for power ratios, 20 log for voltage ratios. 100 × the voltage is 40 dB.</p>
+    <p class="source">Source: L3 p.6 · Notes: Lecture 3 › 2. Signal to Noise Ratio (SNR)</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc4" data-sample="1" data-part="mc" data-num="4" data-topic="Prefix property">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 4, Properties of Huffman coding</p>
+    <h3 class="q-title">Which property of Huffman codes makes it possible to decode a bitstream without any ambiguity, with no separators between codewords?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The two least frequent symbols have codes of the same length</span>
+      <span class="why">No. True for Huffman, but it says nothing about where one codeword ends.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>The average code length is strictly less than the entropy + 1</span>
+      <span class="why">No. True (η ≤ l̄ &lt; η + 1), but it is a bound on length, not a decoding rule.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>More frequent symbols get shorter codes</span>
+      <span class="why">No. True, but a code can do this and still be ambiguous (Figure 2).</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>No codeword is a prefix of any other codeword</span>
+      <span class="why">Correct. The unique prefix property (L4 p.30).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The unique prefix property says no Huffman code is a prefix of any other Huffman code, which "precludes any ambiguity in decoding". Every symbol sits on a leaf of the tree, so the decoder follows bits from the root until it reaches a leaf, outputs that symbol and starts again at the root.</p>
+    <p>Options a, b and c are the optimality properties from the same slide. They are true for Huffman codes, but none of them decides how to split a bitstream.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Decoding walks from the root to a leaf, once per symbol</h4>
+    </div>
+    <p class="fig-lede">The slide-24 tree for A 15, B 7, C 6, D 6, E 5 (left branch 0, right branch 1). Codewords end only at leaves, so no codeword lies on the path to another one. Step through the 10-bit stream 1001110110.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="tree"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Same lengths without the prefix rule: one bitstream, two readings</h4>
+    </div>
+    <p class="fig-lede">Three symbols with p(A) = 0.5 and p(B) = p(C) = 0.25. Huffman gives A = 0, B = 10, C = 11. The second code A = 0, B = 01, C = 10 has the same lengths, so it also satisfies a, b and c. But A's codeword 0 is the start of B's 01, and the stream 010 splits two ways.</p>
+    <div data-viz="pair"></div>
+    <div data-viz="checks"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Unique prefix property: no Huffman code is a prefix of any other Huffman code, which precludes any ambiguity in decoding. Optimality: the two least frequent symbols have the same length, frequent symbols get shorter codes, and η ≤ l̄ &lt; η + 1.</p>
+    <p class="source">Source: L4 p.30 · Notes: Lecture 4 › 9. Properties of Huffman Coding and Extended Huffman</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc5" data-sample="1" data-part="mc" data-num="5" data-topic="Arithmetic vs Huffman">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 5, Arithmetic Coding Basics</p>
+    <h3 class="q-title">Why does arithmetic coding usually outperform Huffman coding?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>It is lossy, so it can drop rarely used symbols</span>
+      <span class="why">No. Arithmetic coding is lossless: the decoder gets the exact message back.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>Huffman gives every symbol a codeword with an integral number of bits, while arithmetic coding treats the whole message as one unit, an interval [a, b)</span>
+      <span class="why">Correct. This is the slide's wording (L5 p.3).</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>It builds a dictionary of repeated strings and sends a fixed-length code for each string</span>
+      <span class="why">No. That describes LZW.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It codes each run of identical symbols as a count followed by the symbol</span>
+      <span class="why">No. That describes run-length coding (RLE).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Huffman coding gives each symbol its own codeword, and a codeword is always a whole number of bits. A symbol that carries only 0.15 bits of information still costs at least 1 bit.</p>
+    <p>Arithmetic coding has no per-symbol codewords. It narrows one interval [a, b) symbol by symbol and sends a single number from the final interval. The rounding to whole bits happens once for the whole message, not once per symbol, so the output gets close to the entropy.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Huffman pays at least 1 bit per symbol</h4>
+    </div>
+    <p class="fig-lede">A source with two symbols: A with probability p and B with 1 − p. The best Huffman code is A = 0, B = 1, so every symbol costs 1 bit no matter how predictable A is. Drag p and compare with the entropy H(p), the average information per symbol that arithmetic coding approaches on long messages.</p>
+    <div data-viz="slider"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">A's information</span><span class="v" data-role="info">0.152</span><span class="sub">bits, −log₂ p(A)</span></div>
+      <div class="stat"><span class="label">Huffman</span><span class="v sec">1.000</span><span class="sub">bits per symbol, always</span></div>
+      <div class="stat"><span class="label">Arithmetic</span><span class="v pri" data-role="h">0.469</span><span class="sub">bits per symbol, long messages</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div data-viz="curve"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>Huffman, 1 bit per symbol</span>
+      <span><i class="sw-pri"></i>Entropy H(p), the arithmetic coding limit</span>
+    </div>
+    <p class="fig-lede">The same source, one 20-symbol message. Huffman spends one whole-bit box per symbol. In arithmetic coding each symbol shrinks the shared interval by its probability, which costs −log₂ p bits of the final codeword, a fraction of a bit for A.</p>
+    <div data-viz="tape"></div>
+    <p class="mono" data-role="tape-msg" style="color: var(--muted); overflow-wrap: anywhere;"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>CAEE$ becomes one interval</h4>
+    </div>
+    <p class="fig-lede">The slide-5 table splits [0, 1) into one slice per symbol, sized by its probability. Each symbol picks its slice of the current interval, and the next column redraws that slice at full height. The whole message ends up as one interval, [0.33184, 0.3322).</p>
+    <div data-viz="ladder-steps"></div>
+    <p class="step-note" data-role="step-note" aria-live="polite"></p>
+    <div data-viz="ladder"></div>
+    <p class="formula">low′ = low + range · R<sub>low</sub>(s) &nbsp;&nbsp; high′ = low + range · R<sub>high</sub>(s) &nbsp;&nbsp; (both use the old low)</p>
+    <div data-viz="ladder-table"></div>
+    <p class="fig-lede">Final range = 0.2 × 0.2 × 0.3 × 0.3 × 0.1 = 0.00036, the product of the symbol probabilities. The shortest binary fraction inside the interval is 0.01010101₂ = 0.33203125 (slide 8), so the whole message is sent as those 8 bits.</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 3</span>
+      <h4>Where the bits go for CAEE$</h4>
+    </div>
+    <p class="fig-lede">Huffman lengths come from one valid Huffman tree for the slide-5 table: A 3, B 3, C 2, D 4, E 2, F 4, $ 3 bits, 2.6 bits per symbol on average against an entropy of 2.55. Grid lines mark whole bits.</p>
+    <div data-viz="ledger"></div>
+    <p class="fig-lede">Every Huffman block ends on a grid line. The information content −log₂ p does not, and arithmetic coding is the method that can follow it. The 8-bit codeword is a lucky case: the final interval happens to contain 85/256. In general an interval of width w costs about log₂(1/w) bits, 11.4 bits for CAEE$.</p>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>Lossy? No.</h5>
+        <p>Decode 0.33203125 with the same table (slide 10) and CAEE$ comes back exactly.</p>
+        <div class="chain">
+          <span>0.33203125 → <b>C</b></span>
+          <span>0.16015625 → <b>A</b></span>
+          <span>0.80078125 → <b>E</b></span>
+          <span>0.8359375 &nbsp;→ <b>E</b></span>
+          <span>0.953125 &nbsp;&nbsp;→ <b>$</b> stop</span>
+        </div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Dictionary of strings: LZW</h5>
+        <p>Start with A = 1, B = 2. Each new string goes into the dictionary and repeats are sent as one code.</p>
+        <div class="chips"><span>ABABABA</span></div>
+        <div class="chips"><span>AB = 3</span><span>BA = 4</span><span>ABA = 5</span></div>
+        <div class="chips"><span class="arrow">output</span><span class="out">1</span><span class="out">2</span><span class="out">3</span><span class="out">5</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>Count + symbol: RLE</h5>
+        <p>Each run of one repeated symbol becomes a count and the symbol.</p>
+        <div class="chips"><span>AAAA</span><span>BBB</span><span>CC</span></div>
+        <div class="chips"><span class="arrow">output</span><span class="out">4A</span><span class="out">3B</span><span class="out">2C</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Huffman: an integral number of bits per symbol. Arithmetic coding: the whole message is one unit, a half-open interval [a, b) with 0 ≤ a &lt; b ≤ 1. Both are lossless.</p>
+    <p class="source">Source: L5 p.3 · Notes: Lecture 5 › 1. Arithmetic Coding Basics</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc6" data-sample="1" data-part="mc" data-num="6" data-topic="Rods and cones">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 6, Human eye structure</p>
+    <h3 class="q-title">Which statement about the two receptors in the retina is correct?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Rods are located in the fovea and are highly sensitive to color</span>
+      <span class="why">No. That describes cones. Rods are insensitive to color.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Cones dominate scotopic (low illumination) vision, so dim scenes appear black and white</span>
+      <span class="why">No. Scotopic vision uses only rods. Cones need good light.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>Cones are located in the fovea and are highly sensitive to color; rods are insensitive to color but sensitive to low levels of illumination</span>
+      <span class="why">Correct. This is the slide-4 wording.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Rods dominate photopic vision and provide color</span>
+      <span class="why">No. Photopic vision uses cones, and cones provide the color.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The retina has two receptors. Cones are located in the fovea and are highly sensitive to color. Rods give a general overall picture of the view. They are insensitive to color and sensitive to low levels of illumination.</p>
+    <p>That fixes the two vision modes. In low light (scotopic vision) only rods work, so objects are visible but appear in black and white. In good light (photopic vision) cones dominate and provide color. Options b and d swap rods and cones.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Cones crowd the fovea, rods fill the rest of the retina</h4>
+    </div>
+    <p class="fig-lede">Left: the cornea and lens focus light on the fovea, the center of the retina. Right: a strip of retina around the fovea. Cones are packed in the fovea. Away from it most receptors are rods.</p>
+    <div data-viz="eye"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>cones: in the fovea, highly sensitive to color</span>
+      <span><i class="sw-sec"></i>rods: insensitive to color, sensitive to low light</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>In dim light only rods work, so color disappears</h4>
+    </div>
+    <p class="fig-lede">Six colored patches seen in good light and in low light. Switch the light level and watch which receptor is in use.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="scene"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Cones are located in the fovea and are highly sensitive to color. Rods are insensitive to color and sensitive to low levels of illumination. Scotopic vision uses only rods (black and white). Photopic vision uses cones and provides color.</p>
+    <p class="source">Source: L6 p.4, p.5 · Notes: Lecture 6 › 1. Human Eye Structure · Lecture 6 › 2. Brightness Adaptation and Weber Ratio</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc7" data-sample="1" data-part="mc" data-num="7" data-topic="Chessboard distance">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 7, Distance measures</p>
+    <h3 class="q-title">Two pixels are p = (1, 2) and q = (6, 4). The chessboard distance D8(p, q) is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>2</span>
+      <span class="why">No. 2 is |2 − 4|, the smaller difference. The max takes the larger one.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>5.39</span>
+      <span class="why">No. That is the Euclidean distance √(5² + 2²) = √29.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>7</span>
+      <span class="why">No. That is D4, the city-block distance 5 + 2.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>5</span>
+      <span class="why">Correct. D8 = max(|1 − 6|, |2 − 4|) = max(5, 2) = 5.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> The chessboard distance is D8(p, q) = max(|x − s|, |y − t|) for p = (x, y) and q = (s, t). The differences are |1 − 6| = 5 and |2 − 4| = 2, so D8 = 5.</p>
+    <p>A move to any of the 8 neighbors costs 1, like a king on a chessboard. The 2 columns are covered by diagonal moves while the walk covers the 5 rows, so the larger difference is the whole cost.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Three distances from p to q on the pixel grid</h4>
+    </div>
+    <p class="fig-lede">x is the row (down) and y is the column (right), origin at the top-left. Each cell shows its distance from p. The shaded cells are one shortest walk from p to q, and the plum outline marks every pixel at the same distance as q.</p>
+    <div data-viz="steps"></div>
+    <div data-viz="grid"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>p = (1, 2)</span>
+      <span><i class="sw-ok"></i>q = (6, 4)</span>
+      <span><i class="sw-pri-soft"></i>shortest walk, one step per cell</span>
+      <span><i class="sw-sec"></i>same distance as q</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Pixels within distance 2: a diamond for D4, a square for D8</h4>
+    </div>
+    <p class="fig-lede">The slide contour figures. D4 = 1 gives the 4-neighbors and D8 = 1 gives the 8-neighbors. Because D8 takes the max, its rings are squares, and q sits on the square ring at 5 in Figure 1.</p>
+    <div data-viz="rings"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Chessboard distance D8(p, q) = max(|x − s|, |y − t|), and D8 ≤ r forms a square. City-block D4 = |x − s| + |y − t| forms a diamond. Euclidean De = √((x − s)² + (y − t)²).</p>
+    <p class="source">Source: L7 p.31, p.32, p.33 · Notes: Lecture 7 › 7. Distance Measures</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc8" data-sample="1" data-part="mc" data-num="8" data-topic="Histogram equalization">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 9, Histogram equalization</p>
+    <h3 class="q-title">The goal of histogram equalization is to:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>obtain a uniform histogram for the output image, by mapping gray level r to s so that s is uniformly distributed</span>
+      <span class="why">Correct. This is the goal on slide 20.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>shift the histogram to the right by adding a constant to every pixel</span>
+      <span class="why">No. Adding a constant brightens the image and slides the histogram, but its shape stays the same.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>make the output histogram match a desired histogram given by the user</span>
+      <span class="why">No. That is histogram specification (slide 40), which needs a desired histogram as a second input.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>reduce the number of gray levels so that the image needs less storage</span>
+      <span class="why">No. Fewer gray levels is requantization (posterizing), not equalization.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> Histogram equalization maps each gray level r to s = T(r), where T is the normalized sum of the histogram (the CDF). Gray levels that hold many pixels get spread over a wide output range, and rare levels get squeezed together.</p>
+    <p>In the continuous case this makes the output density exactly uniform, p<sub>s</sub>(s) = 1 (slide 24). With discrete gray levels the result is spread over the full range but not perfectly flat (slide 26).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The CDF turns the slide-25 density into a flat one</h4>
+    </div>
+    <p class="fig-lede">The input density p<sub>r</sub>(r) = 2 − 2r is cut into five bands that each hold 20% of the pixels. The bands are narrow where pixels are dense. The mapping s = T(r) = 2r − r² sends every band to an output band of the same width 0.2, so the output density is flat.</p>
+    <div data-viz="cdf"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The four options applied to the slide-29 image</h4>
+    </div>
+    <p class="fig-lede">The 4 × 4, 3-bit image from slide 29 (levels 0 to 7, 16 pixels). Pick an option to see what it does to the histogram. The dashed line is a flat histogram, 16 pixels / 8 levels = 2 per level.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="hist"></div>
+    <div class="given" data-viz="mats"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Goal of histogram equalization: to obtain a uniform histogram for the output image, by mapping r to s = T(r), the normalized cumulative histogram. Histogram specification instead needs both a desired histogram and the image as input.</p>
+    <p class="source">Source: L9 p.20, p.40 · Notes: Lecture 9 › 6. Histogram Equalization, Theory · Lecture 9 › 9. Histogram Specification</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc9" data-sample="1" data-part="mc" data-num="9" data-topic="Opening">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 10, Opening and closing</p>
+    <h3 class="q-title">Morphological opening of image A by structuring element B is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>a dilation followed by an erosion</span>
+      <span class="why">No. Dilation then erosion is closing, A • B.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>the difference between the dilation and the erosion</span>
+      <span class="why">No. That is the morphological gradient (slide 55).</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>an erosion followed by a dilation</span>
+      <span class="why">Correct. A ∘ B = (A ⊖ B) ⊕ B.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>an erosion followed by a second erosion</span>
+      <span class="why">No. Two erosions only shrink the shape further, and nothing grows back.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Opening is "obtained by the erosion of an image followed by a dilation" (slide 26): A ∘ B = (A ⊖ B) ⊕ B. The erosion keeps only the places where B fits inside A. The dilation grows what is left back to its size.</p>
+    <p>Parts where B never fits, such as small bright spots and thin protrusions, do not come back. Closing uses the reverse order, A • B = (A ⊕ B) ⊖ B, and fills small dark gaps instead.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The order of the two operations decides the result</h4>
+    </div>
+    <p class="fig-lede">A binary image A with a notch, a thin line and one noise pixel. B is the 3 × 3 square of ones with its origin at the center. Each option is drawn as its sequence of steps. In the last panel a red dashed outline marks a pixel that A had and the result lost, and a green one marks a pixel the result gained.</p>
+    <div data-viz="steps"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+    <div data-viz="morph"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>1, foreground</span>
+      <span><i class="sw-seg"></i>0, background</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Opening A ∘ B = (A ⊖ B) ⊕ B, an erosion followed by a dilation. It removes small bright spots and thin protrusions. Closing A • B = (A ⊕ B) ⊖ B, a dilation followed by an erosion, removes small dark spots. The gradient is dilation minus erosion.</p>
+    <p class="source">Source: L10 p.26, p.28, p.55 · Notes: Lecture 10 › 5. Opening and Closing · Lecture 10 › 11. Gray Scale Morphology, Gradient, Top Hat</p>
+  </div>
+</article>
+
+<article class="q" id="s1-mc10" data-sample="1" data-part="mc" data-num="10" data-topic="Unsupervised learning">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 12, Learning and adaptation</p>
+    <h3 class="q-title">In pattern recognition, unsupervised learning means that:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>a teacher provides a category label or cost for each pattern in the training set</span>
+      <span class="why">No. That is supervised learning, word for word.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>the system forms clusters or "natural groupings" of the input patterns</span>
+      <span class="why">Correct. This is the slide-28 definition.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>every pattern is put in the reject class until a teacher labels it</span>
+      <span class="why">No. The reject class is where a classifier puts a pattern it cannot assign to any class.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>each pattern is compared with a stored template of every class</span>
+      <span class="why">No. That is template matching, a way to classify.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> In supervised learning a teacher provides a category label or cost for each pattern in the training set. In unsupervised learning there is no teacher. The system only sees the feature vectors and forms clusters, or "natural groupings", of the input patterns by itself.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The same patterns with a teacher and without one</h4>
+    </div>
+    <p class="fig-lede">26 fish as feature vectors (lightness, width), as in the slide's salmon and sea bass example. Left: a teacher labels every training pattern, and the classifier learns a decision boundary between the labelled classes. Right: no labels. The system can only find the groups that the points form by themselves, and it does not know their names.</p>
+    <div data-viz="scatter"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>labelled salmon</span>
+      <span><i class="sw-sec"></i>labelled sea bass</span>
+      <span><i class="sw-ter"></i>cluster found without labels</span>
+    </div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>Teacher labels: supervised</h5>
+        <p>Every training pattern comes with its category, so the system learns from labelled examples.</p>
+        <div class="chips"><span>pattern</span><span class="arrow">+</span><span class="out">label "salmon"</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Reject class: a classifier output</h5>
+        <p>A classifier assigns a feature vector to one of the designated classes or to the reject class (slide 31).</p>
+        <div class="chips"><span>feature vector</span><span class="arrow">→</span><span class="out">class 1</span><span class="out">class 2</span><span class="out">reject</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>Stored templates: template matching</h5>
+        <p>The pattern is compared with one stored template per class and gets the best match. That classifies, it does not learn groups.</p>
+        <div class="chips"><span>pattern</span><span class="arrow">vs</span><span class="out">template A</span><span class="out">template B</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Supervised learning: a teacher provides a category label or cost for each pattern in the training set. Unsupervised learning: the system forms clusters or "natural groupings" of the input patterns.</p>
+    <p class="source">Source: L12 p.28 · Notes: Lecture 12 › 6. Learning, Statistical and Structural PR</p>
+  </div>
+</article>

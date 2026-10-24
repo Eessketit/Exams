@@ -1,0 +1,647 @@
+<article class="q" id="s4-mc1" data-sample="4" data-part="mc" data-num="1" data-topic="Bit rate">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2, Bit rate</p>
+    <h3 class="q-title">An audio signal is sampled at 11.025 kHz with 16 bits per sample, in stereo. What is its uncompressed bit rate?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>176.4 kbps</span>
+      <span class="why">No. 11,025 × 16 = 176,400 bps is one channel. Stereo has two.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>44.1 kbps</span>
+      <span class="why">No. 352,800 ÷ 8 = 44,100 is the rate in bytes per second (44.1 kB/s).</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>352.8 kbps</span>
+      <span class="why">Correct. 11,025 × 16 × 2 = 352,800 bps.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>705.6 kbps</span>
+      <span class="why">No. That is 44,100 × 16, the mono CD rate. 11.025 kHz is a quarter of 44.1 kHz.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Bit rate is the number of bits produced per second: sampling rate × quantization bits per sample, times the number of channels. Stereo has two channels, and each one sends its own 16-bit sample at every sampling instant. So 11,025 × 16 × 2 = 352,800 bits/s = 352.8 kbps.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Every sampling instant adds two 16-bit words</h4>
+    </div>
+    <p class="fig-lede">Both channels are sampled at the same instants, one sample period T = 1/11,025 s ≈ 90.7 µs apart. Each instant puts one left word and one right word on the stream, 32 bits in total.</p>
+    <div data-viz="words"></div>
+    <p class="formula">11,025 instants/s × 16 bits × 2 channels = 352,800 bits/s = 352.8 kbps</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Where each option's number comes from</h4>
+    </div>
+    <p class="fig-lede">All four values drawn to scale in kbps. Each wrong option is the right product with one factor dropped, added or mixed up.</p>
+    <div data-viz="options"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Bit rate = sampling rate × quantization bits per sample, in bits per second; multiply by the number of channels. Stereo is twice the mono rate.</p>
+    <p class="source">Source: L2 p.34 bit rate definition · L2 p.35 table of sampling rates and bit rates · Notes: Lecture 2 › Bit rate</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc2" data-sample="4" data-part="mc" data-num="2" data-topic="PCM encoder">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 3, Coding of audio and PCM</p>
+    <h3 class="q-title">Which is the correct order of the blocks in a PCM speech encoder?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>μ-law compressor → bandlimiting filter → linear PCM → transmission</span>
+      <span class="why">No. The bandlimiting filter comes first, before the compressor.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>bandlimiting filter → linear PCM → μ-law expander → transmission</span>
+      <span class="why">No. The expander is a decoder block. It undoes the compressor at the receiver.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>low-pass filter → digital-to-analog converter → μ-law expander → transmission</span>
+      <span class="why">No. Low-pass filter, DAC and expander are all decoder blocks.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>bandlimiting filter → μ-law compressor → linear PCM → transmission</span>
+      <span class="why">Correct. This is the encoder row of Fig. 6.15 (L3 p.44).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Fig. 6.15 on slide 44 has an encoder row and a decoder row. The encoder takes the analog speech through a bandlimiting filter, a μ-law or A-law compressor and linear PCM, then transmits. The decoder runs a digital-to-analog converter, a μ-law or A-law expander and a low-pass filter. Options b and c use decoder blocks, and option a compresses before it filters.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Fig. 6.15: the encoder row and the decoder row</h4>
+    </div>
+    <p class="fig-lede">The top two rows redraw slide 44. Pick an option to lay its four blocks under the encoder. A block is green when it sits in the encoder's slot for it and red otherwise.</p>
+    <div data-viz="pick"></div>
+    <div data-viz="chain"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Why the compressor sits before linear PCM</h4>
+    </div>
+    <p class="fig-lede">The μ-law compressor bends the amplitude (μ = 255), and linear PCM then cuts the bent signal into equal steps. Read the 8 equal output steps back to the input axis: they are fine for quiet sounds and coarse for loud ones, the logarithmic quantization of L2 p.33. The expander in the decoder applies the inverse curve.</p>
+    <div data-viz="mulaw"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>μ-law compressor, y = ln(1 + μx) / ln(1 + μ)</span>
+      <span><i class="sw-seg"></i>no compression, y = x</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>PCM encoder: bandlimiting filter → μ-law or A-law compressor → linear PCM → transmission. Decoder: digital-to-analog converter → μ-law or A-law expander → low-pass filter.</p>
+    <p class="source">Source: L3 p.44 PCM encoder and decoder blocks · Notes: Lecture 3 › Coding of audio and PCM</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc3" data-sample="4" data-part="mc" data-num="3" data-topic="Run-length coding">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 4, Run length coding</p>
+    <h3 class="q-title">Run-length coding compresses well because it:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>exploits memory in the source: symbols tend to form continuous groups (runs)</span>
+      <span class="why">Correct. Slide 14: RLC exploits memory in the source.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>assumes a memoryless source, where each symbol is independent of the previous ones</span>
+      <span class="why">No. A memoryless source has short runs, and RLE then makes the data longer.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>gives shorter codewords to more probable symbols, using a tree built bottom-up</span>
+      <span class="why">No. That is Huffman coding.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>builds a dictionary of repeated strings while it scans the input</span>
+      <span class="why">No. That is LZW (pattern substitution).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> In a memoryless source every symbol is drawn independently of the previous ones. RLC is built for a source with memory, where symbols tend to form continuous groups. It codes each group as two entities, count then symbol, so a run of 8 E's costs only <code>8E</code>. A lone symbol still costs two entries, like the <code>1D</code> on slide 15, so a source without runs gets longer.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>More memory, longer runs, shorter RLE output</h4>
+    </div>
+    <p class="fig-lede">A source over four symbols A to D. Each new symbol repeats the previous one with probability P and otherwise picks one of the other three. At P = 0.25 every symbol is equally likely whatever came before, so the source is memoryless. Slide 15's example has strong memory: <code>BBBBEEEEEEEECCCCDAAAAA</code> (22) → <code>4B8E4C1D5A</code> (10).</p>
+    <div data-viz="slider"></div>
+    <div data-viz="tape"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Runs</span><span class="v pri" data-role="runs"></span><span class="sub">groups of one symbol</span></div>
+      <div class="stat"><span class="label">RLE output</span><span class="v" data-role="out"></span><span class="sub">symbols, 2 per run</span></div>
+      <div class="stat"><span class="label">Ratio</span><span class="v ok" data-role="ratio"></span><span class="sub">32 / output length</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+    <div class="chips" data-role="code"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Why the other options are wrong</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Short codes for likely symbols: Huffman</h5>
+        <p>The tree is built bottom-up from the probabilities. The order of the symbols in the input does not matter.</p>
+        <div class="chips"><span>A 0.5</span><span>B 0.25</span><span>C 0.125</span><span>D 0.125</span></div>
+        <div class="chips"><span class="arrow">codes</span><span class="out">A 0</span><span class="out">B 10</span><span class="out">C 110</span><span class="out">D 111</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>Dictionary of strings: LZW</h5>
+        <p>Start with A = 1, B = 2. New strings enter the dictionary during the scan, and repeats go out as one code.</p>
+        <div class="chips"><span>ABABABA</span></div>
+        <div class="chips"><span>AB = 3</span><span>BA = 4</span><span>ABA = 5</span></div>
+        <div class="chips"><span class="arrow">output</span><span class="out">1</span><span class="out">2</span><span class="out">3</span><span class="out">5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Memoryless source: each symbol is independent of the previous ones. RLC exploits memory in the source: if symbols form continuous groups, code the symbol and the length of the group (count, then symbol).</p>
+    <p class="source">Source: L4 p.14 memoryless source vs RLC exploiting memory · L4 p.15 runs coded as count + symbol · Notes: Lecture 4 › Run length coding</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc4" data-sample="4" data-part="mc" data-num="4" data-topic="MP4 container">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 5, MPEG-4 audio, AAC and MP4</p>
+    <h3 class="q-title">What is MP4 (MPEG-4 Part 14)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The audio codec that succeeded MP3, based on pure MDCT</span>
+      <span class="why">No. That describes AAC, the audio codec of MPEG-4.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>A multimedia container (wrapper) format that stores video and audio streams and metadata</span>
+      <span class="why">Correct. Slide 52: MPEG-4 Part 14, extension .mp4, a container format.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>MPEG-1 Audio Layer III</span>
+      <span class="why">No. MPEG-1 Audio Layer III is MP3, an audio codec.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>A lossless audio format, like FLAC</span>
+      <span class="why">No. FLAC is a lossless audio coding format. MP4 codes no audio itself; it stores streams that codecs made.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> MPEG-4 Part 14 (.mp4) is a multimedia container (wrapper) format. It stores digital video and audio streams and allows Internet streaming. Slide 52 calls it a meta-file format whose spec describes how different data elements and metadata coexist in a computer file. AAC, MP3 and FLAC are codings of the audio itself, one layer below the container.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Codecs make the streams, the .mp4 container holds them</h4>
+    </div>
+    <p class="fig-lede">Options a, c and d all name audio codings, which turn samples into one stream. Option b names the file layer that holds several streams side by side, with metadata, in chunks that can be played while the file is still arriving.</p>
+    <div data-viz="layers"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>video stream</span>
+      <span><i class="sw-sec"></i>audio stream</span>
+      <span><i class="sw-seg"></i>metadata</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>MPEG-4 Part 3 is audio coding, Part 14 is the file</h4>
+    </div>
+    <p class="fig-lede">The names are easy to mix up. MP3 comes from MPEG-1. AAC started as MPEG-2 Part 7 in 1997 and joined MPEG-4 in 1999. MP4 is a different part of the same MPEG-4 standard.</p>
+    <div data-viz="family"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>MPEG-4 Part 14 = MP4 (.mp4): a multimedia container (wrapper) format that stores digital video and audio streams and allows Internet streaming. AAC is the codec that succeeded MP3.</p>
+    <p class="source">Source: L5 p.52 MPEG-4 Part 14, container format · Notes: Lecture 5 › MPEG4 audio, AAC and MP4</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc5" data-sample="4" data-part="mc" data-num="5" data-topic="Image storage">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 6, Representing and storing a digital image</p>
+    <h3 class="q-title">How many bits are needed to store a 512 x 512 gray-scale image with 64 gray levels?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>1,572,864 bits</span>
+      <span class="why">Correct. k = log₂ 64 = 6, so 512 × 512 × 6.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>2,097,152 bits</span>
+      <span class="why">No. That is 512 × 512 × 8, for 256 gray levels.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>16,777,216 bits</span>
+      <span class="why">No. That multiplies by L = 64 in place of k = 6.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>196,608 bits</span>
+      <span class="why">No. That is the answer in bytes, 1,572,864 ÷ 8.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> An image with L gray levels needs k bits per pixel, where L = 2<sup>k</sup>. Here 64 = 2⁶, so k = 6. The number of bits is b = M × N × k = 512 × 512 × 6 = 262,144 pixels × 6 bits = 1,572,864 bits.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>L = 2<sup>k</sup>: 64 gray levels need 6 bits per pixel</h4>
+    </div>
+    <p class="fig-lede">The ramp shows all L gray levels for k bits. The marked pixel's value is written in k bits below it. Move k and watch b = 512 × 512 × k.</p>
+    <div data-viz="slider"></div>
+    <div data-viz="ramp"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Gray levels</span><span class="v pri" data-role="L"></span><span class="sub">L = 2<sup>k</sup></span></div>
+      <div class="stat"><span class="label">Bits per pixel</span><span class="v pri" data-role="k"></span><span class="sub">k = log₂ L</span></div>
+      <div class="stat"><span class="label">Bits for the image</span><span class="v ok" data-role="b"></span><span class="sub">b = 512 × 512 × k</span></div>
+    </div>
+    <p class="verdict" data-role="verdict"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The four options on one scale</h4>
+    </div>
+    <p class="fig-lede">Every option is 262,144 pixels times some factor. Only k = 6 is the right one.</p>
+    <div data-viz="options"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>L = 2<sup>k</sup> gray levels, 0 ≤ f(x, y) ≤ L − 1. Bits to store an M × N image: b = M × N × k (b = N²k for a square image).</p>
+    <p class="source">Source: L6 p.26 L = 2<sup>k</sup> gray levels · L6 p.27-28 b = M × N × k · Notes: Lecture 6 › Dynamic range · Lecture 6 › Representing and storing a digital image</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc6" data-sample="4" data-part="mc" data-num="6" data-topic="CIE XYZ">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 7, CIE XYZ color coordinate system</p>
+    <h3 class="q-title">In the CIE XYZ color system, which tristimulus value represents luminance (perceived brightness)?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>X</span>
+      <span class="why">No. X is the "red mix", chosen mathematically to keep the values positive.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Z</span>
+      <span class="why">No. Z is the "blue response" to short wavelengths.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>Y</span>
+      <span class="why">Correct. Slide 47: Y = luminance (perceived brightness).</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>x = X / (X + Y + Z)</span>
+      <span class="why">No. x is a chromaticity coordinate. Dividing by X + Y + Z removes the brightness.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> The CIE defined the matching function ȳ(λ) to match the luminous-efficiency function of the eye (criterion 3, slide 45). Y is built with ȳ, so Y measures luminance, the perceived brightness (slide 47). X is the "red mix" and Z the "blue response". The chromaticity x is a ratio, and a ratio stays the same when the light gets brighter or dimmer.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>ȳ(λ) is the eye's luminous-efficiency curve</h4>
+    </div>
+    <p class="fig-lede">The three CIE 1931 matching functions. ȳ peaks at 1.0 near 555 nm, where the eye is most sensitive, so Y weights light by how bright it looks. z̄ sits at short (blue) wavelengths. x̄ has its main lobe near 600 nm and a small lobe near 445 nm.</p>
+    <div data-viz="cmf"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>ȳ(λ), gives Y = luminance</span>
+      <span><i class="sw-sec"></i>x̄(λ), gives X, red mix</span>
+      <span><i class="sw-ter"></i>z̄(λ), gives Z, blue response</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Dimming the light changes Y, and x stays put</h4>
+    </div>
+    <p class="fig-lede">One green light at intensity s. X, Y and Z all scale with s. Y follows the brightness of the swatch, while x = X / (X + Y + Z) and y = Y / (X + Y + Z) do not move.</p>
+    <div data-viz="slider"></div>
+    <div data-viz="dim"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Luminance</span><span class="v pri" data-role="Y"></span><span class="sub">changes with s</span></div>
+      <div class="stat"><span class="label">Chromaticity</span><span class="v" data-role="x"></span><span class="sub">x = X / (X + Y + Z), fixed</span></div>
+      <div class="stat"><span class="label">Chromaticity</span><span class="v" data-role="y"></span><span class="sub">y = Y / (X + Y + Z), fixed</span></div>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Y = luminance (perceived brightness), X = "red mix", Z = "blue response". ȳ is defined to match the luminous-efficiency function of the eye.</p>
+    <p class="source">Source: L7 p.47 meaning of X, Y, Z · Notes: Lecture 7 › CIE XYZ color coordinate system</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc7" data-sample="4" data-part="mc" data-num="7" data-topic="Image addition">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 9, Arithmetic operations</p>
+    <h3 class="q-title">Adding the constant 40 to every pixel of an 8-bit image (with clamping at 255) mainly:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>increases the contrast; the histogram is stretched</span>
+      <span class="why">No. Stretching needs multiplication. Adding moves every level by the same amount.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>increases the brightness; the histogram shifts right and the contrast does not change</span>
+      <span class="why">Correct. Slides 46-48: adding and subtracting adjust brightness and cannot adjust the contrast.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>flattens the histogram, as histogram equalization does</span>
+      <span class="why">No. Equalization maps each level through the CDF, a different move for each level.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>inverts the image, as the NOT operation does</span>
+      <span class="why">No. NOT maps r to 255 − r and reverses the order of the levels.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Adding a constant maps every gray level r to r + 40, the same shift for every pixel. The whole histogram moves 40 levels to the right, so the image gets brighter. The gaps between gray levels stay the same, so the contrast does not change (slide 48: adding and subtracting cannot adjust the contrast). Clamping only touches pixels that would pass 255.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The histogram slides, its width stays</h4>
+    </div>
+    <p class="fig-lede">An 8 × 8 patch before and after adding a. The histogram (bins of 10 levels) moves by a. The spread from darkest to brightest pixel stays the same until pixels start to clamp at 255 or 0.</p>
+    <div data-viz="slider"></div>
+    <div data-viz="hist"></div>
+    <div class="legend">
+      <span><i class="sw-seg"></i>original histogram</span>
+      <span><i class="sw-pri"></i>after adding a</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="label">Mean</span><span class="v pri" data-role="mean"></span><span class="sub">brightness</span></div>
+      <div class="stat"><span class="label">Max − min</span><span class="v ok" data-role="range"></span><span class="sub">contrast range</span></div>
+      <div class="stat"><span class="label">Clamped</span><span class="v" data-role="clip"></span><span class="sub">pixels cut at 0 or 255</span></div>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Slope is contrast: r + 40 against 1.5 r</h4>
+    </div>
+    <p class="fig-lede">The transfer curves s = T(r). The input band 100 to 140 is 40 levels wide. Adding 40 moves it to 140 to 180, still 40 wide. Multiplying by 1.5 stretches it to 150 to 210, 60 wide. Only a slope above 1 increases contrast.</p>
+    <div data-viz="curves"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>s = r + 40 (brightness)</span>
+      <span><i class="sw-sec"></i>s = 1.5 r (contrast)</span>
+      <span><i class="sw-seg"></i>s = r</span>
+    </div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Addition and subtraction adjust brightness; division and multiplication adjust contrast. Adding and subtracting cannot adjust the contrast. Overflow is clamped: below 0 becomes 0, above 255 becomes 255.</p>
+    <p class="source">Source: L9 p.46 add/subtract = brightness, multiply/divide = contrast · L9 p.47 image + 40 example · L9 p.48 adding cannot adjust contrast · Notes: Lecture 9 › Arithmetic operations</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc8" data-sample="4" data-part="mc" data-num="8" data-topic="Erosion">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 10, Erosion</p>
+    <h3 class="q-title">Which morphological operation makes foreground (bright) regions shrink and the holes inside them grow?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Dilation</span>
+      <span class="why">No. Dilation grows the foreground and fills small holes.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Closing</span>
+      <span class="why">No. Closing (dilation, then erosion) fills small holes and keeps the outline.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Region filling</span>
+      <span class="why">No. Region filling fills a hole from a seed point inside it.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>Erosion</span>
+      <span class="why">Correct. Erode, shrink, reduce (L10 p.15).</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Erosion writes the local minimum under the structuring element to each pixel (slide 18). With a 3 × 3 square of 1s, a foreground pixel survives only if its whole window is foreground. Pixels on the outer boundary touch the background and become 0, and so do the pixels around a hole. The region shrinks and the hole grows. Dilation, the local maximum, does the opposite.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One image, the four options</h4>
+    </div>
+    <p class="fig-lede">A 7 × 9 block with a one-pixel hole, processed with the 3 × 3 structuring element B of all 1s. Pixels outside the image count as 0. The outlined window on A shows the rule for one pixel.</p>
+    <div data-viz="pick"></div>
+    <div data-viz="morph"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>1, foreground</span>
+      <span><i class="sw-seg"></i>0, background</span>
+      <span>× removed (1 → 0)</span>
+      <span>+ added (0 → 1)</span>
+    </div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Erosion (erode, shrink, reduce): areas of foreground pixels shrink in size, and holes within those areas become larger. It is the local minimum over the kernel; dilation is the local maximum.</p>
+    <p class="source">Source: L10 p.15 erosion: foreground shrinks, holes grow · L10 p.18 erosion = local minimum · Notes: Lecture 10 › Erosion</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc9" data-sample="4" data-part="mc" data-num="9" data-topic="Gaussian mask">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 11, Blurring</p>
+    <h3 class="q-title">The 3x3 Gaussian smoothing mask is written as (1/16) x [1 2 1; 2 4 2; 1 2 1]. Why the factor 1/16?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>The mask window contains 16 pixels</span>
+      <span class="why">No. A 3 × 3 window holds 9 pixels.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>It makes the weights sum to 0, so flat regions become 0</span>
+      <span class="why">No. A sum of 0 belongs to a high-pass mask such as the Laplacian. This mask sums to 1.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>16 is the sum of the weights, so the mask sums to 1 and a flat region keeps its value</span>
+      <span class="why">Correct. 1 + 2 + 1 + 2 + 4 + 2 + 1 + 2 + 1 = 16.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>It equals 1/σ² for σ = 4</span>
+      <span class="why">No. 1/16 happens to equal 1/4². The factor comes from the weight sum, and these weights fit σ ≈ 0.85.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> A blurring mask should not change the overall brightness. The weights add up to 1 + 2 + 1 + 2 + 4 + 2 + 1 + 2 + 1 = 16, so the factor 1/16 makes the mask sum to 1. On a flat region of value v the output is 16v / 16 = v. Written out, the slide's mask is [1/16 1/8 1/16; 1/8 1/4 1/8; 1/16 1/8 1/16].</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>On a flat region, only the 1/16 mask keeps the value</h4>
+    </div>
+    <p class="fig-lede">A flat 3 × 3 window, every pixel 100. Multiply each pixel by its weight, add, then divide by the factor. Compare the factors and the zero-sum Laplacian of option b.</p>
+    <div data-viz="pick"></div>
+    <div data-viz="flat"></div>
+    <p class="step-note" data-role="note" aria-live="polite"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>16 = 4 × 4: the mask is [1 2 1] times [1 2 1]</h4>
+    </div>
+    <p class="fig-lede">Each weight is the product of a row weight and a column weight from [1 2 1]. The row sums are 4, 8 and 4, and the total is (1 + 2 + 1)² = 16.</p>
+    <div data-viz="outer"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Gaussian 3 × 3 mask = (1/16)[1 2 1; 2 4 2; 1 2 1]: the weights sum to 16, so the mask sums to 1 and a flat region keeps its value. The center gets the largest weight, 4/16.</p>
+    <p class="source">Source: L11 p.19 Gaussian smoothing mask · Notes: Lecture 11 › Blurring</p>
+  </div>
+</article>
+
+<article class="q" id="s4-mc10" data-sample="4" data-part="mc" data-num="10" data-topic="Feature extraction">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 12, Pattern recognition system flowchart</p>
+    <h3 class="q-title">In a pattern recognition system, which stage should produce features that are invariant to translation, rotation and scale?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>Feature extraction</span>
+      <span class="why">Correct. Slide 19: "Invariant features with respect to translation, rotation and scale."</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Sensing</span>
+      <span class="why">No. Sensing is the transducer (camera or microphone) that captures the input.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Segmentation and grouping</span>
+      <span class="why">No. Segmentation makes the patterns well separated so they do not overlap.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>Post-processing</span>
+      <span class="why">No. Post-processing exploits context to improve the decision.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> The feature extractor turns each segmented object into the feature vector that the classifier uses. Slide 19 asks for discriminative features that are invariant with respect to translation, rotation and scale. Then the same fish gets the same feature values wherever it lies, however it is turned and however large it appears in the image.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The system flowchart, with feature extraction marked</h4>
+    </div>
+    <p class="fig-lede">Slide 18, read from the bottom up. Solid arrows carry the data up; dotted arrows go down to the stage below. The letters are the options of this question.</p>
+    <div data-viz="flow"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Which features survive a move, a turn and a zoom</h4>
+    </div>
+    <p class="fig-lede">The same fish, moved, rotated by 35° and scaled by 1.4. Raw measurements in image coordinates change. The length-to-width ratio along the fish's own axis and its lightness do not, so those are the invariant features.</p>
+    <div data-viz="pick"></div>
+    <div data-viz="fish"></div>
+    <div data-viz="table"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Feature extraction: discriminative features; invariant features with respect to translation, rotation and scale. Order: sensing → segmentation → feature extraction → classification → post-processing → decision.</p>
+    <p class="source">Source: L12 p.19 feature extraction: invariant features · Notes: Lecture 12 › Pattern recognition system flowchart</p>
+  </div>
+</article>

@@ -12,7 +12,8 @@ d) 20 ms
 
 > **Answer: b)** T = 1/f = 1/50 = 20 ms. 90 degrees = pi/2 rad = a shift of T/4 = 5 ms. (10 ms is 180 degrees = T/2; 20 ms is a full period.)  
 > **Source:** L2 p.16 amplitude, frequency, period T = 1/f, phase · L2 p.21 period and frequency are inverses · L2 p.24 same wave at different phases  
-> **Notes:** [Lecture 2 › Sine Wave Parameters: Amplitude, Frequency, Period, Phase, Wavelength](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)
+> **Notes:** [Lecture 2 › Sine Wave Parameters: Amplitude, Frequency, Period, Phase, Wavelength](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#4-sine-wave-parameters-amplitude-frequency-period-phase-wavelength-slides-16-18-21-26)  
+> **Visual:** [Sample 1 › Part 1 Q1](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc1)
 
 **2.** An audio signal contains frequencies up to 12 kHz. What is the Nyquist sampling frequency for this signal (the frequency the sampling rate must be greater than)?  
 a) 6 kHz  
@@ -22,7 +23,8 @@ d) 48 kHz
 
 > **Answer: c)** Sample at more than twice the maximum frequency. The slide calls 2 x f_max = 2 x 12 = 24 kHz the "Nyquist sampling frequency". 6 kHz is the f_s/2 mix-up.  
 > **Source:** L2 p.47 sample at more than twice the highest frequency · L2 p.48 2 x f_max is the "Nyquist sampling frequency"  
-> **Notes:** [Lecture 2 › Sampling Theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50)
+> **Notes:** [Lecture 2 › Sampling Theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50)  
+> **Visual:** [Sample 1 › Part 1 Q2](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc2)
 
 **3.** The signal voltage is 100 times the noise voltage. The SNR is:  
 a) 40 dB  
@@ -32,7 +34,8 @@ d) 2 dB
 
 > **Answer: a)** Voltages use 20 log10: 20 log10(100) = 40 dB. 20 dB comes from wrongly using 10 log10, which is the power form.  
 > **Source:** L3 p.6 SNR = 20 log10 of the voltage ratio  
-> **Notes:** [Lecture 3 › Signal to Noise Ratio (SNR)](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#2-signal-to-noise-ratio-snr-slides-4-6)
+> **Notes:** [Lecture 3 › Signal to Noise Ratio (SNR)](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#2-signal-to-noise-ratio-snr-slides-4-6)  
+> **Visual:** [Sample 1 › Part 1 Q3](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc3)
 
 **4.** Which property of Huffman codes makes it possible to decode a bitstream without any ambiguity, with no separators between codewords?  
 a) The two least frequent symbols have codes of the same length  
@@ -43,7 +46,8 @@ d) No codeword is a prefix of any other codeword
 > **Answer: d)** Unique prefix property: "no Huffman code is a prefix of any other ... precludes any ambiguity in decoding". a, b and c are true optimality properties, but they are not what makes decoding unambiguous.  
 > **Source:** L4 p.30 unique prefix property and optimality properties  
 > **Notes:** [Lecture 4 › Properties of Huffman Coding and Extended Huffman](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#9-properties-of-huffman-coding-and-extended-huffman-slides-30-32)  
-> **Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)
+> **Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)  
+> **Visual:** [Sample 1 › Part 1 Q4](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc4)
 
 **5.** Why does arithmetic coding usually outperform Huffman coding?  
 a) It is lossy, so it can drop rarely used symbols  
@@ -53,7 +57,8 @@ d) It codes each run of identical symbols as a count followed by the symbol
 
 > **Answer: b)** Slide wording: Huffman uses an integral bit length per symbol, while arithmetic coding treats the whole message as one unit, an interval [a, b). Arithmetic coding is lossless; c is LZW and d is RLE.  
 > **Source:** L5 p.3 integral bit length per symbol vs the whole message as one interval  
-> **Notes:** [Lecture 5 › Arithmetic Coding Basics](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#1-arithmetic-coding-basics-slides-3-4)
+> **Notes:** [Lecture 5 › Arithmetic Coding Basics](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#1-arithmetic-coding-basics-slides-3-4)  
+> **Visual:** [Sample 1 › Part 1 Q5](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc5)
 
 **6.** Which statement about the two receptors in the retina is correct?  
 a) Rods are located in the fovea and are highly sensitive to color  
@@ -63,7 +68,8 @@ d) Rods dominate photopic vision and provide color
 
 > **Answer: c)** Cones sit in the fovea and see color. Rods are insensitive to color and sensitive to low illumination. Scotopic vision is rod-dominant (b and d swap rods and cones).  
 > **Source:** L6 p.4 rods and cones in the retina · L6 p.5 scotopic (rods) vs photopic (cones) vision  
-> **Notes:** [Lecture 6 › Human Eye Structure](../notes/06_Week3_Image_Basics_Perception_Resampling.md#1-human-eye-structure-slides-3-4) · [Lecture 6 › Brightness Adaptation and Weber Ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)
+> **Notes:** [Lecture 6 › Human Eye Structure](../notes/06_Week3_Image_Basics_Perception_Resampling.md#1-human-eye-structure-slides-3-4) · [Lecture 6 › Brightness Adaptation and Weber Ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7)  
+> **Visual:** [Sample 1 › Part 1 Q6](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc6)
 
 **7.** Two pixels are p = (1, 2) and q = (6, 4). The chessboard distance D8(p, q) is:  
 a) 2  
@@ -73,7 +79,8 @@ d) 5
 
 > **Answer: d)** D8 = max(|1-6|, |2-4|) = max(5, 2) = 5. 7 is D4 (city block) and 5.39 is the Euclidean distance.  
 > **Source:** L7 p.31 Euclidean distance · L7 p.32 city-block distance D4 · L7 p.33 chessboard distance D8  
-> **Notes:** [Lecture 7 › Distance Measures](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#7-distance-measures-slides-30-34)
+> **Notes:** [Lecture 7 › Distance Measures](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#7-distance-measures-slides-30-34)  
+> **Visual:** [Sample 1 › Part 1 Q7](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc7)
 
 **8.** The goal of histogram equalization is to:  
 a) obtain a uniform histogram for the output image, by mapping gray level r to s so that s is uniformly distributed  
@@ -83,7 +90,8 @@ d) reduce the number of gray levels so that the image needs less storage
 
 > **Answer: a)** The goal on slide 20 is a uniform output histogram. c is histogram specification, b is brightness addition, d is posterizing.  
 > **Source:** L9 p.20 goal: a uniform output histogram · L9 p.40 histogram specification  
-> **Notes:** [Lecture 9 › Histogram Equalization, Theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram Specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)
+> **Notes:** [Lecture 9 › Histogram Equalization, Theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram Specification](../notes/09_Week5_Intensity_Transforms_Histogram.md#9-histogram-specification-slides-40-45)  
+> **Visual:** [Sample 1 › Part 1 Q8](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc8)
 
 **9.** Morphological opening of image A by structuring element B is:  
 a) a dilation followed by an erosion  
@@ -93,7 +101,8 @@ d) an erosion followed by a second erosion
 
 > **Answer: c)** Opening = erosion followed by dilation. a is closing; b is the morphological gradient.  
 > **Source:** L10 p.26 opening = erosion then dilation · L10 p.28 closing = dilation then erosion · L10 p.55 morphological gradient  
-> **Notes:** [Lecture 10 › Opening and Closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Gray Scale Morphology, Gradient, Top Hat](../notes/10_Week5_Morphology.md#11-gray-scale-morphology-gradient-top-hat-slides-52-56)
+> **Notes:** [Lecture 10 › Opening and Closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Gray Scale Morphology, Gradient, Top Hat](../notes/10_Week5_Morphology.md#11-gray-scale-morphology-gradient-top-hat-slides-52-56)  
+> **Visual:** [Sample 1 › Part 1 Q9](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc9)
 
 **10.** In pattern recognition, unsupervised learning means that:  
 a) a teacher provides a category label or cost for each pattern in the training set  
@@ -103,7 +112,8 @@ d) each pattern is compared with a stored template of every class
 
 > **Answer: b)** Unsupervised learning = the system forms clusters or "natural groupings". a is supervised learning.  
 > **Source:** L12 p.28 supervised vs unsupervised learning  
-> **Notes:** [Lecture 12 › Learning, Statistical and Structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31)
+> **Notes:** [Lecture 12 › Learning, Statistical and Structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31)  
+> **Visual:** [Sample 1 › Part 1 Q10](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-mc10)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -136,7 +146,8 @@ Structuring element B (3 x 3 cross, origin = the centre pixel, in brackets):
 **Answer**
 
 **Source:** L10 p.3 definition · L10 p.4-5 structuring element · L10 p.10-11 binary images, erosion and dilation · L10 p.12-13 dilation = local maximum · L10 p.20 set definition of dilation · L10 p.22 cross SE example  
-**Notes:** [Lecture 10 › Basic Concepts and Structuring Element](../notes/10_Week5_Morphology.md#1-basic-concepts-and-structuring-element-slides-2-6) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)
+**Notes:** [Lecture 10 › Basic Concepts and Structuring Element](../notes/10_Week5_Morphology.md#1-basic-concepts-and-structuring-element-slides-2-6) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22)  
+**Visual:** [Sample 1 › Part 2 Q1 Morphology](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w1)
 
 **(a) Write:**
 - "Morphological image processing is a collection of **non-linear** operations related to the shape or morphology of features in an image." It relies only on the relative ordering of pixel values, so it is especially suited to binary images. The two basic operations are **erosion and dilation**; opening and closing are built from them.
@@ -190,7 +201,8 @@ Working grid (`#` = 1 already in A, `+` = 1 added by the dilation, `0` = stays 0
 **Answer**
 
 **Source:** L11 p.14 applying a mask (weighted sum at the centre) · L11 p.16 blurring, 1/9 mask · L11 p.53 median vs low-pass filter · L11 p.55 median method  
-**Notes:** [Lecture 11 › Blurring: Average and Gaussian Masks](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19) · [Lecture 11 › Median and Color Median Filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59)
+**Notes:** [Lecture 11 › Blurring: Average and Gaussian Masks](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19) · [Lecture 11 › Median and Color Median Filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59)  
+**Visual:** [Sample 1 › Part 2 Q2 Filtering](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w2)
 
 **(a) Write:**
 - **Blurring** = low-pass spatial filtering. It "removes the finer details of an image" and is done by convolution. In the common blurring mask "all convolution coefficients are equal" (3 x 3: 1/9 each); "the bigger the mask, the greater the blurring effect". It is linear: the output is the mean of the window. A low-pass filter is "suited for removing **Gaussian noise**, but not impulse noise", and it also blurs edges.
@@ -231,7 +243,8 @@ A 3-bit image (L = 8, gray levels 0 to 7) of size 4 x 4:
 **Answer**
 
 **Source:** L9 p.14 histogram definition · L9 p.20 goal and the 3 steps · L9 p.26 the result is not flat · L9 p.27-28 T(r) = (M/N^2) x integral of h · L9 p.29-31 worked example (factor 7/16, round to nearest)  
-**Notes:** [Lecture 9 › Histogram](../notes/09_Week5_Intensity_Transforms_Histogram.md#5-histogram-slides-14-19) · [Lecture 9 › Histogram Equalization, Theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram Equalization, Worked Example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)
+**Notes:** [Lecture 9 › Histogram](../notes/09_Week5_Intensity_Transforms_Histogram.md#5-histogram-slides-14-19) · [Lecture 9 › Histogram Equalization, Theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram Equalization, Worked Example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)  
+**Visual:** [Sample 1 › Part 2 Q3 Histogram equalization](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w3)
 
 **Write:**
 - A histogram is "a simple bar graph that stands for pixel intensities": intensity on the x-axis and number of occurrences on the y-axis.
@@ -275,7 +288,8 @@ A 3-bit image (L = 8, gray levels 0 to 7) of size 4 x 4:
 **Answer**
 
 **Source:** L12 p.17 sensing, segmentation and grouping · L12 p.18 flowchart · L12 p.19 feature extraction, classification, post-processing · L12 p.20-21 design cycle  
-**Notes:** [Lecture 12 › Pattern Recognition System Flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › The Design Cycle](../notes/12_Week7_Pattern_Recognition.md#5-the-design-cycle-slides-20-27)
+**Notes:** [Lecture 12 › Pattern Recognition System Flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › The Design Cycle](../notes/12_Week7_Pattern_Recognition.md#5-the-design-cycle-slides-20-27)  
+**Visual:** [Sample 1 › Part 2 Q4 Pattern recognition system](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w4)
 
 **(a) Draw (slide 18, read bottom to top):**
 
@@ -345,7 +359,8 @@ A source emits 5 symbols with these probabilities:
 
 **Source:** L4 p.24-27 Huffman outline and Algorithm 7.1 (bottom-up) · L4 p.12 entropy · L4 p.26 average length and efficiency table · L4 p.30 properties ($\eta\le\bar l<\eta+1$)  
 **Notes:** [Lecture 4 › Huffman Coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#8-huffman-coding-slides-24-29) · [Lecture 4 › Entropy: Basics of Information Theory](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)  
-**Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)
+**Video:** [Huffman coding step-by-step example (Pizzey Technology)](https://www.youtube.com/watch?v=iEm1NRyEe5c)  
+**Visual:** [Sample 1 › Part 2 Q5 Huffman coding](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w5)
 
 **Rules used:**
 - Always merge the two smallest probabilities. This source has no ties.
@@ -416,7 +431,8 @@ A source emits 5 symbols with these probabilities:
 **Answer**
 
 **Source:** L2 p.12 sampling definition · L2 p.14 sampling (time) vs quantization (amplitude) · L2 p.15 A/D and D/A · L2 p.29 quantization, 2^b levels · L2 p.34-35 bit rate · L2 p.47-48 Nyquist · L3 p.11 stereo doubles the data rate  
-**Notes:** [Lecture 2 › Building Complex Signals and the Digitization Process](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#3-building-complex-signals-and-the-digitization-process-slides-12-15) · [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33) · [Lecture 2 › Bit Rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#8-bit-rate-slides-34-35) · [Lecture 2 › Sampling Theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50)
+**Notes:** [Lecture 2 › Building Complex Signals and the Digitization Process](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#3-building-complex-signals-and-the-digitization-process-slides-12-15) · [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33) · [Lecture 2 › Bit Rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#8-bit-rate-slides-34-35) · [Lecture 2 › Sampling Theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50)  
+**Visual:** [Sample 1 › Part 2 Q6 Audio digitization](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w6)
 
 **(a) Write:**
 - **Sampling**: "using measurements only at evenly spaced time intervals"; the rate is the sampling frequency $f_s=1/T$, and the samples are $x_s(n)=x(nT)$. It digitizes the **time** axis.
@@ -446,7 +462,8 @@ A source emits 5 symbols with these probabilities:
 **Answer**
 
 **Source:** L6 p.24 sampling (coordinates) vs quantization (amplitude) · L6 p.26 $0\le f\le L-1$, $L=2^k$ · L6 p.27-28 $b=M\times N\times k$ · L6 p.29 spatial resolution · L6 p.30 intensity resolution and false contouring  
-**Notes:** [Lecture 6 › Sampling, Quantization and Dynamic Range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26) · [Lecture 6 › Representing and Storing a Digital Image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28) · [Lecture 6 › Spatial and Intensity Resolution, Isopreference Curves](../notes/06_Week3_Image_Basics_Perception_Resampling.md#10-spatial-and-intensity-resolution-isopreference-curves-slides-29-31)
+**Notes:** [Lecture 6 › Sampling, Quantization and Dynamic Range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26) · [Lecture 6 › Representing and Storing a Digital Image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28) · [Lecture 6 › Spatial and Intensity Resolution, Isopreference Curves](../notes/06_Week3_Image_Basics_Perception_Resampling.md#10-spatial-and-intensity-resolution-isopreference-curves-slides-29-31)  
+**Visual:** [Sample 1 › Part 2 Q7 Digital image representation](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w7)
 
 **(a) Write:**
 - **Spatial resolution** = the "smallest discernible detail" in an image.
@@ -497,7 +514,8 @@ Image (5 x 5), rows and columns numbered from 0:
 **Answer**
 
 **Source:** L11 p.14 applying a mask · L11 p.43 Sobel definition and masks · L11 p.37 magnitude and direction formulas · L11 p.38 Roberts, Sobel and Prewitt properties · L11 p.44 Sobel advantages and limitations  
-**Notes:** [Lecture 11 › First Order Derivative Operators: Roberts, Prewitt, Sobel, Frei Chen](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44)
+**Notes:** [Lecture 11 › First Order Derivative Operators: Roberts, Prewitt, Sobel, Frei Chen](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44)  
+**Visual:** [Sample 1 › Part 2 Q8 Edge detection](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s1-w8)
 
 Rule (slide 14): place the mask on the 3 x 3 window centred on (2, 2), multiply the matching positions and add (no flip). Window:
 

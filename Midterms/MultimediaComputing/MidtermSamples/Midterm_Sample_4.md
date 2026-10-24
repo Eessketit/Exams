@@ -13,7 +13,8 @@ d) 705.6 kbps
 
 > **Answer: c)** Bit rate = f_s x bits x channels = 11,025 x 16 x 2 = 352,800 bps. a) forgets the 2 channels; b) is 44.1 kB/s (bytes, not bits).  
 > **Source:** L2 p.34 bit rate definition · L2 p.35 table of sampling rates and bit rates  
-> **Notes:** [Lecture 2 › Bit rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#8-bit-rate-slides-34-35)
+> **Notes:** [Lecture 2 › Bit rate](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#8-bit-rate-slides-34-35)  
+> **Visual:** [Sample 4 › Part 1 Q1](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc1)
 
 **2.** Which is the correct order of the blocks in a PCM speech encoder?
 
@@ -24,7 +25,8 @@ d) bandlimiting filter → μ-law compressor → linear PCM → transmission
 
 > **Answer: d)** Encoder: bandlimiting filter → μ-law/A-law compressor → linear PCM → transmission. The expander, DAC and low-pass filter belong to the decoder.  
 > **Source:** L3 p.44 PCM encoder and decoder blocks  
-> **Notes:** [Lecture 3 › Coding of audio and PCM](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#12-coding-of-audio-and-pcm-slides-42-44)
+> **Notes:** [Lecture 3 › Coding of audio and PCM](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#12-coding-of-audio-and-pcm-slides-42-44)  
+> **Visual:** [Sample 4 › Part 1 Q2](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc2)
 
 **3.** Run-length coding compresses well because it:
 
@@ -35,7 +37,8 @@ d) builds a dictionary of repeated strings while it scans the input
 
 > **Answer: a)** RLC exploits memory in the source: it codes the symbol and the length of its group. b) is the opposite case; c) is Huffman; d) is LZW.  
 > **Source:** L4 p.14 memoryless source vs RLC exploiting memory · L4 p.15 runs coded as count + symbol  
-> **Notes:** [Lecture 4 › Run length coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#6-run-length-coding-repetition-suppression-pattern-substitution-slides-14-18)
+> **Notes:** [Lecture 4 › Run length coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#6-run-length-coding-repetition-suppression-pattern-substitution-slides-14-18)  
+> **Visual:** [Sample 4 › Part 1 Q3](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc3)
 
 **4.** What is MP4 (MPEG-4 Part 14)?
 
@@ -46,7 +49,8 @@ d) A lossless audio format, like FLAC
 
 > **Answer: b)** MPEG-4 Part 14 (.mp4) is a container (wrapper) format for video and audio streams. a) describes AAC.  
 > **Source:** L5 p.52 MPEG-4 Part 14, container format  
-> **Notes:** [Lecture 5 › MPEG4 audio, AAC and MP4](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#13-mpeg4-audio-aac-and-mp4-slides-47-53)
+> **Notes:** [Lecture 5 › MPEG4 audio, AAC and MP4](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#13-mpeg4-audio-aac-and-mp4-slides-47-53)  
+> **Visual:** [Sample 4 › Part 1 Q4](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc4)
 
 **5.** How many bits are needed to store a 512 x 512 gray-scale image with 64 gray levels?
 
@@ -57,7 +61,8 @@ d) 196,608 bits
 
 > **Answer: a)** b = M x N x k with k = log2 64 = 6: 512 x 512 x 6 = 1,572,864 bits. c) uses L = 64 in place of k; b) assumes 8 bits; d) is the answer in bytes.  
 > **Source:** L6 p.26 L = 2^k gray levels · L6 p.27-28 b = M x N x k  
-> **Notes:** [Lecture 6 › Dynamic range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26) · [Lecture 6 › Representing and storing a digital image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28)
+> **Notes:** [Lecture 6 › Dynamic range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26) · [Lecture 6 › Representing and storing a digital image](../notes/06_Week3_Image_Basics_Perception_Resampling.md#9-representing-and-storing-a-digital-image-slides-27-28)  
+> **Visual:** [Sample 4 › Part 1 Q5](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc5)
 
 **6.** In the CIE XYZ color system, which tristimulus value represents luminance (perceived brightness)?
 
@@ -68,7 +73,8 @@ d) x = X / (X + Y + Z)
 
 > **Answer: c)** Y = luminance; X = "red mix"; Z = "blue response". x is a chromaticity coordinate, which ignores luminance.  
 > **Source:** L7 p.47 meaning of X, Y, Z  
-> **Notes:** [Lecture 7 › CIE XYZ color coordinate system](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#10-cie-xyz-color-coordinate-system-slides-42-53)
+> **Notes:** [Lecture 7 › CIE XYZ color coordinate system](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#10-cie-xyz-color-coordinate-system-slides-42-53)  
+> **Visual:** [Sample 4 › Part 1 Q6](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc6)
 
 **7.** Adding the constant 40 to every pixel of an 8-bit image (with clamping at 255) mainly:
 
@@ -79,7 +85,8 @@ d) inverts the image, as the NOT operation does
 
 > **Answer: b)** Addition and subtraction adjust brightness; they cannot adjust contrast (multiplication and division do).  
 > **Source:** L9 p.46 add/subtract = brightness, multiply/divide = contrast · L9 p.47 image + 40 example · L9 p.48 adding cannot adjust contrast  
-> **Notes:** [Lecture 9 › Arithmetic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#10-arithmetic-operations-slides-46-53)
+> **Notes:** [Lecture 9 › Arithmetic operations](../notes/09_Week5_Intensity_Transforms_Histogram.md#10-arithmetic-operations-slides-46-53)  
+> **Visual:** [Sample 4 › Part 1 Q7](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc7)
 
 **8.** Which morphological operation makes foreground (bright) regions shrink and the holes inside them grow?
 
@@ -90,7 +97,8 @@ d) Erosion
 
 > **Answer: d)** Erosion (erode, shrink, reduce): foreground areas shrink and holes inside them grow. Dilation and closing do the opposite.  
 > **Source:** L10 p.15 erosion: foreground shrinks, holes grow · L10 p.18 erosion = local minimum  
-> **Notes:** [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25)
+> **Notes:** [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25)  
+> **Visual:** [Sample 4 › Part 1 Q8](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc8)
 
 **9.** The 3x3 Gaussian smoothing mask is written as (1/16) x [1 2 1; 2 4 2; 1 2 1]. Why the factor 1/16?
 
@@ -101,7 +109,8 @@ d) It equals 1/σ² for σ = 4
 
 > **Answer: c)** 1+2+1+2+4+2+1+2+1 = 16, so the mask sums to 1. The window has 9 pixels, not 16; a sum of 0 is a high-pass/Laplacian mask.  
 > **Source:** L11 p.19 Gaussian smoothing mask  
-> **Notes:** [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19)
+> **Notes:** [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19)  
+> **Visual:** [Sample 4 › Part 1 Q9](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc9)
 
 **10.** In a pattern recognition system, which stage should produce features that are invariant to translation, rotation and scale?
 
@@ -112,7 +121,8 @@ d) Post-processing
 
 > **Answer: a)** Feature extraction: "discriminative features", "invariant features with respect to translation, rotation and scale".  
 > **Source:** L12 p.19 feature extraction: invariant features  
-> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)
+> **Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19)  
+> **Visual:** [Sample 4 › Part 1 Q10](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-mc10)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -145,7 +155,8 @@ Structuring element B:
 **Answer**
 
 **Source:** L10 p.28-29 closing definition and effects · L10 p.26 opening · L10 p.12-13, 18 dilation = local max, erosion = local min · L10 p.34 properties  
-**Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25)
+**Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35) · [Lecture 10 › Dilation](../notes/10_Week5_Morphology.md#3-dilation-slides-12-14-20-22) · [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25)  
+**Visual:** [Sample 4 › Part 2 Q1 Morphology: closing](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w1)
 
 **(a) Write:**
 - **Closing** = a dilation followed by an erosion: A • B = (A ⊕ B) ⊖ B. "Closing can remove small dark spots and connect small bright cracks." It smooths contours, "fuses narrow breaks and long thin gulfs, eliminates small holes, and fills gaps in the contour". The result contains A: A ⊆ A • B.
@@ -213,7 +224,8 @@ Average mask = (1/9) x [1 1 1; 1 1 1; 1 1 1]. Gaussian mask = (1/16) x [1 2 1; 2
 **Answer**
 
 **Source:** L11 p.15 image borders · L11 p.14 applying a mask · L11 p.16-18 average mask · L11 p.19 Gaussian mask  
-**Notes:** [Lecture 11 › Convolution and image borders](../notes/11_Week6_Spatial_Filtering_Edges.md#3-convolution-and-image-borders-slides-11-15) · [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19)
+**Notes:** [Lecture 11 › Convolution and image borders](../notes/11_Week6_Spatial_Filtering_Edges.md#3-convolution-and-image-borders-slides-11-15) · [Lecture 11 › Blurring](../notes/11_Week6_Spatial_Filtering_Edges.md#4-blurring-average-and-gaussian-masks-slides-16-19)  
+**Visual:** [Sample 4 › Part 2 Q2 Filtering: blurring](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w2)
 
 **(a) Write (slide 15):**
 1. **Zero padding:** treat the empty cells of the window as zeros. Simple, but it darkens the border.
@@ -268,7 +280,8 @@ Average mask = (1/9) x [1 1 1; 1 1 1; 1 1 1]. Gaussian mask = (1/16) x [1 2 1; 2
 **Answer**
 
 **Source:** L9 p.14 histogram · L9 p.20 steps (histogram, normalized sum, transform) · L9 p.28 T(r) = (M/N²) ∫ h(w) dw · L9 p.29-31 worked example (factor 7/16, round to nearest) · L9 p.26 result not flat  
-**Notes:** [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31) · [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28)
+**Notes:** [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31) · [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28)  
+**Visual:** [Sample 4 › Part 2 Q3 Histogram equalization](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w3)
 
 **Write:** steps: 1. compute the histogram; 2. calculate the normalized sum of the histogram; 3. transform the input image to the output image with a LUT. Rule (slide convention, factor (L-1)/(M x N) = 7/25, round to the nearest integer):
 
@@ -331,7 +344,8 @@ Classify the new fish x = [5, 5] with the nearest neighbour (1-NN) rule and Eucl
 **Answer**
 
 **Source:** L12 p.17-19 PR system stages · L12 p.18 flow chart · L12 p.41 nearest neighbour, extendable to k-NN · L12 p.4-13 fish example (lightness, width)  
-**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Nearest neighbor and k nearest neighbors](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)
+**Notes:** [Lecture 12 › Pattern recognition system flowchart](../notes/12_Week7_Pattern_Recognition.md#4-pattern-recognition-system-flowchart-slides-17-19) · [Lecture 12 › Nearest neighbor and k nearest neighbors](../notes/12_Week7_Pattern_Recognition.md#11-nearest-neighbor-and-k-nearest-neighbors-slide-41)  
+**Visual:** [Sample 4 › Part 2 Q4 Pattern recognition](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w4)
 
 **(a) Draw (bottom to top, as on slide 18).** Solid `^` = data flowing up; dotted `: v` = arrows going down to the stage below.
 
@@ -408,7 +422,8 @@ Build the Shannon-Fano code (top-down splits, left branch = 0, right branch = 1)
 **Answer**
 
 **Source:** L4 p.19-23 Shannon-Fano (top-down, sort then split) · L4 p.12-13 entropy · L4 p.11 compression ratio B0/B1 · L4 p.24 fixed-length coding · L4 p.14-15 run-length coding  
-**Notes:** [Lecture 4 › Shannon Fano algorithm](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#7-shannon-fano-algorithm-slides-19-23) · [Lecture 4 › Run length coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#6-run-length-coding-repetition-suppression-pattern-substitution-slides-14-18)
+**Notes:** [Lecture 4 › Shannon Fano algorithm](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#7-shannon-fano-algorithm-slides-19-23) · [Lecture 4 › Run length coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#6-run-length-coding-repetition-suppression-pattern-substitution-slides-14-18)  
+**Visual:** [Sample 4 › Part 2 Q5 Compression: Shannon-Fano and run-length coding](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w5)
 
 **(a) Write:** Shannon-Fano is a top-down approach: 1. sort the symbols by count; 2. recursively divide them into two parts with approximately the same counts until each part has one symbol. Left = 0, right = 1.
 
@@ -463,7 +478,8 @@ Sorted: A 10, B 9, C 6, D 4, E 3 (total 32).
 **Answer**
 
 **Source:** L3 p.15-16 MIDI definition, scripting language, small files · L3 p.21 3 min MIDI ≈ 3 kB, WAV 1 min ≈ 10 MB · L3 p.25 status bytes 128-255, data bytes 0-127, 10-bit bytes · L3 p.35 channel message structure · L3 p.37 Table 6.3 · L3 p.31, 34 31.25 kbps and timing example  
-**Notes:** [Lecture 3 › MIDI basics](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#7-midi-basics-concepts-and-terminology-slides-15-24) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39) · [Lecture 3 › Hardware aspects of MIDI](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#9-hardware-aspects-of-midi-slides-31-34)
+**Notes:** [Lecture 3 › MIDI basics](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#7-midi-basics-concepts-and-terminology-slides-15-24) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39) · [Lecture 3 › Hardware aspects of MIDI](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#9-hardware-aspects-of-midi-slides-31-34)  
+**Visual:** [Sample 4 › Part 2 Q6 MIDI](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w6)
 
 **(a) Write:**
 - MIDI (Musical Instrument Digital Interface, early 1980s) is a protocol adopted by the electronic music industry. It lets computers, synthesizers, keyboards and other musical devices communicate.
@@ -510,7 +526,8 @@ Status byte 1001 0101:
 **Answer**
 
 **Source:** L6 p.4-5 rods and cones, scotopic and photopic vision · L6 p.6-7 Weber ratio · L6 p.23 image formation model f = i · r · L6 p.26 dynamic range  
-**Notes:** [Lecture 6 › Human eye structure](../notes/06_Week3_Image_Basics_Perception_Resampling.md#1-human-eye-structure-slides-3-4) · [Lecture 6 › Brightness adaptation and Weber ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7) · [Lecture 6 › Image sensing and the 2D image model](../notes/06_Week3_Image_Basics_Perception_Resampling.md#7-image-sensing-and-the-2d-image-model-slides-20-23) · [Lecture 6 › Dynamic range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26)
+**Notes:** [Lecture 6 › Human eye structure](../notes/06_Week3_Image_Basics_Perception_Resampling.md#1-human-eye-structure-slides-3-4) · [Lecture 6 › Brightness adaptation and Weber ratio](../notes/06_Week3_Image_Basics_Perception_Resampling.md#2-brightness-adaptation-and-weber-ratio-slides-5-7) · [Lecture 6 › Image sensing and the 2D image model](../notes/06_Week3_Image_Basics_Perception_Resampling.md#7-image-sensing-and-the-2d-image-model-slides-20-23) · [Lecture 6 › Dynamic range](../notes/06_Week3_Image_Basics_Perception_Resampling.md#8-sampling-quantization-and-dynamic-range-slides-24-26)  
+**Visual:** [Sample 4 › Part 2 Q7 Human visual perception and image formation](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w7)
 
 **(a)**
 
@@ -595,7 +612,8 @@ Apply a mask by multiplying each pixel by the mask weight in the same position a
 **Answer**
 
 **Source:** L11 p.29-30 derivatives at an edge · L11 p.37 Prewitt masks, magnitude and direction · L11 p.38 Roberts / Prewitt / Sobel properties · L11 p.45 Laplacian and its disadvantages · L11 p.27-28 point detection |R| > T  
-**Notes:** [Lecture 11 › First order derivative operators](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44) · [Lecture 11 › Second order operators](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47) · [Lecture 11 › Point and line detection](../notes/11_Week6_Spatial_Filtering_Edges.md#6-point-and-line-detection-slides-27-28)
+**Notes:** [Lecture 11 › First order derivative operators](../notes/11_Week6_Spatial_Filtering_Edges.md#8-first-order-derivative-operators-roberts-prewitt-sobel-frei-chen-slides-37-40-43-44) · [Lecture 11 › Second order operators](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47) · [Lecture 11 › Point and line detection](../notes/11_Week6_Spatial_Filtering_Edges.md#6-point-and-line-detection-slides-27-28)  
+**Visual:** [Sample 4 › Part 2 Q8 Edge detection](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s4-w8)
 
 **(a) Write:**
 - **First order (gradient based: Roberts, Prewitt, Sobel):**

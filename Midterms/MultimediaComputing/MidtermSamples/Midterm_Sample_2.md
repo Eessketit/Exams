@@ -14,7 +14,8 @@ d) 20 kHz
 
 > **Answer: d)** Need $f_s > 2f_{max} = 24$ kHz. 20 kHz is below that, so it undersamples and aliases; 25 kHz is (just) enough.  
 > **Source:** L2 p.47 sample at more than twice the highest frequency · L2 p.51 undersampling causes aliasing  
-> **Notes:** [Lecture 2 › Sampling theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50) · [Lecture 2 › Aliasing](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#14-aliasing-undersampling-spatial-and-temporal-slides-51-55)
+> **Notes:** [Lecture 2 › Sampling theorem and Nyquist](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#13-sampling-theorem-and-nyquist-slides-45-50) · [Lecture 2 › Aliasing](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#14-aliasing-undersampling-spatial-and-temporal-slides-51-55)  
+> **Visual:** [Sample 2 › Part 1 Q1](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc1)
 
 **2.** How many MIDI channels are there, and where is the channel number stored in a channel message?  
 a) 16 channels (0 to 15), in the four low-order bits of the status byte  
@@ -24,7 +25,8 @@ d) 128 channels, in the first data byte
 
 > **Answer: a)** "16 channels, numbered from 0 to 15"; status byte = `1ttt nnnn`, channel = the four low-order bits. The 3 middle bits hold the message type, not the channel.  
 > **Source:** L3 p.18 16 MIDI channels, 0 to 15 · L3 p.35 channel number in the four low-order bits of the status byte  
-> **Notes:** [Lecture 3 › MIDI basics](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#7-midi-basics-concepts-and-terminology-slides-15-24) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)
+> **Notes:** [Lecture 3 › MIDI basics](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#7-midi-basics-concepts-and-terminology-slides-15-24) · [Lecture 3 › Structure of MIDI messages](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#10-structure-of-midi-messages-slides-35-39)  
+> **Visual:** [Sample 2 › Part 1 Q2](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc2)
 
 **3.** A source emits 8 different symbols. Its entropy is largest when ... , and the largest value is ...  
 a) one symbol has probability close to 1; 3 bits/symbol  
@@ -34,7 +36,8 @@ d) all symbols are equally likely; 1 bit/symbol
 
 > **Answer: c)** Entropy is largest when all symbols are equally likely: $\log_2 8 = 3$ bits/symbol. 8 is the number of symbols, not bits (8 bits needs 256 equally likely levels).  
 > **Source:** L4 p.12 entropy formula · L4 p.13 a uniform distribution gives the maximum (log2 256 = 8)  
-> **Notes:** [Lecture 4 › Entropy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)
+> **Notes:** [Lecture 4 › Entropy](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#5-entropy-basics-of-information-theory-slides-12-13)  
+> **Visual:** [Sample 2 › Part 1 Q3](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc3)
 
 **4.** Which statement about frequency masking, as used by MPEG audio (MP3), is true?  
 a) A higher tone masks a lower tone better than the reverse  
@@ -44,7 +47,8 @@ d) The weaker the masking tone, the wider the range of frequencies it masks
 
 > **Answer: b)** "A lower tone can mask a higher tone"; the reverse is not true. A stronger masker masks a wider range; widely separated tones give little masking.  
 > **Source:** L5 p.14 frequency masking  
-> **Notes:** [Lecture 5 › Psychoacoustics: masking](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#7-psychoacoustics-masking-and-threshold-of-hearing-slides-14-16-33-36)
+> **Notes:** [Lecture 5 › Psychoacoustics: masking](../notes/05_Week3_ArithmeticCoding_LossyCompression_MPEG.md#7-psychoacoustics-masking-and-threshold-of-hearing-slides-14-16-33-36)  
+> **Visual:** [Sample 2 › Part 1 Q4](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc4)
 
 **5.** When an image is resampled, bilinear interpolation computes each new pixel from how many nearest original pixels?  
 a) 1  
@@ -54,7 +58,8 @@ d) 16
 
 > **Answer: b)** Bilinear uses the 2x2 = 4 nearest pixels. Nearest neighbour uses 1, bicubic 16 (the slide only lists the methods; the counts are textbook context).  
 > **Source:** L6 p.36 resampling and interpolation methods (pixel counts are textbook context)  
-> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)
+> **Notes:** [Lecture 6 › Image resampling and interpolation](../notes/06_Week3_Image_Basics_Perception_Resampling.md#12-image-resampling-and-interpolation-slide-36)  
+> **Visual:** [Sample 2 › Part 1 Q5](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc5)
 
 **6.** Why is m-adjacency (mixed adjacency) used?  
 a) To eliminate the multiple path connections that arise with 8-adjacency  
@@ -64,7 +69,8 @@ d) To measure the city-block (D4) distance between two pixels
 
 > **Answer: a)** "m-connectivity eliminates the multiple path connections that arises in 8-connectivity." Both pixels must still be in V, and some diagonals are dropped, so b) and c) are wrong.  
 > **Source:** L7 p.23 m-connectivity definition · L7 p.24 m-connectivity removes the multiple paths of 8-connectivity  
-> **Notes:** [Lecture 7 › Connectivity and adjacency](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#5-connectivity-and-adjacency-4-8-and-m-slides-22-24-26)
+> **Notes:** [Lecture 7 › Connectivity and adjacency](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#5-connectivity-and-adjacency-4-8-and-m-slides-22-24-26)  
+> **Visual:** [Sample 2 › Part 1 Q6](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc6)
 
 **7.** A 3-bit image is passed through the look-up table (LUT) below. What does a pixel with value 5 become?
 
@@ -79,7 +85,8 @@ d) 7
 
 > **Answer: c)** The pixel value is the array index: LUT[5] = 6. a) is the 1-based slip (5th entry = 4).  
 > **Source:** L9 p.9 LUT definition · L9 p.10-11 pixel value as the array index, 3-bit LUT  
-> **Notes:** [Lecture 9 › Lookup tables](../notes/09_Week5_Intensity_Transforms_Histogram.md#3-lookup-tables-slides-9-12)
+> **Notes:** [Lecture 9 › Lookup tables](../notes/09_Week5_Intensity_Transforms_Histogram.md#3-lookup-tables-slides-9-12)  
+> **Visual:** [Sample 2 › Part 1 Q7](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc7)
 
 **8.** Morphological closing of a binary image with a small structuring element is:  
 a) an erosion followed by a dilation; it removes small bright spots  
@@ -89,7 +96,8 @@ d) a dilation followed by an erosion; it fills small holes (dark spots) and narr
 
 > **Answer: d)** Closing = dilation followed by erosion; it "removes small dark spots", fills small holes and gaps. b) describes opening.  
 > **Source:** L10 p.28 closing = dilation then erosion, removes small dark spots · L10 p.29 opening vs closing effects  
-> **Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35)
+> **Notes:** [Lecture 10 › Opening and closing](../notes/10_Week5_Morphology.md#5-opening-and-closing-slides-26-35)  
+> **Visual:** [Sample 2 › Part 1 Q8](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc8)
 
 **9.** Which filter is best for removing salt-and-pepper (impulse) noise while preserving edges?  
 a) 3x3 average (low-pass) filter  
@@ -99,7 +107,8 @@ d) Laplacian filter
 
 > **Answer: b)** Median: "an effective method for removing impulse noise" that preserves sharp edges. Low-pass suits Gaussian noise; max removes only dark spikes, and min/max fail on mixed impulse noise.  
 > **Source:** L11 p.53 median vs low-pass filter · L11 p.60 min/max filtering  
-> **Notes:** [Lecture 11 › Median and color median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Minimum and maximum filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)
+> **Notes:** [Lecture 11 › Median and color median filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#13-median-and-color-median-filtering-slides-53-59) · [Lecture 11 › Minimum and maximum filtering](../notes/11_Week6_Spatial_Filtering_Edges.md#14-minimum-and-maximum-filtering-slide-60)  
+> **Visual:** [Sample 2 › Part 1 Q9](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc9)
 
 **10.** In a statistical pattern recognition system, the "reject class" is:  
 a) the class with the largest number of training samples  
@@ -109,7 +118,8 @@ d) the cluster that unsupervised learning forms first
 
 > **Answer: c)** Reject class: "a generic class for objects not in any of the designated known classes". The classifier assigns a class or "reject".  
 > **Source:** L12 p.31 classifier assigns a class or "reject" · L12 p.36 reject class definition  
-> **Notes:** [Lecture 12 › Learning, statistical and structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31) · [Lecture 12 › Feature vectors and terminology](../notes/12_Week7_Pattern_Recognition.md#7-feature-vectors-character-features-and-terminology-slides-32-34-36)
+> **Notes:** [Lecture 12 › Learning, statistical and structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31) · [Lecture 12 › Feature vectors and terminology](../notes/12_Week7_Pattern_Recognition.md#7-feature-vectors-character-features-and-terminology-slides-32-34-36)  
+> **Visual:** [Sample 2 › Part 1 Q10](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-mc10)
 
 ## Part 2: Short questions (8 x 10 = 80 pts)
 
@@ -142,7 +152,8 @@ Structuring element B (3x3):
 **Answer**
 
 **Source:** L10 p.3 morphology definition · L10 p.15-18 erosion effect and local minimum · L10 p.23-25 erosion definition and duality · L10 p.6 fit  
-**Notes:** [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Basic concepts and structuring element](../notes/10_Week5_Morphology.md#1-basic-concepts-and-structuring-element-slides-2-6)
+**Notes:** [Lecture 10 › Erosion](../notes/10_Week5_Morphology.md#4-erosion-slides-15-19-23-25) · [Lecture 10 › Basic concepts and structuring element](../notes/10_Week5_Morphology.md#1-basic-concepts-and-structuring-element-slides-2-6)  
+**Visual:** [Sample 2 › Part 2 Q1 Morphology: erosion](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w1)
 
 **(a) Write:**
 - Morphology = "a collection of non-linear operations related to the shape or morphology of features in an image".
@@ -215,7 +226,8 @@ Sharpening S:
 **Answer**
 
 **Source:** L11 p.20 sharpening and sharpening masks · L11 p.21 high pass filter · L11 p.45 Laplacian masks · L11 p.14 applying a mask  
-**Notes:** [Lecture 11 › Sharpening](../notes/11_Week6_Spatial_Filtering_Edges.md#5-sharpening-high-pass-unsharp-masking-high-boost-slides-20-26) · [Lecture 11 › Laplacian](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47)
+**Notes:** [Lecture 11 › Sharpening](../notes/11_Week6_Spatial_Filtering_Edges.md#5-sharpening-high-pass-unsharp-masking-high-boost-slides-20-26) · [Lecture 11 › Laplacian](../notes/11_Week6_Spatial_Filtering_Edges.md#10-second-order-operators-laplacian-and-zero-crossing-slides-45-47)  
+**Visual:** [Sample 2 › Part 2 Q2 Filtering: sharpening](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w2)
 
 **(a) Write:**
 - "Sharpening has the opposite affect of blurring." Also called **crispening**, it "emphasizes the details in an image" and **increases its contrast**.
@@ -253,7 +265,8 @@ A 3-bit image (L = 8 gray levels) of size 8x8 (64 pixels) has this histogram:
 **Answer**
 
 **Source:** L9 p.20 steps of H.E. · L9 p.26 effects · L9 p.27-28 mapping · L9 p.29-31 worked example (factor 7/16)  
-**Notes:** [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)
+**Notes:** [Lecture 9 › Histogram equalization, theory](../notes/09_Week5_Intensity_Transforms_Histogram.md#6-histogram-equalization-theory-slides-20-28) · [Lecture 9 › Histogram equalization, worked example](../notes/09_Week5_Intensity_Transforms_Histogram.md#7-histogram-equalization-worked-example-slides-29-31)  
+**Visual:** [Sample 2 › Part 2 Q3 Histogram equalization](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w3)
 
 **Write:** Steps: 1. compute the histogram; 2. calculate the **normalized sum** of the histogram; 3. transform input to output with a LUT. Rule (slide convention, $L-1 = 7$, $MN = 64$ pixels):
 
@@ -296,7 +309,8 @@ LUT: **0→1, 1→2, 2→4, 3→5, 4→6, 5→7, 6→7, 7→7**.
 **Answer**
 
 **Source:** L12 p.20-27 design cycle (flow chart on p.21) · L12 p.28 learning and adaptation · L12 p.29-30 statistical vs structural PR  
-**Notes:** [Lecture 12 › The design cycle](../notes/12_Week7_Pattern_Recognition.md#5-the-design-cycle-slides-20-27) · [Lecture 12 › Learning, statistical and structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31)
+**Notes:** [Lecture 12 › The design cycle](../notes/12_Week7_Pattern_Recognition.md#5-the-design-cycle-slides-20-27) · [Lecture 12 › Learning, statistical and structural PR](../notes/12_Week7_Pattern_Recognition.md#6-learning-statistical-and-structural-pr-slides-28-31)  
+**Visual:** [Sample 2 › Part 2 Q4 Pattern recognition: design cycle](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w4)
 
 **(a) Draw** (slide 21):
 
@@ -361,7 +375,8 @@ LUT: **0→1, 1→2, 2→4, 3→5, 4→6, 5→7, 6→7, 7→7**.
 **Answer**
 
 **Source:** L4 p.37-39 LZW idea and Algorithm 7.2 · L4 p.42-43 decoding (Algorithm 7.3) · L4 p.44 modified decoder with the exception  
-**Notes:** [Lecture 4 › LZW dictionary coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#11-lzw-dictionary-coding-slides-37-45)
+**Notes:** [Lecture 4 › LZW dictionary coding](../notes/04_Week2_DPCM_Entropy_Huffman_LZW.md#11-lzw-dictionary-coding-slides-37-45)  
+**Visual:** [Sample 2 › Part 2 Q5 Compression: LZW](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w5)
 
 **Write:** LZW uses fixed-length codes for variable-length strings. Encoder: `s = next char; while not EOF { c = next char; if s+c in dict: s = s+c; else { output code(s); add s+c; s = c } } output code(s)`.
 
@@ -411,7 +426,8 @@ LUT: **0→1, 1→2, 2→4, 3→5, 4→6, 5→7, 6→7, 7→7**.
 **Answer**
 
 **Source:** L3 p.4-6 SNR · L3 p.7-9 SQNR and quantization noise · L2 p.29 quantization  
-**Notes:** [Lecture 3 › SNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#2-signal-to-noise-ratio-snr-slides-4-6) · [Lecture 3 › SQNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#3-signal-to-quantization-noise-ratio-sqnr-slides-7-9) · [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33)
+**Notes:** [Lecture 3 › SNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#2-signal-to-noise-ratio-snr-slides-4-6) · [Lecture 3 › SQNR](../notes/03_Week2_Audio_SNR_MIDI_PCM.md#3-signal-to-quantization-noise-ratio-sqnr-slides-7-9) · [Lecture 2 › Quantization](../notes/02_Week1_Sound_Sampling_Quantization_Fourier.md#7-quantization-slides-29-33)  
+**Visual:** [Sample 2 › Part 2 Q6 Audio quality: SNR and SQNR](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w6)
 
 **(a) Write:** SNR = "the ratio of the power of the correct signal to the noise", in dB.
 - Voltages: $\mathrm{SNR}=20\log_{10}\frac{V_s}{V_n}=20\log_{10}\frac{5}{0.25}=20\log_{10}20=$ **26.02 dB**.
@@ -446,7 +462,8 @@ Image f (5x5). Coordinates are (row, column) with the origin (0,0) at the top-le
 **Answer**
 
 **Source:** L7 p.21 neighbours of a pixel · L7 p.22-24 4-, 8- and m-connectivity · L7 p.30-33 distance measures  
-**Notes:** [Lecture 7 › Neighbors of a pixel](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#4-neighbors-of-a-pixel-slide-21) · [Lecture 7 › Connectivity and adjacency](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#5-connectivity-and-adjacency-4-8-and-m-slides-22-24-26) · [Lecture 7 › Distance measures](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#7-distance-measures-slides-30-34)
+**Notes:** [Lecture 7 › Neighbors of a pixel](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#4-neighbors-of-a-pixel-slide-21) · [Lecture 7 › Connectivity and adjacency](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#5-connectivity-and-adjacency-4-8-and-m-slides-22-24-26) · [Lecture 7 › Distance measures](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#7-distance-measures-slides-30-34)  
+**Visual:** [Sample 2 › Part 2 Q7 Pixel relationships](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w7)
 
 **(a)** For p = (x, y) = (1,3):
 - $N_4(p)=\lbrace(x+1,y),(x-1,y),(x,y+1),(x,y-1)\rbrace=$ **{(2,3), (0,3), (1,4), (1,2)}**
@@ -479,7 +496,8 @@ Image f (5x5). Coordinates are (row, column) with the origin (0,0) at the top-le
 **Answer**
 
 **Source:** L7 p.42-45 CIE XYZ and the CIE criteria · L7 p.47 meaning of X, Y, Z · L7 p.54 chromaticity coordinates · L7 p.58 illuminants (D65 values from the Lecture 7 notebook)  
-**Notes:** [Lecture 7 › CIE XYZ color coordinate system](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#10-cie-xyz-color-coordinate-system-slides-42-53) · [Lecture 7 › CIE chromaticity diagram](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60)
+**Notes:** [Lecture 7 › CIE XYZ color coordinate system](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#10-cie-xyz-color-coordinate-system-slides-42-53) · [Lecture 7 › CIE chromaticity diagram](../notes/07_Week4_Pixel_Relationships_Color_XYZ.md#11-cie-chromaticity-diagram-illuminants-and-gamut-slides-54-60)  
+**Visual:** [Sample 2 › Part 2 Q8 Color: CIE XYZ and chromaticity](https://claude.ai/artifact/FFfagp6CpEJvE15eAPJ6Zf#s2-w8)
 
 **(a) Write:**
 - CIE-RGB (monochromatic primaries 700, 546.1, 435.8 nm) has a color matching function $\bar r(\lambda)$ that goes **negative**, so some colors need a negative amount of a primary.

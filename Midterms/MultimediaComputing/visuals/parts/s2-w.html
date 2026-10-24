@@ -1,0 +1,565 @@
+<article class="q" id="s2-w1" data-sample="2" data-part="w" data-num="1" data-topic="Morphology">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · 10 pts · Lecture 10, Morphology</p>
+    <h3 class="q-title">Morphology: erosion</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What is erosion? Define the erosion of a binary image A by a structuring element B (set notation or words) and state the duality between erosion and dilation. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Apply erosion on image A using the structuring element B. The origin of B is its centre pixel, marked [1]. Pixels outside the image are 0. <span class="pts">(5 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>Morphology is "a collection of non-linear operations related to the shape or morphology of features in an image".</li>
+        <li>Erosion "erodes away the boundaries of regions of foreground pixels". Areas of foreground pixels shrink, and holes inside them become larger. Each pixel takes the <b>local minimum</b> over the structuring element (SE) area.</li>
+        <li>Definition: A ⊖ B = { z | (B)<sub>z</sub> ⊆ A }, "the set of all points z such that B, translated by z, is contained in A". The slide prints (B̂)<sub>z</sub>, which is the same for a symmetric B.</li>
+        <li>In practice an output pixel is 1 only where the SE <b>fits</b>, which means every 1 of B lies on a 1 of A.</li>
+        <li>Duality: <b>(A ⊖ B)ᶜ = Aᶜ ⊕ B̂</b>. Eroding the object is the same as dilating the background with the reflected SE and then taking the complement.</li>
+      </ul>
+      <pre class="calc">(A ⊖ B)ᶜ = { z | (B)<sub>z</sub> ⊆ A }ᶜ
+         = { z | (B)<sub>z</sub> ∩ Aᶜ = ∅ }ᶜ
+         = { z | (B)<sub>z</sub> ∩ Aᶜ ≠ ∅ }
+         = Aᶜ ⊕ B̂</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Duality on this image: grow the background, then flip</h4></div>
+        <p class="fig-lede">Read the panels clockwise from the top left. Each one has a faded ring for the pixels outside the image. The ring is 0 in A, so it belongs to the background Aᶜ. Dilating the background by B̂ (B is symmetric, so B̂ = B) pushes it one pixel into the object on every side. The complement of that, bottom left, is exactly A ⊖ B, right under A for comparison.</p>
+        <div data-viz="dual"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>object pixel, 1 in A</span>
+          <span><i class="sw-sec"></i>background pixel, 1 in Aᶜ</span>
+          <span><i class="sw-ter"></i>added to the background, removed from the object</span>
+          <span><i class="sw-seg"></i>0</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>Rule: (r, c) becomes 1 only if all 9 pixels of the 3 × 3 window centred at (r, c) are 1. Pixels outside the image count as 0.</li>
+        <li>A 0 pixel can never become 1, because the window includes the centre.</li>
+        <li>Row 0, row 6, column 0 and column 6: the window reaches outside the image, so all of them become 0. This removes the top-left 1s and the corner pixel (6,6).</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Slide B over A: a pixel survives only where B fits</h4></div>
+        <p class="fig-lede">Left: A with its outside ring of zeros. Right: the result. Pick a pixel to place B on it. The plum square is the footprint of B, and red rings mark the zeros under it. One zero under B is enough to turn the pixel off.</p>
+        <div data-viz="slide-steps"></div>
+        <p class="step-note" data-role="slide-note" aria-live="polite"></p>
+        <div data-viz="slide"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1</span>
+          <span><i class="sw-ter"></i>1 in A, removed by the erosion</span>
+          <span><i class="sw-seg"></i>0</span>
+        </div>
+      </figure>
+      <p>The interior 1-pixels, row by row:</p>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Row</th><th class="l">Pixels that stay 1 (window all 1)</th><th class="l">Pixels that become 0 (a 0 in the window)</th></tr></thead>
+          <tbody>
+            <tr><td class="l">1</td><td class="l">(1,1): rows 0–2, cols 0–2 all 1</td><td class="l">(1,2) and (1,3): (0,3) = 0</td></tr>
+            <tr><td class="l">2</td><td class="l">(2,2): rows 1–3, cols 1–3 all 1</td><td class="l">(2,1): (3,0) = 0; (2,3), (2,4): (1,4) = 0</td></tr>
+            <tr><td class="l">3</td><td class="l">(3,2), (3,3)</td><td class="l">(3,1): (3,0) = 0; (3,4), (3,5): (2,5) = 0</td></tr>
+            <tr><td class="l">4</td><td class="l">(4,3), (4,4)</td><td class="l">(4,1): (3,0) = 0; (4,2): (5,1) = 0; (4,5): (3,6) = 0</td></tr>
+            <tr><td class="l">5</td><td class="l">none</td><td class="l">(5,2) to (5,5): row 6 below is 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Result: <span class="result">27 ones become 6: (1,1), (2,2), (3,2), (3,3), (4,3), (4,4).</span></p>
+      <div class="given" data-viz="result"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Check: dilating the result gives A back, minus (6,6)</h4></div>
+        <p class="fig-lede">Dilating A ⊖ B by the same B gives the opening A ∘ B. It puts back every 3 × 3 square of ones that fits inside A. The corner pixel (6,6) lies in no such square, so it is the only pixel lost.</p>
+        <div data-viz="open"></div>
+      </figure>
+      <ul>
+        <li>The opening removes only what is smaller than B.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Erosion: A ⊖ B = { z | (B)<sub>z</sub> ⊆ A }, "the set of all points z such that B, translated by z, is contained in A". It takes the local minimum, so foreground regions shrink. Duality: (A ⊖ B)ᶜ = Aᶜ ⊕ B̂.</p>
+    <p class="source">Source: L10 p.3 morphology definition · L10 p.15-18 erosion effect and local minimum · L10 p.23-25 erosion definition and duality · L10 p.6 fit · Notes: Lecture 10 › Erosion · Lecture 10 › Basic concepts and structuring element</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w2" data-sample="2" data-part="w" data-num="2" data-topic="Sharpening">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · 10 pts · Lecture 11, Spatial filtering</p>
+    <h3 class="q-title">Filtering: sharpening</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>What does sharpening do to an image? Why does a sharpening mask sum to 1, while a high-pass mask sums to 0? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>For the 8-bit image f below, apply the Laplacian mask L and the sharpening mask S at the pixel in row 2, column 2 (rows and columns are counted from 0; the pixel value is 180). Clip each result to 0..255. <span class="pts">(6 pts)</span></span></li>
+    </ol>
+    <div class="given" data-viz="given"></div>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>"Sharpening has the opposite affect of blurring." It is also called <b>crispening</b>. It "emphasizes the details in an image" and <b>increases its contrast</b>.</li>
+        <li>The sharpening mask [0 −1 0; −1 5 −1; 0 −1 0] sums to <b>1</b>. In a flat area the output equals the input, so brightness is kept and only the details (edges) are boosted. It equals identity + Laplacian.</li>
+        <li>The high-pass mask (1/9) × [−1 −1 −1; −1 8 −1; −1 −1 −1] sums to <b>0</b>, so a flat area becomes 0. It "removes the low frequency components and shows only high detail". The result is a black image with bright edges.</li>
+        <li>Example: a flat area of 90 gives 90 with the sharpening mask and 0 with the high-pass (or Laplacian) mask.</li>
+      </ul>
+      <p class="formula">flat area of value v: &nbsp; output = v × (sum of the mask) &nbsp;→&nbsp; sum 1 keeps v, sum 0 gives 0</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>One edge, two masks: sum 1 keeps the levels, sum 0 keeps only the edge</h4></div>
+        <p class="fig-lede">One row of an image whose columns are constant, with a step from 90 to 150. On such an image L reduces to 2f(x) − f(x−1) − f(x+1). The Laplacian (sum 0) is 0 on both flat parts and responds only at the step. The sharpening mask (sum 1) adds that response to the original, so the flat parts keep their levels and the edge overshoots on both sides.</p>
+        <div data-viz="profile"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>input f</span>
+          <span><i class="sw-sec"></i>Laplacian L, sum 0</span>
+          <span><i class="sw-pri"></i>sharpened S = f + L, sum 1</span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">window around (2,2):    90  140   70
+                       120  180  150
+                        60  130  200
+
+4-neighbours: 140 + 120 + 150 + 130 = 540     (corners × 0)
+L = 4 × 180 − 540 = 720 − 540 = 180     inside 0..255  → 180
+S = 5 × 180 − 540 = 900 − 540 = 360     clip           → 255
+check: S = f + L = 180 + 180 = 360 → 255</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Multiply, add, clip at pixel (2,2)</h4></div>
+        <p class="fig-lede">Window values times mask coefficients, cell by cell. The corners have coefficient 0, so only the centre and its 4-neighbours count. Switch masks: the only change is the centre weight, 4 or 5, and the extra 180 pushes S past 255.</p>
+        <div data-viz="mask-steps"></div>
+        <p class="step-note" data-role="mask-note" aria-live="polite"></p>
+        <div data-viz="mask"></div>
+      </figure>
+      <p>Result: <span class="result">L = 180, S = 360 clipped to 255.</span></p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>S = f + L on the whole 3 × 3 interior</h4></div>
+        <p class="fig-lede">The same masks applied at all nine interior pixels of f. Adding the Laplacian to the image gives the sharpening output before clipping. Ochre cells fall outside 0..255 and get clipped, which is why the sharpened block shows much stronger contrast than f.</p>
+        <div data-viz="interior"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Sharpening (crispening) "emphasizes the details in an image" and increases contrast. A sharpening mask sums to 1, so flat areas keep their value. A high-pass or Laplacian mask sums to 0, so flat areas become 0. Sharpening = original + Laplacian, then clip to 0..255.</p>
+    <p class="source">Source: L11 p.20 sharpening and sharpening masks · L11 p.21 high pass filter · L11 p.45 Laplacian masks · L11 p.14 applying a mask · Notes: Lecture 11 › Sharpening · Lecture 11 › Laplacian</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w3" data-sample="2" data-part="w" data-num="3" data-topic="Histogram equalization">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · 10 pts · Lecture 9, Histogram equalization</p>
+    <h3 class="q-title">Histogram equalization</h3>
+  </div>
+  <div class="prompt">
+    <p>A 3-bit image (L = 8 gray levels) of size 8x8 (64 pixels) has this histogram:</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Equalize the histogram. Give the full table: r<sub>k</sub>, n<sub>k</sub>, cumulative sum, normalized (scaled) sum, and the new level s<sub>k</sub>. <span class="pts">(7 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Give the histogram of the equalized image. Is it flat? Explain why or why not. <span class="pts">(3 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>Steps: 1. compute the histogram; 2. calculate the <b>normalized sum</b> of the histogram; 3. transform input to output with a LUT.</li>
+        <li>Rule with the slide convention, L − 1 = 7 and MN = 64 pixels. Round to the nearest integer, as on slides 30-31 where 4.81 becomes 5.</li>
+      </ul>
+      <p class="formula">s<sub>k</sub> = round( (L − 1) / MN × Σ<sub>j=0..k</sub> n<sub>j</sub> ) = round( 7 / 64 × cumulative sum )</p>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Accumulate, scale by 7/64, round</h4></div>
+        <p class="fig-lede">Top: the histogram. Bottom: the normalized sum 7 × cumulative sum / 64 (dots) and the rounded new level s<sub>k</sub> (squares). Step through the levels to add one bar at a time.</p>
+        <div data-viz="cdf-steps"></div>
+        <p class="step-note" data-role="cdf-note" aria-live="polite"></p>
+        <div data-viz="cdf"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i><span>n<sub>k</sub> and the normalized sum</span></span>
+          <span><i class="sw-ok"></i><span>new level s<sub>k</sub></span></span>
+        </div>
+        <div data-viz="table"></div>
+      </figure>
+      <p>Result: <span class="result">LUT 0→1, 1→2, 2→4, 3→5, 4→6, 5→7, 6→7, 7→7.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) New histogram</h4>
+      <ul>
+        <li>Add the n<sub>k</sub> that map to the same s<sub>k</sub>. Level 7 collects 5 + 3 + 1 = 9 pixels. The total is still 64.</li>
+      </ul>
+      <div data-viz="new-table"></div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>The LUT moves whole bars, so the result cannot be flat</h4></div>
+        <p class="fig-lede">Each arrow carries one whole bar from its input level to its new level. Bars can merge (5, 6, 7 all land on 7) and levels can stay empty (0 and 3), but no bar is ever split. A flat histogram would need 64 / 8 = 8 pixels at every level, the dashed line.</p>
+        <div data-viz="map"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Mean level before</span><span class="v pri">2.47</span><span class="sub">most pixels at 0 to 3</span></div>
+          <div class="stat"><span class="label">Mean level after</span><span class="v ok">4.08</span><span class="sub">spread over 1 to 7</span></div>
+          <div class="stat"><span class="label">Used levels</span><span class="v">8 → 6</span><span class="sub">0 and 3 stay empty</span></div>
+        </div>
+      </figure>
+      <ul>
+        <li><b>Not flat</b>: levels 5, 6, 7 merge into 7, and levels 0 and 3 stay empty.</li>
+        <li>Why: in the discrete case H.E. moves whole levels and cannot split one level into several. "The resulting histogram is not flat" (slide 26).</li>
+        <li>It still spreads the dark image (most pixels at 0-3) over the range 1-7, so contrast improves. The mean level goes from 2.47 to 4.08.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Compute the histogram, the normalized sum and the LUT, s<sub>k</sub> = round((L − 1)/MN × cumulative sum). In the discrete case "the resulting histogram is not flat", because whole levels move and merge, but the contrast improves.</p>
+    <p class="source">Source: L9 p.20 steps of H.E. · L9 p.26 effects · L9 p.27-28 mapping · L9 p.29-31 worked example (factor 7/16) · Notes: Lecture 9 › Histogram equalization, theory · Lecture 9 › Histogram equalization, worked example</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w4" data-sample="2" data-part="w" data-num="4" data-topic="Design cycle">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · 10 pts · Lecture 12, Pattern recognition</p>
+    <h3 class="q-title">Pattern recognition: design cycle</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Draw the flow chart of the design cycle of a pattern recognition system, and explain each step in one line. <span class="pts">(5 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Explain the difference between supervised and unsupervised learning, and between statistical and structural pattern recognition. <span class="pts">(5 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Draw (slide 21)</h4>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The design cycle: five boxes, one feedback loop</h4></div>
+        <p class="fig-lede">Draw five boxes from start to end. Evaluation feeds back into every earlier box, and prior knowledge (e.g. invariances) feeds feature choice and model choice. Pick a step for its one-line explanation.</p>
+        <div data-viz="flow-steps"></div>
+        <p class="step-note" data-role="flow-note" aria-live="polite"></p>
+        <div data-viz="flow"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>feedback from evaluation</span>
+          <span><i class="sw-sec"></i>prior knowledge</span>
+        </div>
+      </figure>
+      <ul>
+        <li><b>Data collection</b>: is the set of examples "adequately large and representative" for training and testing?</li>
+        <li><b>Feature choice</b>: depends on the problem domain. Features should be "simple to extract, invariant to irrelevant transformation, insensitive to noise".</li>
+        <li><b>Model choice</b>: if performance is unsatisfactory, "jump to another class of model".</li>
+        <li><b>Training</b>: "use data to determine the classifier".</li>
+        <li><b>Evaluation</b>: "measure the error rate (or performance)" and switch features or model if needed.</li>
+        <li><b>Computational complexity</b>: the "trade-off between computational ease and performance", and how the algorithm scales with the number of features, patterns or categories.</li>
+      </ul>
+    </div>
+    <div class="sol-part">
+      <h4>(b) What to write</h4>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l"></th><th class="l">Meaning (slide wording)</th><th class="l">Example</th></tr></thead>
+          <tbody>
+            <tr><td class="l"><b>Supervised learning</b></td><td class="l">"A teacher provides a category label or cost for each pattern in the training set"</td><td class="l">fish samples labelled salmon / sea bass</td></tr>
+            <tr><td class="l"><b>Unsupervised learning</b></td><td class="l">"The system forms clusters or natural groupings of the input patterns" (no labels)</td><td class="l">group unlabelled fish by length and lightness</td></tr>
+            <tr><td class="l"><b>Statistical PR</b></td><td class="l">"The data is reduced to vectors of numbers and statistical techniques are used"</td><td class="l">feature vector X = [x<sub>1</sub>, …, x<sub>n</sub>], nearest class mean</td></tr>
+            <tr><td class="l"><b>Structural PR</b></td><td class="l">"The data is converted to a discrete structure (such as a grammar or a graph)"; techniques are "parsing and graph matching"</td><td class="l">a character described by its strokes and how they connect</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Same fish, with and without a teacher</h4></div>
+        <p class="fig-lede">Sixteen fish measured by lightness and width, the two features of slides 12-13. Supervised: every training fish comes with its label, and the classifier learns a boundary between the labelled classes. Unsupervised: the same points arrive without labels, and the system can only find natural groups.</p>
+        <div data-viz="learn"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>salmon (label)</span>
+          <span><i class="sw-sec"></i>sea bass (label)</span>
+          <span><i class="sw-ter"></i>cluster found without labels</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The letter A, statistically and structurally</h4></div>
+        <p class="fig-lede">Statistical PR turns the character into a vector of numbers (here the slide-34 features of A) and compares vectors. Structural PR turns it into a graph of strokes and junctions and matches that graph against a model of A.</p>
+        <div data-viz="pr"></div>
+      </figure>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Design cycle: collect data → choose features → choose model → train classifier → evaluate classifier, with feedback from evaluation and prior knowledge into features and model. Supervised: "a teacher provides a category label". Unsupervised: "the system forms clusters". Statistical: "vectors of numbers". Structural: "a discrete structure (such as a grammar or a graph)".</p>
+    <p class="source">Source: L12 p.20-27 design cycle (flow chart on p.21) · L12 p.28 learning and adaptation · L12 p.29-30 statistical vs structural PR · Notes: Lecture 12 › The design cycle · Lecture 12 › Learning, statistical and structural PR</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w5" data-sample="2" data-part="w" data-num="5" data-topic="LZW">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · 10 pts · Lecture 4, LZW</p>
+    <h3 class="q-title">Compression: LZW</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Encode the string <code>ABBABBBABBAB</code> with LZW. The initial dictionary is A = 1, B = 2. Show the table (s, c, output, code, string) and give the output code sequence. <span class="pts">(6 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Decode the LZW code sequence <code>2 2 1 4 6 1</code> with the same initial dictionary (A = 1, B = 2). Show the dictionary as it is built and give the decoded string. <span class="pts">(4 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>LZW uses fixed-length codes for variable-length strings. The dictionary is built while encoding, so it is never sent.</li>
+      </ul>
+      <pre class="calc">s = next char
+while not EOF {
+    c = next char
+    if s + c in dict:  s = s + c
+    else {  output code(s);  add s + c;  s = c  }
+}
+output code(s)</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>Encoding ABBABBBABBAB, one table row per step</h4></div>
+        <p class="fig-lede">Blue is the current string s, plum the next character c. If s + c is already in the dictionary, s just grows. Otherwise the encoder outputs code(s), adds s + c as a new entry (green), and restarts s at c.</p>
+        <div data-viz="enc-steps"></div>
+        <p class="step-note" data-role="enc-note" aria-live="polite"></p>
+        <div data-viz="enc"></div>
+        <div data-viz="enc-table"></div>
+      </figure>
+      <p>Result: <span class="result">output 1 2 2 3 4 6 3</span>, 12 characters in 7 codes (ratio 12/7 = 1.71 in symbols). Final dictionary: 3 AB, 4 BB, 5 BA, 6 ABB, 7 BBA, 8 ABBA.</p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>Each step outputs the entry for code k and adds s + entry[0], where s is the previous entry.</li>
+        <li>If k is not in the dictionary yet, use entry = s + s[0] (Algorithm 7.4). This happens when the encoder used a code in the same step it created it.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Decoding 2 2 1 4 6 1, with the special case at code 6</h4></div>
+        <p class="fig-lede">The decoder rebuilds the same dictionary one step behind the encoder. At step 5 code 6 arrives before entry 6 exists, so the decoder builds it as s + s[0] = BA + B = BAB (ochre).</p>
+        <div data-viz="dec-steps"></div>
+        <p class="step-note" data-role="dec-note" aria-live="polite"></p>
+        <div data-viz="dec"></div>
+        <div data-viz="dec-table"></div>
+      </figure>
+      <p>Result: <span class="result">decoded string BBABABABA</span> (9 characters). Check: encoding BBABABABA gives 2 2 1 4 6 1 again.</p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>LZW: output code(s) when s + c is not in the dictionary, add s + c, set s = c. The decoder adds s + entry[0]. If a code is not in the dictionary yet, entry = s + s[0].</p>
+    <p class="source">Source: L4 p.37-39 LZW idea and Algorithm 7.2 · L4 p.42-43 decoding (Algorithm 7.3) · L4 p.44 modified decoder with the exception · Notes: Lecture 4 › LZW dictionary coding</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w6" data-sample="2" data-part="w" data-num="6" data-topic="SNR and SQNR">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · 10 pts · Lecture 3, SNR and SQNR</p>
+    <h3 class="q-title">Audio quality: SNR and SQNR</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>A signal has a voltage of 5 V and the noise voltage is 0.25 V. Compute the SNR in dB. A second system has a signal power of 2 W and a noise power of 0.5 mW; compute its SNR in dB. Why is the factor 20 in the first case and 10 in the second? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Using SQNR = 6.02N dB: <span class="pts">(6 pts)</span><br>1. What is the SQNR of a 12-bit quantizer?<br>2. What is the minimum number of bits per sample for an SQNR of at least 50 dB? How many quantization levels does that give?<br>3. With that number of bits and an input range of 0 to 2 V, what are the quantization step and the maximum quantization error?</span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>SNR = "the ratio of the power of the correct signal to the noise", in dB.</li>
+        <li>Why 20 and 10: "the power in a signal is proportional to the square of the voltage", so 10 log<sub>10</sub>(V<sub>s</sub>² / V<sub>n</sub>²) = 20 log<sub>10</sub>(V<sub>s</sub> / V<sub>n</sub>). Use 10 log for power ratios and 20 log for voltage ratios.</li>
+      </ul>
+      <pre class="calc">voltages: SNR = 20 log10(5 / 0.25)     = 20 log10(20)   = 26.02 dB
+powers:   SNR = 10 log10(2 / 0.0005)   = 10 log10(4000) = 36.02 dB</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>One dB scale, two ratio scales</h4></div>
+        <p class="fig-lede">The middle line is decibels. Above it, the voltage ratio that gives each dB value. Below it, the power ratio. A factor of 10 in voltage spans 20 dB, a factor of 10 in power spans only 10 dB, because power goes with voltage squared. System 1 reads 20 on the voltage scale and system 2 reads 4000 on the power scale.</p>
+        <div data-viz="db"></div>
+      </figure>
+      <p>Result: <span class="result">26.02 dB and 36.02 dB.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <ul>
+        <li>SQNR = 20 log<sub>10</sub>(2<sup>N−1</sup> / ½) = 20N log<sub>10</sub>2 = 6.02N dB, about 6 dB per bit. The quantization error is at most half of the interval.</li>
+      </ul>
+      <pre class="calc">1. 12 bits: 6.02 × 12 = 72.24 dB
+2. 6.02N ≥ 50  →  N ≥ 50 / 6.02 = 8.31  →  N = 9 bits
+   (8 bits give 48.16 dB, 9 bits give 54.18 dB);  levels 2⁹ = 512
+3. step = 2 V / 512 = 0.0039 V = 3.91 mV
+   max error = step / 2 = 0.00195 V = 1.95 mV</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Each bit adds 6.02 dB</h4></div>
+        <p class="fig-lede">SQNR for 1 to 16 bits against the 50 dB target. Move N to see the levels, the step for a 0 to 2 V range and the maximum error. N = 8 falls just short at 48.16 dB, so 9 bits is the minimum.</p>
+        <div data-viz="n-slider"></div>
+        <div class="stats">
+          <div class="stat"><span class="label">SQNR</span><span class="v pri" data-role="sqnr">54.18</span><span class="sub">dB, 6.02 × N</span></div>
+          <div class="stat"><span class="label">Levels</span><span class="v" data-role="levels">512</span><span class="sub">2<sup>N</sup></span></div>
+          <div class="stat"><span class="label">Step</span><span class="v" data-role="step">3.91</span><span class="sub">mV, 2 V / 2<sup>N</sup></span></div>
+          <div class="stat"><span class="label">Max error</span><span class="v" data-role="err">1.95</span><span class="sub">mV, step / 2</span></div>
+        </div>
+        <p class="verdict" data-role="n-verdict"></p>
+        <div data-viz="sqnr"></div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>9 bits on 0 to 2 V, zoomed to the first 8 steps</h4></div>
+        <p class="fig-lede">Top: a slowly rising input and the quantizer output, which jumps by one step of 3.91 mV. Bottom: the error, input minus output. It never leaves ±1.95 mV, half a step.</p>
+        <div data-viz="quant"></div>
+        <div class="legend">
+          <span><i class="sw-seg"></i>input</span>
+          <span><i class="sw-pri"></i>quantized output</span>
+          <span><i class="sw-sec"></i>quantization error</span>
+        </div>
+      </figure>
+      <p>Result: <span class="result">72.24 dB; N = 9 bits, 512 levels; step 3.91 mV, max error 1.95 mV.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>SNR = 10 log<sub>10</sub>(P<sub>s</sub>/P<sub>n</sub>) = 20 log<sub>10</sub>(V<sub>s</sub>/V<sub>n</sub>), because power is proportional to voltage squared. SQNR = 6.02N dB, about 6 dB per bit, and the quantization error is at most half a step.</p>
+    <p class="source">Source: L3 p.4-6 SNR · L3 p.7-9 SQNR and quantization noise · L2 p.29 quantization · Notes: Lecture 3 › SNR · Lecture 3 › SQNR · Lecture 2 › Quantization</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w7" data-sample="2" data-part="w" data-num="7" data-topic="Pixel relationships">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · 10 pts · Lecture 7, Pixel relationships</p>
+    <h3 class="q-title">Pixel relationships</h3>
+  </div>
+  <div class="prompt">
+    <p>Image f (5x5). Coordinates are (row, column) with the origin (0,0) at the top-left. Use V = {1, 2}.</p>
+    <div class="given" data-viz="given"></div>
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>List N<sub>4</sub>(p), N<sub>D</sub>(p) and N<sub>8</sub>(p) for p = (1,3). <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Compute the D<sub>4</sub> (city-block), D<sub>8</sub> (chessboard) and Euclidean distances between (4,0) and (1,2). <span class="pts">(3 pts)</span></span></li>
+      <li><span class="tag">(c)</span><span>For each pair, say whether the two pixels are 4-adjacent, 8-adjacent and m-adjacent, and justify the m-adjacency answers: (i) (2,2) and (2,3); (ii) (1,1) and (2,2); (iii) (3,1) and (4,2); (iv) (2,3) and (2,4). <span class="pts">(4 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) Worked solution</h4>
+      <ul>
+        <li>N<sub>4</sub>(p) = {(x+1,y), (x−1,y), (x,y+1), (x,y−1)} = <b>{(2,3), (0,3), (1,4), (1,2)}</b></li>
+        <li>N<sub>D</sub>(p) = {(x+1,y+1), (x+1,y−1), (x−1,y+1), (x−1,y−1)} = <b>{(2,4), (2,2), (0,4), (0,2)}</b></li>
+        <li>N<sub>8</sub>(p) = N<sub>4</sub>(p) ∪ N<sub>D</sub>(p) = <b>all 8 pixels above</b>. Neighbours depend only on coordinates, not on values.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>The neighbours of p = (1,3)</h4></div>
+        <p class="fig-lede">Each cell shows its value and its (row, column). p is ochre. N<sub>4</sub> shares an edge with p, N<sub>D</sub> shares only a corner, and N<sub>8</sub> is both together.</p>
+        <div data-viz="nb-steps"></div>
+        <p class="step-note" data-role="nb-note" aria-live="polite"></p>
+        <div data-viz="nb"></div>
+        <div class="legend">
+          <span><i class="sw-ter"></i>p</span>
+          <span><i class="sw-pri"></i><span>N<sub>4</sub>(p)</span></span>
+          <span><i class="sw-sec"></i><span>N<sub>D</sub>(p)</span></span>
+        </div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">p = (x, y) = (4,0),  q = (s, t) = (1,2):  |x − s| = 3,  |y − t| = 2
+D4 = |x − s| + |y − t|        = 3 + 2       = 5
+D8 = max(|x − s|, |y − t|)    = max(3, 2)   = 3
+De = √(3² + 2²) = √13                       = 3.61
+check: D8 ≤ De ≤ D4</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>Three ways to measure from (4,0) to (1,2)</h4></div>
+        <p class="fig-lede">D<sub>4</sub> counts moves up, down, left and right only. D<sub>8</sub> also allows diagonal moves, so two of the three row steps can carry a column step with them. D<sub>e</sub> is the straight line.</p>
+        <div data-viz="dist-steps"></div>
+        <p class="step-note" data-role="dist-note" aria-live="polite"></p>
+        <div data-viz="dist"></div>
+      </figure>
+      <p>Result: <span class="result">D<sub>4</sub> = 5, D<sub>8</sub> = 3, D<sub>e</sub> = √13 = 3.61.</span></p>
+    </div>
+    <div class="sol-part">
+      <h4>(c) Worked solution</h4>
+      <ul>
+        <li>Rule: p and q with values in V are 4-adjacent if q ∈ N<sub>4</sub>(p), 8-adjacent if q ∈ N<sub>8</sub>(p), and m-adjacent if q ∈ N<sub>4</sub>(p), <b>or</b> q ∈ N<sub>D</sub>(p) and N<sub>4</sub>(p) ∩ N<sub>4</sub>(q) has no pixel whose value is in V.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The four pairs, with their common 4-neighbours</h4></div>
+        <p class="fig-lede">Shaded cells have a value in V = {1, 2}. The pair is outlined in blue. For a diagonal pair, the two plum-ringed cells are N<sub>4</sub>(p) ∩ N<sub>4</sub>(q). A green link means m-adjacent. A red dashed link means the pair is not m-adjacent.</p>
+        <div data-viz="madj"></div>
+        <div class="legend">
+          <span><i class="sw-pri-soft"></i>value in V</span>
+          <span><i class="sw-seg"></i>value not in V</span>
+          <span><i class="sw-ok"></i>m-adjacent link</span>
+          <span><i class="sw-bad"></i>no m-adjacency</span>
+        </div>
+      </figure>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th class="l">Pair</th><th class="l">Values</th><th class="l">4-adj</th><th class="l">8-adj</th><th class="l">m-adj</th><th class="l">Reason</th></tr></thead>
+          <tbody>
+            <tr><td class="l">(i) (2,2)-(2,3)</td><td class="l">2, 2</td><td class="l"><b>yes</b></td><td class="l"><b>yes</b></td><td class="l"><b>yes</b></td><td class="l">horizontal 4-neighbours, both in V</td></tr>
+            <tr><td class="l">(ii) (1,1)-(2,2)</td><td class="l">2, 2</td><td class="l"><b>no</b></td><td class="l"><b>yes</b></td><td class="l"><b>no</b></td><td class="l">diagonal; common 4-neighbours (1,2) = 1 and (2,1) = 0; (1,2) is in V, so the diagonal link is dropped (the path (1,1)-(1,2)-(2,2) already exists)</td></tr>
+            <tr><td class="l">(iii) (3,1)-(4,2)</td><td class="l">1, 1</td><td class="l"><b>no</b></td><td class="l"><b>yes</b></td><td class="l"><b>yes</b></td><td class="l">diagonal; common 4-neighbours (3,2) = 0 and (4,1) = 3, neither in V</td></tr>
+            <tr><td class="l">(iv) (2,3)-(2,4)</td><td class="l">2, 3</td><td class="l"><b>no</b></td><td class="l"><b>no</b></td><td class="l"><b>no</b></td><td class="l">3 is not in V, so no adjacency at all</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>N<sub>4</sub>: edge neighbours, N<sub>D</sub>: corner neighbours, N<sub>8</sub> = N<sub>4</sub> ∪ N<sub>D</sub>. D<sub>4</sub> = |x − s| + |y − t|, D<sub>8</sub> = max(|x − s|, |y − t|). m-adjacency keeps a diagonal link only if the two pixels share no 4-neighbour with a value in V.</p>
+    <p class="source">Source: L7 p.21 neighbours of a pixel · L7 p.22-24 4-, 8- and m-connectivity · L7 p.30-33 distance measures · Notes: Lecture 7 › Neighbors of a pixel · Lecture 7 › Connectivity and adjacency · Lecture 7 › Distance measures</p>
+  </div>
+</article>
+
+<article class="q" id="s2-w8" data-sample="2" data-part="w" data-num="8" data-topic="CIE XYZ">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · 10 pts · Lecture 7, CIE XYZ color</p>
+    <h3 class="q-title">Color: CIE XYZ and chromaticity</h3>
+  </div>
+  <div class="prompt">
+    <ol class="subq">
+      <li><span class="tag">(a)</span><span>Why did the CIE define the XYZ color system instead of using CIE-RGB directly? What are chromaticity coordinates? <span class="pts">(4 pts)</span></span></li>
+      <li><span class="tag">(b)</span><span>Two colors have tristimulus values C1 = (X, Y, Z) = (48, 42, 30) and C2 = (19, 20, 25). Compute the chromaticity coordinates x, y, z of each color. Which color is closer to the D65 white point (x, y) = (0.3127, 0.3290)? Which color is brighter? <span class="pts">(6 pts)</span></span></li>
+    </ol>
+  </div>
+  <div class="solution">
+    <div class="sol-part">
+      <h4>(a) What to write</h4>
+      <ul>
+        <li>CIE-RGB (monochromatic primaries 700, 546.1, 435.8 nm) has a color matching function r̄(λ) that goes <b>negative</b>, so some colors need a negative amount of a primary.</li>
+        <li>In 1931 the CIE defined XYZ, a linear transformation of CIE-RGB, so that XYZ tristimulus values can describe <b>any visible color</b>.</li>
+        <li>Criteria: the CMFs are <b>non-negative</b> (3 positive values for any color); <b>equal amounts give white</b>; ȳ matches the eye's luminous efficiency, so <b>Y = luminance</b>; the primaries are as tight as possible around the visible colors.</li>
+        <li>Chromaticity coordinates: x = X / (X + Y + Z), y = Y / (X + Y + Z), z = Z / (X + Y + Z), with x + y + z = 1. Only (x, y) is plotted, in the chromaticity diagram.</li>
+        <li>Chromaticity specifies the quality of a color (hue and saturation) "regardless of its luminance".</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 1</span><h4>r̄ dips below zero, the XYZ functions never do</h4></div>
+        <p class="fig-lede">Top: the CIE-RGB color matching functions. Between about 440 and 546 nm r̄ is negative, so matching those spectral colors needs negative red. Bottom: the XYZ functions, a linear mix of the same curves, chosen to stay at or above zero, with ȳ equal to the eye's luminous efficiency. Curves are an analytic fit to the CIE 1931 tables.</p>
+        <div data-viz="cmf"></div>
+      </figure>
+    </div>
+    <div class="sol-part">
+      <h4>(b) Worked solution</h4>
+      <pre class="calc">distance to D65:  d = √((x − 0.3127)² + (y − 0.3290)²)
+
+C1 = (48, 42, 30):  X + Y + Z = 120
+    x = 48/120 = 0.4000    y = 42/120 = 0.3500    z = 30/120 = 0.2500
+    d = √(0.0873² + 0.0210²) = 0.0898
+C2 = (19, 20, 25):  X + Y + Z = 64
+    x = 19/64 = 0.2969     y = 20/64 = 0.3125     z = 25/64 = 0.3906
+    d = √(0.0158² + 0.0165²) = 0.0229</pre>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 2</span><h4>C1, C2 and D65 on the chromaticity diagram</h4></div>
+        <p class="fig-lede">Left: the horseshoe of spectral colors, with wavelengths in nm. Right: the dashed box enlarged. C2 sits next to the D65 white point. C1 lies further out towards red and orange.</p>
+        <div data-viz="xy"></div>
+      </figure>
+      <ul>
+        <li><b>C2 is closer to D65 white</b> (0.023 vs 0.090). It is an almost neutral, slightly bluish white. C1 has a large x, so it is shifted towards red/orange.</li>
+        <li><b>C1 is brighter</b> (Y = 42 vs Y = 20). Brightness is Y, which chromaticity ignores. A dim color can still be near white.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Brightness lives in Y, which chromaticity throws away</h4></div>
+        <p class="fig-lede">Each swatch is the color converted to sRGB. C2 scaled by 2.1 to Y = 42 keeps exactly the chromaticity of C2 and becomes as bright as C1. So (x, y) says what color, and Y says how bright.</p>
+        <div data-viz="swatch"></div>
+      </figure>
+      <p>Result: <span class="result">C1 (0.4000, 0.3500, 0.2500), C2 (0.2969, 0.3125, 0.3906); C2 is closer to white, C1 is brighter.</span></p>
+    </div>
+  </div>
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>CIE-RGB needs negative amounts (r̄ &lt; 0), so the CIE defined XYZ: non-negative CMFs, equal amounts give white, Y = luminance. Chromaticity x = X/(X+Y+Z), y = Y/(X+Y+Z), z = 1 − x − y gives hue and saturation "regardless of its luminance".</p>
+    <p class="source">Source: L7 p.42-45 CIE XYZ and the CIE criteria · L7 p.47 meaning of X, Y, Z · L7 p.54 chromaticity coordinates · L7 p.58 illuminants (D65 values from the Lecture 7 notebook) · Notes: Lecture 7 › CIE XYZ color coordinate system · Lecture 7 › CIE chromaticity diagram</p>
+  </div>
+</article>

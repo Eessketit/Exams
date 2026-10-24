@@ -1,0 +1,675 @@
+<article class="q" id="s3-mc1" data-sample="3" data-part="mc" data-num="1" data-topic="Quantization levels">
+  <div class="q-head">
+    <p class="eyebrow">Question 1 · Lecture 2, Quantization</p>
+    <h3 class="q-title">A signal with range R = 4 V is quantized with b = 5 bits. How many quantization levels are there, and what is the quantization step?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>5 levels, step 0.8 V</span>
+      <span class="why">No. 5 is the number of bits b. Five bits can write 2⁵ different codes.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>10 levels, step 0.4 V</span>
+      <span class="why">No. 10 = 2 × 5. Each bit doubles the level count; it does not add 2 levels.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>32 levels, step 0.125 V</span>
+      <span class="why">Correct. 2⁵ = 32 levels and δ = 4/32 = 0.125 V.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>25 levels, step 0.16 V</span>
+      <span class="why">No. 25 = 5². The level count is 2<sup>b</sup>, not b².</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Each sample is stored with b bits, and b bits can write 2<sup>b</sup> different codes, so there are 2⁵ = 32 levels. The range R is shared evenly among the levels: δ = R/2<sup>b</sup> = 4/32 = 0.125 V.</p>
+    <p>All four options split 4 V evenly (levels × step = 4 V in every option). So the step cannot tell them apart. Only the level count does, and it must be 2<sup>b</sup>.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Five bits cut 4 V into 32 steps of 0.125 V</h4>
+    </div>
+    <p class="fig-lede">A signal inside the 0 to 4 V range is sampled, and each sample is rounded to the nearest level. The thin lines are the levels. Drag b: each extra bit doubles the levels and halves the step δ.</p>
+    <div data-viz="bits"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Levels</span><span class="v pri" data-role="levels">32</span><span class="sub" data-role="levels-sub">2⁵</span></div>
+      <div class="stat"><span class="label">Step size</span><span class="v pri" data-role="step">0.125 V</span><span class="sub" data-role="step-sub">δ = 4 / 32</span></div>
+      <div class="stat"><span class="label">Largest rounding error</span><span class="v" data-role="err">0.0625 V</span><span class="sub">δ / 2</span></div>
+    </div>
+    <div data-viz="stairs"></div>
+    <div class="legend">
+      <span><i class="sw-sec"></i>analog signal</span>
+      <span><i class="sw-pri"></i>quantized samples</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Every option splits 4 V evenly; only one uses 2<sup>b</sup> levels</h4>
+    </div>
+    <p class="fig-lede">Each bar is the 4 V range cut into the option's number of levels. The level counts are b, 2b, 2<sup>b</sup> and b². Five bits give the codes 00000 to 11111, which is 32 codes, one per level.</p>
+    <div data-viz="rulers"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>b bits give N = 2<sup>b</sup> levels, and the quantization step is δ = R/2<sup>b</sup>.</p>
+    <p class="source">Source: L2 p.29 2<sup>b</sup> levels, step δ = R/2<sup>b</sup> · L2 p.30 one signal at 8, 4 and 3 bits · Notes: Lecture 2 › 7. Quantization</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc2" data-sample="3" data-part="mc" data-num="2" data-topic="SQNR">
+  <div class="q-head">
+    <p class="eyebrow">Question 2 · Lecture 3, SQNR</p>
+    <h3 class="q-title">Using SQNR = 6.02N dB, going from 8-bit to 12-bit audio samples raises the maximum SQNR by about:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>4 dB</span>
+      <span class="why">No. 4 is the number of added bits. Each bit is worth about 6 dB.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>12 dB</span>
+      <span class="why">No. 12 dB is only 2 bits' worth (2 × 6.02 dB). Here 4 bits are added.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>48 dB</span>
+      <span class="why">No. 48.16 dB is the SQNR of 8-bit samples itself, not the gain.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>24 dB</span>
+      <span class="why">Correct. 4 added bits × 6.02 dB = 24.08 dB.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> SQNR = 6.02N grows in a straight line with N, so the gain depends only on the number of added bits: 6.02 × 12 − 6.02 × 8 = 72.24 − 48.16 = 24.08 dB.</p>
+    <p>Each extra bit halves the quantization step, so the largest error (half a step) is halved too. The signal-to-noise voltage ratio doubles, and 20 log₁₀ 2 = 6.02 dB.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>From 8 to 12 bits: four steps of 6.02 dB</h4>
+    </div>
+    <p class="fig-lede">Maximum SQNR = 6.02N for N = 0 to 16 bits. The staircase between 8 and 12 bits climbs 6.02 dB per bit, 24.08 dB in total.</p>
+    <div data-viz="line"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Each added bit halves the step</h4>
+    </div>
+    <p class="fig-lede">Bar height is the quantization step δ for the same signal range, drawn to scale. The peak signal stays the same, so every halving of δ doubles the ratio signal / noise.</p>
+    <div data-viz="halving"></div>
+    <p class="formula">ratio grows 2⁴ = 16 times &nbsp;→&nbsp; 20 log₁₀ 16 = 4 × 20 log₁₀ 2 = 4 × 6.02 = 24.08 dB</p>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>SQNR = 20 log₁₀ (2<sup>N−1</sup> / ½) = 6.02N dB: each bit adds about 6 dB of resolution, so 16 bits provide a maximum SQNR of 96 dB.</p>
+    <p class="source">Source: L3 p.9 each bit adds about 6 dB · Notes: Lecture 3 › 3. Signal to Quantization Noise Ratio (SQNR)</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc3" data-sample="3" data-part="mc" data-num="3" data-topic="LZW">
+  <div class="q-head">
+    <p class="eyebrow">Question 3 · Lecture 4, LZW</p>
+    <h3 class="q-title">LZW starts with the dictionary 1 = A, 2 = B. What is the output for the input string BABAA?</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>2 1 3 1</span>
+      <span class="why">Correct. B, A, then the new entry BA = 3, then A at the end.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>2 1 2 1 1</span>
+      <span class="why">No. One code per character never uses the dictionary. At the third character BA is already code 3.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>2 1 3 5</span>
+      <span class="why">No. 5 = BAA is the entry added when BA is sent. What is left after BA is only A = 1.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>2 1 4 1</span>
+      <span class="why">No. 4 = AB, but the string matched at that point is BA = 3.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> LZW keeps a current string s and grows it while s + c is in the dictionary. When s + c is new, it outputs code(s), adds s + c as the next code, and restarts with s = c.</p>
+    <p>For BABAA: output 2 (B) and add 3 = BA; output 1 (A) and add 4 = AB; BA is now known, so s grows to BA; BAA is new, so output 3 and add 5 = BAA; at EOF output 1 (A).</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>BABAA is parsed as B · A · BA · A</h4>
+    </div>
+    <p class="fig-lede">The tape is the input. s is the string matched so far and c the next character. Each output code covers one bracketed piece of the input. Step through the five rows of the algorithm.</p>
+    <div data-viz="lzw-steps"></div>
+    <p class="step-note" data-role="lzw-note" aria-live="polite"></p>
+    <div data-viz="lzw"></div>
+    <div class="legend">
+      <span><i class="sw-pri-soft"></i>s, matched string</span>
+      <span><i class="sw-sec-soft"></i>c, next character</span>
+      <span><i class="sw-pri"></i>output code</span>
+      <span><i class="sw-ok"></i>entry added in this step</span>
+    </div>
+    <div data-viz="lzw-table"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>Decode each option with the same starting dictionary</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a · 2 1 3 1</span>
+        <h5>Gives back BABAA</h5>
+        <p>The decoder adds each entry one step later than the encoder.</p>
+        <div class="chain">
+          <span>2 → <b>B</b></span>
+          <span>1 → <b>A</b>, add 3 = BA</span>
+          <span>3 → <b>BA</b>, add 4 = AB</span>
+          <span>1 → <b>A</b>, add 5 = BAA</span>
+        </div>
+      </div>
+      <div class="mini">
+        <span class="label">Option b · 2 1 2 1 1</span>
+        <h5>Decodes, but LZW never sends it</h5>
+        <p>Five codes for five characters. The encoder finds BA in the dictionary at the third character and sends 3 instead of 2 1.</p>
+        <div class="chips"><span>B</span><span>A</span><span>B</span><span>A</span><span>A</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c · 2 1 3 5</span>
+        <h5>Decodes to BABABAB</h5>
+        <p>When 5 arrives the decoder knows only codes 1 to 4. The exception rule gives s + s[0] = BAB.</p>
+        <div class="chain">
+          <span>2 1 3 → <b>B A BA</b></span>
+          <span>5 → <b>BAB</b> (not yet known)</span>
+        </div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d · 2 1 4 1</span>
+        <h5>Decodes to BAAAA</h5>
+        <p>When 4 arrives the decoder knows only codes 1 to 3. The exception rule gives s + s[0] = AA.</p>
+        <div class="chain">
+          <span>2 1 → <b>B A</b></span>
+          <span>4 → <b>AA</b>, 1 → <b>A</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>LZW (Algorithm 7.2): if s + c is in the dictionary, s = s + c; otherwise output code(s), add s + c, and set s = c. At EOF output code(s).</p>
+    <p class="source">Source: L4 p.39 Algorithm 7.2, LZW compression · L4 p.40-41 worked example ABABBABCABABBA · Notes: Lecture 4 › 11. LZW Dictionary Coding</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc4" data-sample="3" data-part="mc" data-num="4" data-topic="Source of loss">
+  <div class="q-head">
+    <p class="eyebrow">Question 4 · Lecture 5, Lossy compression</p>
+    <h3 class="q-title">In lossy compression, the main source of the loss is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>entropy coding (e.g. Huffman)</span>
+      <span class="why">No. Huffman coding is lossless: each codeword decodes to exactly one symbol.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>quantization</span>
+      <span class="why">Correct. Slide 13: the "main source of the loss in lossy compression".</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>the transformation stage (e.g. prediction)</span>
+      <span class="why">No. The transformation is reversible: adding the prediction back gives the same values.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>run-length coding</span>
+      <span class="why">No. Run-length coding is lossless: a count and a symbol rebuild the run exactly.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Quantization will "Reduce the number of output values to a much smaller set". Many input values leave the quantizer as the same level, so the decoder cannot tell which one it was. That is where the information is lost.</p>
+    <p>The other stages are one-to-one. An inverse transformation and an entropy decoder give back exactly what went in.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Undo each stage: only quantization changes the numbers</h4>
+    </div>
+    <p class="fig-lede">The three stages of compression from Lecture 4 (slide 6): transformation, loss, coding. Four samples go through each stage, then through that stage's inverse. The prediction is the previous sample, the quantizer step is 3, and the Huffman code is 2 → 0, 4 → 10, 1 → 11.</p>
+    <div data-viz="trip"></div>
+    <p class="fig-lede">Full decode: 12 15 21 27 against the original 12 15 22 27. The one wrong sample comes from the quantizer.</p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>Quantization is many-to-one; coding is one-to-one</h4>
+    </div>
+    <p class="fig-lede">Left: a quantizer with step 3 sends 14 inputs to 5 levels. Inputs 5, 6 and 7 all leave as 6, so a decoder that receives 6 cannot know which it was. Right: a Huffman code gives each symbol its own codeword, so every codeword points back to one symbol.</p>
+    <div data-viz="maps"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Quantization: "Reduce the number of output values to a much smaller set." It is the "main source of the loss in lossy compression". Huffman, LZW and run-length coding are lossless.</p>
+    <p class="source">Source: L5 p.13 quantization is the main source of the loss · Notes: Lecture 5 › 6. Lossy Compression, Rate Distortion and Quantization</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc5" data-sample="3" data-part="mc" data-num="5" data-topic="Weber ratio">
+  <div class="q-head">
+    <p class="eyebrow">Question 5 · Lecture 6, Brightness adaptation</p>
+    <h3 class="q-title">On a background of intensity I = 200, the just noticeable difference is ΔIc = 4. The Weber ratio and its meaning are:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>0.02, poor brightness discrimination</span>
+      <span class="why">No. The number is right, but a small ratio means good discrimination.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>50, good brightness discrimination</span>
+      <span class="why">No. 50 = I/ΔIc, the ratio turned upside down.</span>
+    </li>
+    <li class="right">
+      <span class="key">c</span>
+      <span>0.02, good brightness discrimination</span>
+      <span class="why">Correct. 4/200 = 0.02, and a small ratio means good discrimination.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>0.2, poor brightness discrimination</span>
+      <span class="why">No. 0.2 would need ΔIc = 40 on I = 200. The given ratio is ten times smaller.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: c.</strong> Weber ratio = ΔIc/I = 4/200 = 0.02. It is the fraction of the background intensity that must be added before the observer sees the change.</p>
+    <p>Here a 2% change is enough, so the eye notices small changes: good brightness discrimination. A large ratio means the change must be large before it is seen: poor discrimination.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The flash experiment on a background of 200</h4>
+    </div>
+    <p class="fig-lede">The slide-6 experiment: a background of intensity I with a circle flashed at I + ΔI. ΔI starts at 0 and grows until the observer sees the circle. That value is the just noticeable difference ΔIc. Drag ΔI; the patch is drawn in real gray levels.</p>
+    <div data-viz="flash-slider"></div>
+    <div data-viz="flash"></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Circle</span><span class="v" data-role="circle">204</span><span class="sub">I + ΔI</span></div>
+      <div class="stat"><span class="label">ΔI / I</span><span class="v pri" data-role="ratio">0.02</span><span class="sub" data-role="ratio-sub">4 / 200</span></div>
+    </div>
+    <p class="verdict" data-role="flash-verdict"></p>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>What 0.02 and 0.2 mean on the same background</h4>
+    </div>
+    <p class="fig-lede">The just noticeable difference is ratio × I. With a ratio of 0.02 the observer needs only 4 more levels above 200. With 0.2 (option d) the circle must reach 240 before it is seen.</p>
+    <div data-viz="jnd"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Weber ratio = ΔIc/I. A small Weber ratio means good brightness discrimination; a large ratio means poor brightness discrimination.</p>
+    <p class="source">Source: L6 p.6 Weber ratio ΔIc/I · L6 p.7 discrimination at different intensity levels · Notes: Lecture 6 › 2. Brightness Adaptation and Weber Ratio</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc6" data-sample="3" data-part="mc" data-num="6" data-topic="Chromaticity">
+  <div class="q-head">
+    <p class="eyebrow">Question 6 · Lecture 7, CIE chromaticity</p>
+    <h3 class="q-title">A color has tristimulus values X = 30, Y = 45, Z = 75. Its chromaticity coordinates are:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>x = 0.40, y = 0.60 (z is not used)</span>
+      <span class="why">No. It divides by X + Y = 75 and leaves Z out of the sum.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>x = 0.20, y = 0.30, z = 0.50, so x + y + z = 1</span>
+      <span class="why">Correct. Each value is divided by X + Y + Z = 150.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>x = 0.67, y = 1.00, z = 1.67</span>
+      <span class="why">No. It divides by Y = 45 (X/Y, Y/Y, Z/Y).</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>x = 0.30, y = 0.45, z = 0.75, so x + y + z = 1.5</span>
+      <span class="why">No. It divides by 100. The coordinates always sum to 1.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Each chromaticity coordinate is one tristimulus value divided by the total X + Y + Z = 150: x = 30/150 = 0.2, y = 45/150 = 0.3, z = 75/150 = 0.5.</p>
+    <p>They are shares of one total, so x + y + z = 1 always. That is why only (x, y) is plotted on the chromaticity diagram; z = 1 − x − y.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>x, y, z are the shares of X + Y + Z</h4>
+    </div>
+    <p class="fig-lede">Top: the tristimulus values stacked into their total of 150. Bottom: the same bar divided by 150. The proportions do not change, only the scale, so the shares always add up to 1.</p>
+    <div data-viz="shares"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The color sits at (0.2, 0.3) on the xy diagram</h4>
+    </div>
+    <p class="fig-lede">The horseshoe is the spectral locus with wavelengths in nm, closed by the line of purples. E is equal-energy white (1/3, 1/3). z is not drawn: it is what is left, 1 − 0.2 − 0.3 = 0.5. Option c's point (0.67, 1.00) would lie above the whole diagram.</p>
+    <div data-viz="xy"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>x = X/(X+Y+Z), y = Y/(X+Y+Z), z = Z/(X+Y+Z), and x + y + z = 1. Only (x, y) is plotted.</p>
+    <p class="source">Source: L7 p.54 chromaticity coordinates x, y, z · Notes: Lecture 7 › 11. CIE Chromaticity Diagram, Illuminants and Gamut</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc7" data-sample="3" data-part="mc" data-num="7" data-topic="Histogram specification">
+  <div class="q-head">
+    <p class="eyebrow">Question 7 · Lecture 9, Histogram specification</p>
+    <h3 class="q-title">In histogram specification, T is the equalization of the input image and G is the equalization of the desired histogram. The output level z for an input level r is:</h3>
+  </div>
+
+  <ol class="options">
+    <li class="right">
+      <span class="key">a</span>
+      <span>z = G⁻¹[T(r)]</span>
+      <span class="why">Correct. Equalize the input with T, then undo the desired histogram's equalization with G⁻¹.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>z = T⁻¹[G(r)]</span>
+      <span class="why">No. T and G swap roles. This would turn an image with the desired histogram into one with the input's histogram.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>z = G[T(r)]</span>
+      <span class="why">No. G takes a z and returns an equalized level. Applied forward it never gives back a z.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>z = T[G⁻¹(r)]</span>
+      <span class="why">No. Wrong order. T is built from the input histogram, so r must go through T first.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: a.</strong> T and G are both equalizations, so both lead to the same flat histogram: s = T(r) for the input and v = G(z) for the desired histogram.</p>
+    <p>Matching the two at the shared equalized level, v = s, and solving for z gives z = G⁻¹(s) = G⁻¹[T(r)]. The input goes forward through T, then backward through G.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Forward through T, backward through G</h4>
+    </div>
+    <p class="fig-lede">The slide-43 block diagram. T is built from the input image's histogram and G from the desired histogram. The equalized level s is the meeting point of the two.</p>
+    <div data-viz="blocks"></div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>z = G⁻¹[T(r)] as a lookup on two curves</h4>
+    </div>
+    <p class="fig-lede">The numbers of Part 2 Q3 in this sample: a 3-bit 4×4 image and a desired histogram, both scaled by 7/16. Go up from r to T(r) and round to s, across to the G curve, and down to the z whose G(z) is closest to s.</p>
+    <div data-viz="cdf-steps"></div>
+    <p class="step-note" data-role="cdf-note" aria-live="polite"></p>
+    <div data-viz="cdf"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>T(r), equalization of the input</span>
+      <span><i class="sw-sec"></i>G(z), equalization of the desired histogram</span>
+    </div>
+    <div data-viz="cdf-table"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>(1) Equalize the original: s = T(r). (2) Equalize the desired histogram: v = G(z). (3) Apply the inverse: z = G⁻¹(s) = G⁻¹[T(r)].</p>
+    <p class="source">Source: L9 p.42 the three steps, z = G⁻¹[T(r)] · Notes: Lecture 9 › 9. Histogram Specification</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc8" data-sample="3" data-part="mc" data-num="8" data-topic="Dilation">
+  <div class="q-head">
+    <p class="eyebrow">Question 8 · Lecture 10, Dilation</p>
+    <h3 class="q-title">Which expression is the dilation of A by the structuring element B?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>{z | (B)<sub>z</sub> ⊆ A}</span>
+      <span class="why">No. B shifted to z must fit inside A. That is erosion.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>(A ⊖ B) ⊕ B</span>
+      <span class="why">No. Erosion followed by dilation is opening.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>{z | (<span class="mono">B̂</span>)<sub>z</sub> ∩ A = ∅}</span>
+      <span class="why">No. No overlap at all: these are the positions outside the dilation.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>{z | (<span class="mono">B̂</span>)<sub>z</sub> ∩ A ≠ ∅}</span>
+      <span class="why">Correct. The reflected B shifted to z overlaps A in at least one element.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> Slide 20: dilation is "the set of all displacements, z, such that <span class="mono">B̂</span> and A overlap by at least one element". Reflect B about its origin, shift it to z, and keep z if the shifted copy touches A anywhere.</p>
+    <p>One shared pixel is enough, so A grows by the shape of B. Erosion asks for the opposite extreme: all of B must fit inside A.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>Slide <span class="mono">B̂</span> over A: one shared pixel puts z in A ⊕ B</h4>
+    </div>
+    <p class="fig-lede">B is an L of three pixels with its origin in the corner. Its reflection <span class="mono">B̂</span> points the other way, so A grows to the right and down. Pick a position z = (row, column): the outline is <span class="mono">B̂</span> placed at z, and the result pixel z is 1 if the outline covers any pixel of A.</p>
+    <div data-viz="dil-steps"></div>
+    <p class="step-note" data-role="dil-note" aria-live="polite"></p>
+    <div data-viz="dil"></div>
+    <div class="legend">
+      <span><i class="sw-pri"></i>pixel of A</span>
+      <span><i class="sw-ok"></i>added by dilation</span>
+      <span><i class="sw-seg"></i>0</span>
+      <span><i class="sw-sec"></i>outline: <span class="mono">B̂</span> placed at z</span>
+    </div>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 2</span>
+      <h4>The four options on the same A and B</h4>
+    </div>
+    <p class="fig-lede">The dashed line is the outline of A. Erosion (a) keeps only positions where all of B fits, opening (b) grows that back, (c) is everything <span class="mono">B̂</span> cannot touch, and dilation (d) is everything it can.</p>
+    <div data-viz="four"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>A ⊕ B = {z | (<span class="mono">B̂</span>)<sub>z</sub> ∩ A ≠ ∅}: the set of all displacements z such that <span class="mono">B̂</span> and A overlap by at least one element. Dilation expands A.</p>
+    <p class="source">Source: L10 p.20 set definition of dilation · Notes: Lecture 10 › 3. Dilation</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc9" data-sample="3" data-part="mc" data-num="9" data-topic="Sobel operator">
+  <div class="q-head">
+    <p class="eyebrow">Question 9 · Lecture 11, Edge operators</p>
+    <h3 class="q-title">According to the lecture, the Sobel operator is:</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>more sensitive to vertical and horizontal edges than to diagonal edges</span>
+      <span class="why">No. That is the slide's line for Prewitt.</span>
+    </li>
+    <li class="right">
+      <span class="key">b</span>
+      <span>more sensitive to diagonal edges than to vertical and horizontal edges</span>
+      <span class="why">Correct. Slide 38, word for word, for Sobel.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>a second-order operator that produces double edges</span>
+      <span class="why">No. That describes the Laplacian.</span>
+    </li>
+    <li>
+      <span class="key">d</span>
+      <span>the operator with the smallest effective area, most susceptible to noise</span>
+      <span class="why">No. That describes Roberts.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: b.</strong> Slide 38 gives one property per operator. Sobel: "More sensitive to diagonal edges than vertical and horizontal edges". Prewitt is the opposite, Roberts has the smallest effective area, and the Laplacian is the second-order operator.</p>
+    <p>The masks show why. Put a vertical step and a diagonal step through both operators with the slide's magnitude √(Hr² + Hc²). Prewitt gives 3 and 2.83, so its diagonal response is weaker. Sobel gives 4 and 4.24, so its diagonal response is stronger.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>One edge window through the Prewitt and Sobel masks</h4>
+    </div>
+    <p class="fig-lede">Each mask (slide 37) is laid on the window; with a 0/1 window the response is the sum of the weights on the bright pixels, shaded. Sobel weights the middle row and column by 2, Prewitt weights all rows equally. Switch the edge direction and compare |G|.</p>
+    <div data-viz="edge-steps"></div>
+    <div data-viz="edge"></div>
+    <p class="verdict" data-role="edge-verdict"></p>
+    <div data-viz="edge-table"></div>
+  </figure>
+
+  <div class="q-head">
+    <h4>The operators behind the other options</h4>
+    <div class="why-grid">
+      <div class="mini">
+        <span class="label">Option a</span>
+        <h5>Prewitt</h5>
+        <p>Equal weights in every row. A diagonal step gives 2.83, less than the 3 of a vertical or horizontal step.</p>
+        <div class="chips"><span>vertical 3</span><span>horizontal 3</span><span class="out">diagonal 2.83</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option c</span>
+        <h5>Laplacian, second order</h5>
+        <p>Run along a row that steps from 0 to 1. The response is −1 then +1: two edges for one step.</p>
+        <div data-viz="lap"></div>
+        <div class="chips"><span>0 0 0 1 1 1</span><span class="arrow">→</span><span class="out">0 0 −1 1 0 0</span></div>
+      </div>
+      <div class="mini">
+        <span class="label">Option d</span>
+        <h5>Roberts</h5>
+        <p>Each mask uses only two pixels: the smallest effective area, so it is the most susceptible to noise.</p>
+        <div data-viz="roberts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Roberts: smaller effective area, more susceptible to noise. Sobel: more sensitive to diagonal edges than vertical and horizontal edges. Prewitt: more sensitive to vertical and horizontal edges than diagonal edges.</p>
+    <p class="source">Source: L11 p.38 Roberts, Sobel and Prewitt properties · Notes: Lecture 11 › 8. First Order Derivative Operators: Roberts, Prewitt, Sobel, Frei Chen</p>
+  </div>
+</article>
+
+<article class="q" id="s3-mc10" data-sample="3" data-part="mc" data-num="10" data-topic="PR flow chart">
+  <div class="q-head">
+    <p class="eyebrow">Question 10 · Lecture 12, Pattern recognition system</p>
+    <h3 class="q-title">In the pattern recognition system flow chart, which stage receives "costs" as an input and exploits context (input-dependent information other than from the target pattern itself) to improve performance?</h3>
+  </div>
+
+  <ol class="options">
+    <li>
+      <span class="key">a</span>
+      <span>Segmentation</span>
+      <span class="why">No. Segmentation separates the patterns. No side input enters it.</span>
+    </li>
+    <li>
+      <span class="key">b</span>
+      <span>Feature extraction</span>
+      <span class="why">No. It computes discriminative, invariant features. No side input enters it.</span>
+    </li>
+    <li>
+      <span class="key">c</span>
+      <span>Classification</span>
+      <span class="why">No. Classification gets adjustments for context and for missing features, but not costs.</span>
+    </li>
+    <li class="right">
+      <span class="key">d</span>
+      <span>Post-processing</span>
+      <span class="why">Correct. The costs arrow enters post-processing, and it exploits context.</span>
+    </li>
+  </ol>
+
+  <div class="answer">
+    <p><strong>Answer: d.</strong> On the slide-18 flow chart three side inputs arrive from the right. Costs go only to post-processing. Adjustments for context go to post-processing and to classification. Adjustments for missing features go to classification.</p>
+    <p>Post-processing will "Exploit context input dependent information other than from the target pattern itself to improve performance". It is the last stage before the decision.</p>
+  </div>
+
+  <figure class="fig">
+    <div class="fig-head">
+      <span class="fig-no">Figure 1</span>
+      <h4>The flow chart, read from input at the bottom to decision at the top</h4>
+    </div>
+    <p class="fig-lede">Solid arrows carry the data up. Dashed arrows go back down to the stage below. Pick an option to light its stage and the side inputs that enter it.</p>
+    <div data-viz="pr-steps"></div>
+    <p class="step-note" data-role="pr-note" aria-live="polite"></p>
+    <div data-viz="pr"></div>
+  </figure>
+
+  <div class="exam-line">
+    <span class="label">Exam line</span>
+    <p>Input → sensing → segmentation → feature extraction → classification → post-processing → decision. Costs enter post-processing, which will "exploit context input dependent information other than from the target pattern itself to improve performance".</p>
+    <p class="source">Source: L12 p.18 flow chart, "costs" enter post-processing · L12 p.19 feature extraction, classification, post-processing · Notes: Lecture 12 › 4. Pattern Recognition System Flowchart</p>
+  </div>
+</article>
