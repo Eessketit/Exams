@@ -106,10 +106,92 @@ QV.register('s1-w1', function (q) {
 
   const JOIN = ['3,4', '4,4'];
   mat(viz('result'), FINAL, { caption: `A ⊕ B, ${count(FINAL)} ones`, hl: (v, r, c) => (v ? (JOIN.includes(r + ',' + c) ? 'on org' : 'on') : null) });
+
+  // Figure 3: B̂ = B turned 180°, and checking every pixel with B̂ against B
+  const LOPSIDED = [[-1, 0], [0, 0], [0, 1], [1, 0]];
+  const flip = se => se.map(([dr, dc]) => [-dr, -dc]);
+  const inA = (r, c) => r >= 0 && r < 7 && c >= 0 && c < 7 && A[r][c] === 1;
+  const checkAll = se => A.map((row, r) => row.map((_, c) => (se.some(([dr, dc]) => inA(r + dr, c + dc)) ? 1 : 0)));
+  const seGrid = se => [-1, 0, 1].map(dr => [-1, 0, 1].map(dc => (se.some(([a, b]) => a === dr && b === dc) ? 1 : 0)));
+  const sgn = v => (v > 0 ? '+' + v : v < 0 ? '−' + -v : '0');
+  const HC = 24, SC = 40, ROWS = [236, 470];
+  const hs = svg(viz('hat'), 760, 650, { label: 'B and B̂ with their offsets, then pixel z = (1,3) and the whole dilation checked with B̂ and with B unflipped', minWidth: 560 });
+  const hg = s('g', {}, hs);
+  const ht = (x, y, text, cls, anchor) => s('text', { x, y, dy: '0.35em', 'text-anchor': anchor, class: cls }, hg, text);
+
+  const SES = [CROSS, LOPSIDED];
+  let seK = 0, zi = 10;
+
+  function drawHat() {
+    hg.textContent = '';
+    const se = SES[seK], hat = flip(se);
+    const cur = zi < 49 ? [Math.floor(zi / 7), zi % 7] : null;
+    const done = (r, c) => r * 7 + c <= zi;
+    const same = seGrid(se).flat().join() === seGrid(hat).flat().join();
+    [[se, 'B', 40], [hat, 'B̂', 330]].forEach(([e, title, x]) => {
+      grid(hg, { x, y: 40, data: seGrid(e), cell: SC, fill: v => (v ? 'f-pri' : 'f-seg'), text: (v, r, c) => (v ? sgn(r - 1) + ',' + sgn(c - 1) : null), textCls: () => 't-on', title });
+      s('rect', { x: x + SC, y: 40 + SC, width: SC, height: SC, class: 'f-none outline-sec' }, hg);
+    });
+    arrow(hg, 176, 100, 318, 100, { cls: 'a-sec', width: 2, label: 'turn 180°', dy: -10 });
+    ht(247, 118, 'change both signs', 't-sm', 'middle');
+    ht(480, 80, same ? 'The same five cells come back' : 'The right arm moves to the left', (same ? 't-ok' : 't-bad') + ' t-bold');
+    ht(480, 100, same ? 'up ↔ down, left ↔ right, so B̂ = B' : 'B̂ ≠ B, so the flip changes the answer', 't-fg');
+
+    const good = checkAll(hat);
+    [[hat, 'B̂', 'Definition: check every pixel z with B̂', 't-ok'], [se, 'B', 'No flip: check every pixel z with B', same ? 't-fg' : 't-bad']].forEach(([e, sym, head, cls], i) => {
+      const y = ROWS[i], res = checkAll(e);
+      const wrongSoFar = res.flat().filter((v, j) => j <= zi && v !== good.flat()[j]).length;
+      const onesSoFar = res.flat().filter((v, j) => j <= zi && v).length;
+      ht(0, y - 48, head, cls + ' t-bold');
+      const ga = grid(hg, { x: 40, y, data: A, cell: HC, fill: bin, rowLabels: IDX, colLabels: IDX, title: cur ? `A, ${sym} placed at z = (${cur})` : 'A, read only' });
+      arrow(hg, 220, y + 84, 306, y + 84, { cls: 'a-muted', label: cur ? 'write z' : 'done', dy: -10 });
+      const gr = grid(hg, {
+        x: 330, y, data: res, cell: HC, rowLabels: IDX, colLabels: IDX, title: i === 0 ? 'output, A ⊕ B' : 'output, no flip',
+        fill: (v, r, c) => (done(r, c) ? { cls: v ? (A[r][c] ? 'f-pri' : 'f-ok') : 'f-seg', text: v ? 't-on' : 't-muted' } : { cls: 'f-seg', style: 'opacity: 0.55' }),
+        text: (v, r, c) => (done(r, c) ? v : ''),
+      });
+      res.forEach((row, r) => row.forEach((v, c) => {
+        if (done(r, c) && v !== good[r][c]) s('rect', { x: gr.cx(c) + 1.5, y: gr.cy(r) + 1.5, width: HC - 3, height: HC - 3, class: 's-bad' }, hg);
+      }));
+      if (!cur) {
+        ht(510, y + 40, 'all 49 pixels checked', 't-fg t-bold');
+        ht(510, y + 62, `${count(res)} ones` + (i === 0 ? '' : wrongSoFar ? `, ${wrongSoFar} pixels wrong` : ', identical'), wrongSoFar ? 't-bad t-bold' : 't-ok t-bold');
+        return;
+      }
+      const cells = e.map(([dr, dc]) => [cur[0] + dr, cur[1] + dc]).filter(([r, c]) => r >= 0 && r < 7 && c >= 0 && c < 7).sort((a, b) => a[0] * 7 + a[1] - (b[0] * 7 + b[1]));
+      const hits = cells.filter(([r, c]) => inA(r, c));
+      cells.forEach(([r, c]) => s('rect', { x: ga.cx(c), y: ga.cy(r), width: HC, height: HC, class: 'f-none outline-sec' }, hg));
+      s('rect', { x: gr.cx(cur[1]), y: gr.cy(cur[0]), width: HC, height: HC, class: 'f-none outline-sec' }, hg);
+      const v = res[cur[0]][cur[1]], bad = v !== good[cur[0]][cur[1]];
+      ht(510, y + 20, `z = (${cur})`, 't-fg t-bold');
+      ht(510, y + 40, `${sym} covers, inside the image:`, 't-fg');
+      ht(510, y + 58, cells.map(p => '(' + p + ')').join(' '), 't-sm');
+      ht(510, y + 80, hits.length ? `hits the 1 at ${hits.map(p => '(' + p + ')').join(' ')}` : 'no 1 of A under it', 't-fg');
+      ht(510, y + 100, `write ${v} at (${cur})` + (bad ? ', wrong' : ''), bad ? 't-bad t-bold' : 't-ok t-bold');
+      ht(510, y + 132, `${onesSoFar} ones so far` + (wrongSoFar ? `, ${wrongSoFar} wrong` : ''), wrongSoFar ? 't-bad' : 't-fg');
+    });
+  }
+
+  steps(viz('hat-steps'), ['Q1 cross', 'Lopsided cross'], k => {
+    seK = k;
+    drawHat();
+    role('hat-note').textContent = k === 0
+      ? 'The Q1 cross. Turning it 180° swaps up with down and left with right, so B̂ = B, and both rows fill in the same 28 ones. Step to any pixel: the plum outline on A shows which cells are read, and only that one output pixel is written.'
+      : 'A cross without its left arm, not the exam\'s B. Turning it 180° moves the arm from the right to the left. At z = (1,3), B̂ reaches left to the 1 at (1,2), so z = 1. Unflipped B reaches right to (1,4), finds a 0 and wrongly writes 0. Without the flip every 1 spreads left instead of right.';
+  }, 0);
+  const zIn = slider(viz('hat-z'), { label: 'pixel z', min: 0, max: 49, step: 1, value: zi, fmt: v => (v === 49 ? 'all 49 checked' : `(${Math.floor(v / 7)},${v % 7}), pixel ${v + 1} of 49`) }, v => {
+    zi = v;
+    drawHat();
+  });
+  const nav = QV.h('div', { class: 'steps' }, viz('hat-z'));
+  [['← previous', -1], ['next →', 1], ['all', 49]].forEach(([label, d]) => QV.h('button', { type: 'button' }, nav, label).addEventListener('click', () => {
+    zIn.value = d === 49 ? 49 : Math.min(49, Math.max(0, zi + d));
+    zIn.dispatchEvent(new Event('input'));
+  }));
 });
 
 QV.register('s1-w2', function (q) {
-  const { s, svg, grid, gray, steps, axes, line, scale } = QV;
+  const { s, svg, grid, gray, steps, slider, axes, line, scale } = QV;
   const viz = name => q.querySelector(`[data-viz="${name}"]`);
   const role = name => q.querySelector(`[data-role="${name}"]`);
   const IMG = [
@@ -197,19 +279,121 @@ QV.register('s1-w2', function (q) {
     s('text', { x: xs(v), y: 224, 'text-anchor': 'middle', class: tc + ' t-bold' }, wv, label);
   });
 
-  // Figure 3: both filters on the nine interior pixels
-  const interior = f => [1, 2, 3].map(r => [1, 2, 3].map(c => f([-1, 0, 1].flatMap(dr => [-1, 0, 1].map(dc => IMG[r + dr][c + dc])))));
-  const AVG = interior(a => Math.round(mean(a))), MED = interior(median);
-  const sp = svg(viz('spread'), 620, 200, { label: 'Interior pixels of the image before filtering, after the 3 by 3 average, and after the 3 by 3 median', minWidth: 500 });
-  [[W, 'Input', 't-fg'], [AVG, '3 × 3 average', 't-sec'], [MED, '3 × 3 median', 't-pri']].forEach(([d, title, cls], i) => {
-    const x = 40 + i * 210;
-    grid(sp, { x, y: 50, data: d, cell: 44, gap: 2, fill: gfill, stroke: 'box', rowLabels: ['1', '2', '3'], colLabels: ['1', '2', '3'] });
-    s('text', { x, y: 26, class: cls + ' t-bold' }, sp, title);
-  });
+  // Figure 3: the window visits every pixel; a border rule (slide 15) supplies the cells outside the image
+  const RULES = [
+    { key: 'zero', name: 'Zero padding', how: 'zero padding fills them with 0' },
+    { key: 'skip', name: 'Skip the border', how: 'skipping the border gives this pixel no filtered value' },
+    { key: 'dup', name: 'Duplicate edges', how: 'duplicating the edges copies the nearest image pixel' },
+    { key: 'wrap', name: 'Wrap-around', how: 'wrap-around takes them from the opposite side of the image' },
+  ];
+  const inImg = (r, c) => r >= 0 && r < 5 && c >= 0 && c < 5;
+  const fits = (r, c) => r >= 1 && r <= 3 && c >= 1 && c <= 3;
+  const near = v => Math.max(0, Math.min(4, v));
+  const padv = (rule, r, c) => {
+    if (inImg(r, c)) return IMG[r][c];
+    if (rule === 'zero') return 0;
+    if (rule === 'dup') return IMG[near(r)][near(c)];
+    if (rule === 'wrap') return IMG[(r + 5) % 5][(c + 5) % 5];
+    return null;
+  };
+  const POS = IMG.flatMap((row, r) => row.map((_, c) => [r, c]));
+  const filterAt = (rule, r, c) => {
+    const cells = [-1, 0, 1].flatMap(dr => [-1, 0, 1].map(dc => [r + dr, c + dc]));
+    const out = cells.filter(([rr, cc]) => !inImg(rr, cc)).length;
+    if (rule === 'skip' && !fits(r, c)) return { cells, out, skip: true };
+    const w = cells.map(([rr, cc]) => padv(rule, rr, cc));
+    const total = w.reduce((a, b) => a + b, 0);
+    return { cells, out, w, total, avg: Math.round(total / 9), med: median(w), sorted: w.slice().sort((a, b) => a - b) };
+  };
+  const SC = 30, OC = 30, PAD = ['−1', '0', '1', '2', '3', '4', '5'];
+  const sp = svg(viz('spread'), 760, 486, { label: 'The 3 by 3 window visiting every pixel of the image, with a border rule filling the cells outside it, and the average and median written into two 5 by 5 output images', minWidth: 560 });
+  const sl = s('g', {}, sp);
+  const st = (x, y, text, cls, anchor) => s('text', { x, y, dy: '0.35em', 'text-anchor': anchor, class: cls }, sl, text);
+  const box = (x, y, w, h, cls, extra) => {
+    s('rect', { x, y, width: w, height: h, class: 'f-none sep', style: 'stroke-width: 6' }, sl);
+    s('rect', { x, y, width: w, height: h, class: 'f-none ' + cls, style: 'stroke-width: 3' + (extra || '') }, sl);
+  };
+  // padded cells keep their gray value but are faded, so the invented values stay readable
+  const padFill = (v, out) => (v == null ? { cls: 'f-seg', style: 'opacity: 0.3', text: 't-muted' } : out ? { style: gray(v).style + '; opacity: 0.5', text: 't-fg' } : gray(v));
+  let ruleK = 0, posK = 12;
+
+  function drawSlide() {
+    sl.textContent = '';
+    const rule = RULES[ruleK].key, cur = posK < 25 ? POS[posK] : null;
+    const padded = PAD.map((_, r) => PAD.map((_, c) => padv(rule, r - 1, c - 1)));
+    const gi = grid(sl, {
+      x: 40, y: 56, data: padded, cell: SC, gap: 2, stroke: 'box', rowLabels: PAD, colLabels: PAD, title: 'Input with its border ring',
+      fill: (v, r, c) => padFill(v, !inImg(r - 1, c - 1)), text: v => (v == null ? '–' : v),
+    });
+    s('rect', { x: gi.cx(1) - 1, y: gi.cy(1) - 1, width: 5 * (SC + 2), height: 5 * (SC + 2), class: 'f-none s-fg dash' }, sl);
+    if (cur) box(gi.cx(cur[1]) - 2, gi.cy(cur[0]) - 2, 3 * (SC + 2) + 2, 3 * (SC + 2) + 2, 'outline-pri');
+    const res = POS.map(([r, c]) => filterAt(rule, r, c));
+    [['Average', 'avg', 'outline-sec', 300], ['Median', 'med', 'outline-pri', 500]].forEach(([name, key, oc, x]) => {
+      const data = IMG.map((row, r) => row.map((_, c) => res[r * 5 + c][key]));
+      const go = grid(sl, {
+        x, y: 88, data, cell: OC, gap: 2, stroke: 'box', rowLabels: IDX, colLabels: IDX, title: `${name} output 5 × 5`,
+        fill: (v, r, c) => (r * 5 + c > posK ? { cls: 'f-seg', style: 'opacity: 0.55' } : v == null ? { cls: 'f-seg', style: 'opacity: 0.3' } : gray(v)),
+        text: (v, r, c) => (r * 5 + c > posK ? '' : v == null ? '–' : v),
+        textCls: v => (v == null ? 't-muted' : gray(v).text),
+      });
+      if (cur) box(go.cx(cur[1]), go.cy(cur[0]), OC, OC, oc);
+    });
+    if (!cur) {
+      const inner = res.filter((_, i) => fits(...POS[i]));
+      const corner = res[0];
+      st(40, 318, `All 25 pixels done with ${RULES[ruleK].name.toLowerCase()}.`, 't-fg t-bold');
+      st(40, 344, `Inner 3 × 3: average ${Math.min(...inner.map(o => o.avg))} to ${Math.max(...inner.map(o => o.avg))}, about 21 too bright, because every inner window holds the 255.`, 't-sec');
+      st(40, 366, `Inner 3 × 3: median ${Math.min(...inner.map(o => o.med))} to ${Math.max(...inner.map(o => o.med))}, the salt pixel is gone.`, 't-pri');
+      st(40, 396, rule === 'skip' ? 'The 16 frame pixels have no full window, so they stay empty (–).'
+        : rule === 'zero' ? `The frame is darkened by the zeros. Corner (0, 0): average ${corner.avg}, median ${corner.med}, because 5 of its 9 cells are 0.`
+          : rule === 'dup' ? `The frame stays close to the image. Corner (0, 0): average ${corner.avg}, median ${corner.med}.`
+            : `The frame mixes in the opposite side. Corner (0, 0): average ${corner.avg}, median ${corner.med}.`, 't-fg');
+      return;
+    }
+    const o = res[posK];
+    if (o.skip) {
+      st(40, 318, `Window at (${cur}): ${o.out} of its 9 cells are outside the image.`, 't-fg t-bold');
+      st(40, 342, 'With "skip the border" this output pixel gets no value (–).', 't-fg');
+      return;
+    }
+    const outside = i => !inImg(...o.cells[i]);
+    const ga = grid(sl, { x: 40, y: 330, data: [o.w], cell: SC, gap: 2, stroke: 'box', title: '(i) Average: add the 9 window values, divide by 9', fill: (v, r, c) => padFill(v, outside(c)) });
+    st(ga.cx(8) + SC + 14, 330 + SC / 2 - 9, `sum = ${o.total}`, 't-sec t-bold');
+    st(ga.cx(8) + SC + 14, 330 + SC / 2 + 9, `${o.total} / 9 = ${(o.total / 9).toFixed(2)} → ${o.avg}`, 't-sec t-bold');
+    const gm = grid(sl, { x: 40, y: 420, data: [o.sorted], cell: SC, gap: 2, stroke: 'box', colLabels: o.sorted.map((_, i) => String(i + 1)), title: '(ii) Median: sort the 9 values, take the 5th', fill: v => gray(v) });
+    box(gm.cx(4), 420, SC, SC, 'outline-pri');
+    st(gm.cx(8) + SC + 14, 420 + SC / 2, `5th of 9 = ${o.med}`, 't-pri t-bold');
+    st(gm.cx(4) + SC / 2, 420 + SC + 14, 'median', 't-pri t-sm', 'middle');
+  }
+
+  function slideNote() {
+    const rule = RULES[ruleK];
+    if (posK === 25) return `All 25 positions done with ${rule.name.toLowerCase()}. Switch the rule to compare the frame.`;
+    const [r, c] = POS[posK], o = filterAt(rule.key, r, c);
+    let t = `Window centred on (${r}, ${c}), pixel ${posK + 1} of 25. `;
+    if (o.out) t += `${o.out} of its 9 cells are outside the image, and ${rule.how}. `;
+    if (o.skip) return t;
+    t += `Average: ${o.total} / 9 = ${(o.total / 9).toFixed(2)}, written as ${o.avg}. Median: the 5th sorted value is ${o.med}.`;
+    if (fits(r, c)) {
+      const clean = (o.total - 255) / 8;
+      t += ` The 8 clean pixels average ${clean.toFixed(2)}, but the 255 takes one of the nine votes, so the average comes out ${(o.total / 9 - clean).toFixed(1)} too bright.`;
+    }
+    if (posK === 12) t += ' This is the pixel the question asks about.';
+    return t;
+  }
+
+  const update = () => { drawSlide(); role('slide-note').textContent = slideNote(); };
+  steps(viz('rule-steps'), RULES.map(rl => rl.name), k => { ruleK = k; update(); }, 0);
+  const pIn = slider(viz('slide-steps'), { label: 'pixel', min: 0, max: 25, step: 1, value: posK, fmt: v => (v === 25 ? 'all 25 done' : `(${POS[v]}), ${v + 1} of 25`) }, v => { posK = v; update(); });
+  const nav = QV.h('div', { class: 'steps' }, viz('slide-steps'));
+  [['← previous', -1], ['next →', 1], ['all', 25]].forEach(([label, d]) => QV.h('button', { type: 'button' }, nav, label).addEventListener('click', () => {
+    pIn.value = d === 25 ? 25 : Math.min(25, Math.max(0, posK + d));
+    pIn.dispatchEvent(new Event('input'));
+  }));
 });
 
 QV.register('s1-w3', function (q) {
-  const { s, svg, grid, gray, steps, axes, table, fmt, arrow } = QV;
+  const { s, svg, grid, gray, steps, slider, axes, table, fmt, arrow } = QV;
   const viz = name => q.querySelector(`[data-viz="${name}"]`);
   const role = name => q.querySelector(`[data-role="${name}"]`);
   const IMG = [[1, 2, 2, 3], [2, 1, 3, 3], [2, 2, 4, 3], [1, 2, 3, 6]];
@@ -298,7 +482,107 @@ QV.register('s1-w3', function (q) {
       : `r = ${r}: n = ${NK[r]}, cumulative ${r ? CUM[r - 1] : 0} + ${NK[r]} = ${CUM[r]}, normalized ${CUM[r]} × 7/16 = ${fmt(NORM[r], 4)}, nearest integer s = ${SK[r]}.`;
   });
 
-  // Figure 3: input histogram, the r to s mapping, output histogram
+  // Figure 3: part (c) step by step: build the LUT, convert each pixel, count the output histogram
+  const STAGES = [{ name: '1 · Mapping', from: 0 }, { name: '2 · Output image', from: 8 }, { name: '3 · Output histogram', from: 24 }, { name: 'All', from: 32 }];
+  const LAST = 32;
+  let gk = 0;
+  const stageOf = v => (v < 8 ? 0 : v < 24 ? 1 : v < 32 ? 2 : 3);
+  const cs = svg(viz('c-fig'), 760, 424, { label: 'Histogram equalization step by step: the lookup table, the pixel-by-pixel conversion and the output histogram', minWidth: 560 });
+  const cl = s('g', {}, cs);
+  const ct = (x, y, text, cls, anchor) => s('text', { x, y, dy: '0.35em', 'text-anchor': anchor, class: cls }, cl, text);
+  const ring = (x, y, w, h, cls) => {
+    s('rect', { x, y, width: w, height: h, class: 'f-none sep', style: 'stroke-width: 6' }, cl);
+    s('rect', { x, y, width: w, height: h, class: 'f-none ' + cls, style: 'stroke-width: 3' }, cl);
+  };
+  const faded = { cls: 'f-seg', style: 'opacity: 0.55' };
+
+  function drawC() {
+    cl.textContent = '';
+    const stage = stageOf(gk);
+    const r = stage === 0 ? gk : null;
+    const p = stage === 1 ? gk - 8 : null, pi = p == null ? null : [Math.floor(p / 4), p % 4];
+    const kc = stage === 2 ? gk - 24 : null;
+    const lutDone = l => stage > 0 || l <= r;
+    const pixDone = (i, j) => stage > 1 || (stage === 1 && i * 4 + j <= p);
+    const histDone = k => stage === 3 || (stage === 2 && k <= kc);
+
+    const gin = grid(cl, { x: 40, y: 56, data: IMG, cell: 34, gap: 2, fill: g7, stroke: 'box', title: 'Input image' });
+    if (stage === 0) IMG.forEach((row, i) => row.forEach((v, j) => { if (v === r) ring(gin.cx(j), gin.cy(i), 34, 34, 'outline-sec'); }));
+    if (pi) ring(gin.cx(pi[1]), gin.cy(pi[0]), 34, 34, 'outline-pri');
+
+    const lut = grid(cl, {
+      x: 272, y: 56, data: [LV, CUM, SK], cell: 34, gap: 2, stroke: 'box', rowLabels: ['r', 'cum', 's'], title: 'Mapping r → s (the LUT)',
+      fill: (v, row, col) => (row === 0 ? g7(v) : !lutDone(col) ? faded : row === 2 ? g7(v) : { cls: 'f-seg', text: 't-fg' }),
+      text: (v, row, col) => (row > 0 && !lutDone(col) ? '' : v),
+    });
+    const lc = stage === 0 ? r : pi ? IMG[pi[0]][pi[1]] : null;
+    if (lc != null) ring(lut.cx(lc), 56, 34, 3 * 36 - 2, stage === 0 ? 'outline-sec' : 'outline-pri');
+    arrow(cl, 190, 110, 234, 110, { cls: 'a-muted' });
+    arrow(cl, 566, 110, 606, 110, { cls: 'a-muted' });
+
+    const gout = grid(cl, {
+      x: 616, y: 56, data: OUTIMG, cell: 34, gap: 2, stroke: 'box', title: 'Output image',
+      fill: (v, i, j) => (pixDone(i, j) ? g7(v) : faded), text: (v, i, j) => (pixDone(i, j) ? v : ''),
+    });
+    if (pi) ring(gout.cx(pi[1]), gout.cy(pi[0]), 34, 34, 'outline-pri');
+    if (stage === 2) OUTIMG.forEach((row, i) => row.forEach((v, j) => { if (v === kc) ring(gout.cx(j), gout.cy(i), 34, 34, 's-ok'); }));
+
+    const hIn = axes(cl, { x: 56, y: 268, w: 290, h: 104, xd: [-0.5, 7.5], yd: [0, 7], xt: LV, yt: [0, 2, 4, 6], xl: 'gray level', yl: 'input histogram' });
+    const hOut = axes(cl, { x: 446, y: 268, w: 290, h: 104, xd: [-0.5, 7.5], yd: [0, 7], xt: LV, yt: [0, 2, 4, 6], xl: 'gray level', yl: 'output histogram' });
+    LV.forEach(k => {
+      const on = stage !== 0 || k <= r;
+      if (NK[k]) s('rect', { x: hIn.x(k) - 12, y: hIn.y(NK[k]), width: 24, height: hIn.y(0) - hIn.y(NK[k]), class: 'f-pri', style: on ? null : 'opacity: 0.25' }, cl);
+      ct(hIn.x(k), hIn.y(NK[k]) - 9, NK[k], on ? 't-pri t-bold' : 't-muted', 'middle');
+      if (!histDone(k)) return;
+      if (NOUT[k]) s('rect', { x: hOut.x(k) - 12, y: hOut.y(NOUT[k]), width: 24, height: hOut.y(0) - hOut.y(NOUT[k]), class: 'f-ok' }, cl);
+      ct(hOut.x(k), hOut.y(NOUT[k]) - 9, NOUT[k], 't-ok t-bold', 'middle');
+    });
+    if (stage === 0) ct(346, 252, `bars 0 to ${r}: ${CUM[r]} pixels`, 't-pri t-bold', 'end');
+    if (stage === 2) ring(hOut.x(kc) - 16, hOut.y(7) - 14, 32, hOut.y(0) - hOut.y(7) + 14, 's-ok');
+  }
+
+  function cNote() {
+    const stage = stageOf(gk);
+    if (stage === 0) {
+      const r = gk;
+      return `Step 1, level r = ${r}. Cumulative sum ${r ? `${CUM[r - 1]} + ${NK[r]} = ` : ''}${CUM[r]}: that many pixels have level ${r} or darker (the solid bars). 7 × ${CUM[r]} / 16 = ${fmt(NORM[r], 4)}, nearest integer <b>${SK[r]}</b>. So every ${r} becomes ${SK[r]}.` + (NK[r] ? '' : ` No pixel has level ${r}, so this entry is never used.`);
+    }
+    if (stage === 1) {
+      const p = gk - 8, i = Math.floor(p / 4), j = p % 4, v = IMG[i][j];
+      return `Step 2, pixel (${i}, ${j}) of the input is ${v}. The table says ${v} → ${SK[v]}, so write <b>${SK[v]}</b> at (${i}, ${j}) of the output. ${p + 1} of 16 pixels converted.`;
+    }
+    if (stage === 2) {
+      const k = gk - 24;
+      return `Step 3, level ${k}: ${NOUT[k] ? `${NOUT[k]} output pixel${NOUT[k] > 1 ? 's have' : ' has'} the value ${k} (outlined)` : `no output pixel has the value ${k}`}, so n<sub>${k}</sub> = <b>${NOUT[k]}</b> in the output histogram.`;
+    }
+    return `Done. Mapping ${SK.join(' ')} for r = 0 to 7. Output histogram ${NOUT.join(', ')}, still 16 pixels. The crowded levels 2 and 3 moved apart to 4 and 6, and 4 and 6 merged into 7. The pixels now spread over the whole range, but the histogram is not flat (slide 26).`;
+  }
+
+  const cWrap = viz('c-steps');
+  const stageBar = QV.h('div', { class: 'steps', role: 'group', 'aria-label': 'Stage' }, cWrap);
+  const stageBtns = STAGES.map(st => {
+    const b = QV.h('button', { type: 'button', 'aria-pressed': 'false' }, stageBar, st.name);
+    b.addEventListener('click', () => goC(st.from));
+    return b;
+  });
+  const cLabel = v => {
+    const st = stageOf(v);
+    return st === 0 ? `mapping r = ${v}` : st === 1 ? `pixel (${Math.floor((v - 8) / 4)},${(v - 8) % 4})` : st === 2 ? `counting level ${v - 24}` : 'done';
+  };
+  const cIn = slider(cWrap, { label: 'step', min: 0, max: LAST, step: 1, value: gk, fmt: v => (v === LAST ? `all ${LAST} steps done` : `${v + 1} of ${LAST}, ${cLabel(v)}`) }, v => {
+    gk = v;
+    drawC();
+    role('c-note').innerHTML = cNote();
+    stageBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(i === stageOf(gk))));
+  });
+  const cNav = QV.h('div', { class: 'steps' }, cWrap);
+  [['← previous', -1], ['next →', 1]].forEach(([label, d]) => QV.h('button', { type: 'button' }, cNav, label).addEventListener('click', () => goC(gk + d)));
+  function goC(v) {
+    cIn.value = Math.max(0, Math.min(LAST, v));
+    cIn.dispatchEvent(new Event('input'));
+  }
+
+  // Figure 4: input histogram, the r to s mapping, output histogram
   const mp = svg(viz('map'), 620, 312, { label: 'Input histogram mapped level by level onto the output histogram', minWidth: 500 });
   const X = k => 130 + k * 62, U = 11;
   [['input', 78, 't-pri t-bold'], ['level r', 124, 't-fg'], ['LUT', 168, 't-muted'], ['level s', 212, 't-fg'], ['output', 258, 't-ok t-bold']]

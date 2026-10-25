@@ -30,7 +30,7 @@
     <div class="sol-part">
       <h4>(b) Worked solution</h4>
       <ul>
-        <li>The cross is symmetric, so B̂ = B.</li>
+        <li>The cross is symmetric, so B̂ = B. B̂ is B turned 180°, see Figure 3.</li>
         <li>An output pixel is 1 if the cross centred on it hits at least one 1 of A. That means the pixel itself or one of its 4-neighbours (up, down, left, right) is 1.</li>
         <li>Equivalently, stamp a cross on every 1 of A. A has 8 ones, and no stamp reaches past the 7 x 7 grid.</li>
       </ul>
@@ -51,6 +51,32 @@
       <ul>
         <li>Check (row, col from 0): (3,4) gets a 1 from (3,5), and (4,4) gets one from (4,3). The outlined pixels join the vertical bar and the bottom shape into one region ("broken segments were joined", slide 22).</li>
       </ul>
+    </div>
+    <div class="sol-part">
+      <h4>What B̂ is, and where dilation uses it</h4>
+      <ul>
+        <li><b>B̂ is B turned 180° around its origin.</b> Slide 48: B̂ = { w | w = −b, b ∈ B }, it "reflects all elements of B about the origin". Write each 1 of B as an offset (row, col) from the origin and change both signs.</li>
+        <li>For the Q1 cross, up (−1,0) and down (+1,0) swap, left (0,−1) and right (0,+1) swap, and the centre (0,0) stays. The same five cells come back, so B̂ = B.</li>
+        <li>The definition A ⊕ B = { z | (B̂)<sub>z</sub> ∩ A ≠ ∅ } checks one pixel at a time. Put the origin of B̂ on pixel z. If any 1 of B̂ lands on a 1 of A, z becomes 1.</li>
+        <li>Stamping B on every 1 of A (Figure 2) uses B as it is and gives the same result. The flip is what makes the two methods agree.</li>
+        <li>The flip only changes the answer when B is lopsided or its origin is off-centre. Switch Figure 3 to the lopsided cross to see the mistake a missing flip causes.</li>
+      </ul>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>B̂ is B turned 180°: the Q1 cross and a lopsided cross</h4></div>
+        <p class="fig-lede">Top: each 1 of B labelled with its offset (row, col) from the origin, and B̂ with both signs changed. Below: step through the 49 pixels z in reading order, checked with B̂ (the definition) and with B left unflipped. Each check reads only A and writes one pixel into a separate output grid, so a new 1 never affects a later check. The lopsided cross is not part of the exam question. It shows when the flip matters.</p>
+        <div data-viz="hat-steps"></div>
+        <p class="step-note" data-role="hat-note" aria-live="polite"></p>
+        <div data-viz="hat-z"></div>
+        <div data-viz="hat"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>1 already in A</span>
+          <span><i class="sw-ok"></i>1 added by the dilation</span>
+          <span><i class="sw-seg"></i>0</span>
+          <span><i class="sw-seg" style="opacity: 0.55"></i>not checked yet</span>
+          <span><i class="sw-sec"></i>outline: the SE placed at z, and z in the output</span>
+          <span><i class="sw-bad"></i>outline: a pixel that comes out wrong</span>
+        </div>
+      </figure>
     </div>
   </div>
   <div class="exam-line">
@@ -121,9 +147,19 @@
       </ul>
       <p>Result: <span class="result">average 82, median 62. The median filter is better here.</span></p>
       <figure class="fig">
-        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>The average spreads the salt pixel over its neighbours</h4></div>
-        <p class="fig-lede">Both filters applied at all nine interior pixels (rows and columns 1 to 3). The 255 sits inside every one of these windows, so every averaged pixel comes out about 20 levels too bright. The median output stays close to the clean values.</p>
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Sliding the window over every pixel, with a border rule</h4></div>
+        <p class="fig-lede">The 3 × 3 window visits all 25 pixels in reading order. At each stop the average adds the nine values and divides by 9, and the median sorts them and takes the 5th. Each result goes into a new 5 × 5 output image, and the input never changes. On the frame pixels part of the window hangs outside the image, so slide 15's border rule decides what those cells hold. The faded ring around the input shows the values the rule invents. It starts at (2, 2), the pixel the question asks about, which needs no rule.</p>
+        <div data-viz="rule-steps"></div>
+        <div data-viz="slide-steps"></div>
+        <p class="step-note" data-role="slide-note" aria-live="polite"></p>
         <div data-viz="spread"></div>
+        <div class="legend">
+          <span><i class="sw-pri"></i>outline: the window, and the median pixel it writes</span>
+          <span><i class="sw-sec"></i>outline: the average pixel it writes</span>
+          <span><i class="sw-seg" style="opacity: 0.55"></i>output not computed yet</span>
+          <span>dashed box: the real 5 × 5 image; faded cells outside it come from the border rule</span>
+          <span>–: no value (skip the border)</span>
+        </div>
       </figure>
     </div>
   </div>
@@ -185,9 +221,22 @@
       <p>Result: <span class="result">LUT for r = 0 to 7: 0 1 4 6 7 7 7 7</span></p>
     </div>
     <div class="sol-part">
-      <h4>(c) Output image and output histogram</h4>
+      <h4>(c) Mapping, output image and output histogram</h4>
       <figure class="fig">
-        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Where each input level goes</h4></div>
+        <div class="fig-head"><span class="fig-no">Figure 3</span><h4>Part (c) step by step: table, find and replace, count again</h4></div>
+        <p class="fig-lede">Three jobs, 32 steps. 1: build the mapping r → s one level at a time, s = round(7 × cumulative sum / 16). 2: go through the 16 pixels and replace each value using the table. 3: count each level in the new image to get the output histogram. Use the stage buttons to jump, or step with next.</p>
+        <div data-viz="c-steps"></div>
+        <p class="step-note" data-role="c-note" aria-live="polite"></p>
+        <div data-viz="c-fig"></div>
+        <div class="legend">
+          <span><i class="sw-sec"></i>outline: pixels with the level being mapped</span>
+          <span><i class="sw-pri"></i>outline: the pixel being converted and its table column</span>
+          <span><i class="sw-ok"></i>output histogram, outline: pixels being counted</span>
+          <span><i class="sw-seg" style="opacity: 0.55"></i>not filled in yet</span>
+        </div>
+      </figure>
+      <figure class="fig">
+        <div class="fig-head"><span class="fig-no">Figure 4</span><h4>Where each input level goes</h4></div>
         <p class="fig-lede">Top: the input histogram. Bottom: the output histogram, drawn downward. Each line maps r<sub>k</sub> to s<sub>k</sub>, and its width is the number of pixels it carries. Levels 2 and 3 move apart (to 4 and 6), and levels 4 and 6 merge into 7.</p>
         <div data-viz="map"></div>
         <div data-viz="images"></div>
