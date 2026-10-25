@@ -14,7 +14,7 @@ The 13 decks contain 384 slides including title, closing and accessibility/text-
 
 Notes follow the repository's style: one file per lecture, compact explanations, slide references, examples and an **Exam focus** section. Past-paper solutions use **Source** and **Notes** references and label assumptions.
 
-All navigation links point to Markdown, so you do not need to open a PDF to follow the explanations. Mermaid diagrams render on GitHub; local IDE support may depend on the Markdown preview. Each worked case also includes a text scenario/table for use when diagram rendering is unavailable.
+Lecture notes and worked-answer links point to Markdown, so you do not need to open a PDF to follow the explanations. Mermaid diagrams render on GitHub; local IDE support may depend on the Markdown preview. Each worked case also includes a text scenario/table for use when diagram rendering is unavailable.
 
 ## 2. Lecture notes
 
@@ -102,3 +102,9 @@ Textbook reference: Pressman and Maxim, *Software Engineering: A Practitioner's 
 Mermaid has no native UML use-case diagram type in these files. Its external actor boxes and rounded goal nodes are an approximation for Markdown. In a handwritten UML answer, draw stick figures, use-case ovals and a rectangular system boundary. Activity flowcharts likewise require standard initial/final symbols when drawn as UML.
 
 The solution files identify assumptions about role assignments, validation, failure handling and payment completion. Alternative models can be valid if they preserve the case requirements and remain internally consistent.
+
+## 8. Interactive midterm visualizer
+
+[Download or view the standalone HTML](visuals/software-engineering-midterm-visuals.html) for all three papers: **37 questions and 74 SVG diagrams**, including actor-role views, CRC cards, state/class notation and alternative activity paths. Each question has a study answer, visual explanation, exam line and source references.
+
+GitHub displays HTML source rather than running it. Open the file above, use **Download raw file**, and open the downloaded HTML in a browser. Text, diagrams, controls, navigation and light/dark themes are embedded in this one file. Internet access is only needed for optional web fonts; system fonts work offline. The study assumptions and source limitations described above still apply.
