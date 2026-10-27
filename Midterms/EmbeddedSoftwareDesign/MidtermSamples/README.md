@@ -7,7 +7,7 @@ Three original practice exams based on the instructor's [Fall 2026 ARM midterm g
 ## Start here
 
 - [Online practice](https://exams.eessketit.uz/) — hosted separately on the contributor's VDS.
-- [Standalone trainer](Trainer.html) — download and open in a browser for offline practice; timer, scoring and explanations work without a server. On the GitHub file page use Download raw file.
+- [Standalone trainer](Trainer.html) — download and open in a browser for offline practice; instant green/red answer feedback, explanations, timer and scoring work without a server. The first answer is locked for scoring. On the GitHub file page use Download raw file.
 - [Study guide in Russian](Study-guide-RU.md) — all nine lessons, formulas, failure modes and implementation nuances.
 - [Last review](Last-review.md) — compact revision sheet and preparation plans.
 
